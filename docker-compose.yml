@@ -8,6 +8,9 @@ services:
     container_name: vistorias-app
     restart: unless-stopped
     env_file: .env
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     depends_on:
       - postgres
       - redis
@@ -26,6 +29,9 @@ services:
     command: ["npm", "run", "worker"]
     restart: unless-stopped
     env_file: .env
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     depends_on:
       - postgres
       - redis
