@@ -259,12 +259,45 @@ Recomendo instalar os mesmos três no app (`package.json` já atualizado):
 | Relatório público (`/r/[token]`) | Réplica fiel do site: `primary`, `secondary`, `accent`, nuvens decorativas | **soft/blob** (`2xl`–`3xl`, pill nos CTAs) | Inter + Instrument Serif itálico nos títulos |
 | PDF gerado | Versão estática do relatório público | bordas moderadas (PDF não precisa do exagero, só do reconhecimento de marca) | Inter (Instrument Serif pode não estar disponível no motor de PDF — testar; se não renderizar, usar Inter itálico como fallback) |
 
-## 10. O que ficou pendente / não confirmado
+## 10. Inventário de Telas e Fluxo de Uso
 
-- Não há acesso ao CSS computado real do navegador — os valores acima vêm
-  do `tailwind_config.js`/`output.css` fornecidos, que são a fonte mais
-  confiável disponível, mas se o site tiver sofrido ajustes finos via CSS
-  inline não capturados nesses arquivos, pode haver pequenas divergências.
-- Ícones/imagens (`cloud-1.png` etc.) não foram inspecionados visualmente —
-  se quiser reaproveitá-los literalmente no app (não só a metáfora), copiar
-  os arquivos do repositório do site.
+### 10.1 Telas Mapeadas por Superfície
+
+#### 📱 App de campo (vistoriador) — PWA
+| # | Tela | Observação |
+|---|---|---|
+| 1 | Login Simples | E-mail/senha, sessão longa (7 dias). |
+| 2 | Home/Dashboard do Vistoriador | Vistorias do dia, mini-calendário, botão "Iniciar Vistoria" (estilo "This Week Overview"). |
+| 3 | Detalhe do Agendamento | Endereço, tipo, dados de locador/locatário, botão "Iniciar" (fluxo Info → Meters → Keys → Rooms → Documents). |
+| 4 | Visão geral da vistoria | Cards por ambiente com badge de estado geral (verde/amarelo/vermelho) e % concluído. |
+| 5 | Ambiente (lista de itens) | Lista de itens do ambiente, cada um com mini-thumb de foto e estado. |
+| 6 | Captura de item | Câmera + botão de gravação de áudio + preview. |
+| 7 | Menu flutuante (FAB) | Foto / Áudio / Nota de texto / Marcar dano (conforme imagem "menu-flutuante"). |
+| 8 | Revisão do item (pós-IA) | Descrição gerada editável + seletor de estado (conforme imagem "score-estado-ambiente"). |
+| 9 | Status de sincronização | Fila offline: mídias/checklists sincronizados e pendentes. |
+| 10 | Resumo/finalização da vistoria | Score geral, ambientes pendentes, botão "Finalizar". |
+| 11 | Sucesso + compartilhar | "Vistoria concluída" + botão de compartilhamento via WhatsApp. |
+
+#### 🖥️ Painel Admin (Gestor/Vera Lúcia)
+| # | Tela | Observação |
+|---|---|---|
+| 12 | Login Admin | Autenticação padrão de gestores (email/senha). |
+| 13 | Dashboard de Métricas | Vistorias no mês, tempo médio de entrega, % aceito sem edição, gráficos de status. |
+| 14 | Agenda/calendário | Criar/editar agendamentos, atribuir vistoriador responsável. |
+| 15 | Lista de vistorias | Filtros por status (agendada, em campo, em revisão, concluída, contestada). |
+| 16 | Detalhe da vistoria (admin) | Revisão final ambiente-por-ambiente antes de enviar ao cliente. |
+| 17 | Acompanhamento de verificação | Status linear: gerado → enviado → visualizado → confirmado (com timestamps). |
+| 18 | Contestações | Lista de contestações abertas pelo cliente + formulário de resposta da equipe. |
+| 19 | Cadastros | Cadastro de imóveis, proprietários/locatários e vistoriadores. |
+
+#### 🔗 Cliente (link público com token JWT)
+| # | Tela | Observação |
+|---|---|---|
+| 20 | Relatório digital | Visualização completa de fotos e descrições por ambiente (nuvens, Instrument Serif). |
+| 21 | Contestar item | Formulário simples para contestar um item específico. |
+| 22 | Confirmação de recebimento | Ação do cliente: "Confirmo que recebi e revisei..." com registro de timestamp. |
+
+## 11. O que ficou pendente / não confirmado
+
+- Não há acesso ao CSS computado real do navegador — os valores acima vêm do `tailwind_config.js`/`output.css` fornecidos, que são a fonte mais confiável disponível.
+- Ícones/imagens (`cloud-1.png` etc.) não foram inspecionados visualmente — se quiser reaproveitá-los literalmente no app, copiar do site.

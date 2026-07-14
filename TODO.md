@@ -15,6 +15,9 @@ apenas escrito.
 - [ ] Schema Prisma: Empresa, Usuario, Imovel, Pessoa, Vistoria, Ambiente, Item, Relatorio, ChecklistChegada
 - [ ] Migrations iniciais + seed de dados de teste (baseado nos PDFs de exemplo)
 - [ ] NextAuth: login admin/vistoriador (credentials)
+- [ ] API de agendamento de vistorias (GET, POST, PUT, DELETE)
+- [ ] API do dashboard de métricas e KPIs (vistorias/mês, tempo de entrega, taxa de aceitação IA)
+- [ ] Estruturar pastas e rotas das 22 telas no Next.js (App Router)
 - [ ] CRUD de imóveis e pessoas (locador/locatário)
 - [ ] CRUD de agendamento de vistoria (tipo, data, vistoriador responsável)
 - [ ] Painel admin: lista de vistorias com status
