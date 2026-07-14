@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   app:
     build:
@@ -15,7 +13,7 @@ services:
       - postgres
       - redis
     ports:
-      - "3000:3000" # exposto localmente para debug; produção usa o cloudflared
+      - "3001:3000" # exposto na porta 3001 no host para evitar conflito com 3000; cloudflared acessa internamente via porta 3000
     # SEM bind-mount de código: a imagem já vem com o build (`next build`)
     # embutido (ver Dockerfile). Para desenvolvimento com hot-reload, rode
     # `npm run dev` direto no host, apontando para os serviços deste compose

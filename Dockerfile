@@ -19,8 +19,9 @@ RUN apt-get update && apt-get install -y \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-# Copy built application and all node_modules from builder
+# Copy built application, node_modules, and Prisma engines cache from builder
 COPY --from=builder /app /app
+COPY --from=builder /root/.cache /root/.cache
 
 EXPOSE 3000
 
