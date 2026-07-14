@@ -141,3 +141,23 @@ Se o servidor reiniciar ou você precisar iniciar/parar o serviço do Docker e a
   ```bash
   docker compose logs -f app
   ```
+
+  Perfeito! Já adicionei todos os comandos explicados e organizados no final do seu arquivo 
+
+fase0.md
+ e enviei as modificações para o seu GitHub.
+
+Aqui estão as respostas detalhadas para as suas dúvidas:
+
+1. Sobre as atualizações irem automaticamente para o GitHub:
+Não, as modificações não vão de forma automática.
+
+O meu fluxo: Sempre que eu faço alguma correção ou alteração nos seus arquivos aqui por trás (no VS Code/IDE), eu rodo comandos do Git para enviar (fazer o git push) diretamente ao seu GitHub.
+O seu fluxo: Se você mesmo alterar algum arquivo no computador local e quiser enviar, precisará rodar os comandos no terminal do seu computador (como expliquei na seção nova do fase0.md).
+No Servidor (Putty): O servidor nunca recebe as novidades sozinho. Toda vez que fizermos alterações que devem ir para o ar, você precisa entrar no Putty e rodar o git pull origin main seguido do deploy, para ele baixar a versão nova e atualizar os containers.
+2. Comandos do Docker no Putty
+Adicionei a seção no seu arquivo contendo como iniciar o serviço do Docker (caso o servidor caia ou reinicie) e outros comandos úteis de monitoramento (como ver logs, status dos containers e pará-los).
+
+Assim que o seu comando de build no servidor terminar, você pode rodar a migração do banco de dados normalmente. Como o cache foi embutido, ela não deve demorar quase nada!
+
+Me avise se o deploy e a migração concluíram com sucesso..
