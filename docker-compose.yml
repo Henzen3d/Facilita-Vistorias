@@ -1,0 +1,85 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vistorias-app
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "3000:3000" # exposto localmente para debug; produção usa o cloudflared
+    # SEM bind-mount de código: a imagem já vem com o build (`next build`)
+    # embutido (ver Dockerfile). Para desenvolvimento com hot-reload, rode
+    # `npm run dev` direto no host, apontando para os serviços deste compose
+    # (postgres/redis/minio) — ver README.md "Subindo localmente".
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vistorias-worker
+    command: ["npm", "run", "worker"]
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: vistorias-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vistorias
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: vistorias
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432" # remover/limitar em produção
+
+  redis:
+    image: redis:7-alpine
+    container_name: vistorias-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+  # Storage local S3-compatível — alternativa/backup ao Cloudflare R2.
+  # Trocar STORAGE_PROVIDER=minio no .env para usar este em vez do R2.
+  minio:
+    image: minio/minio:latest
+    container_name: vistorias-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-changeme}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000" # API S3
+      - "9001:9001" # console web
+
+  # Túnel Cloudflare — expõe o app no subdomínio sem abrir portas no firewall.
+  # Criar o túnel no dashboard da Cloudflare (Zero Trust > Networks > Tunnels),
+  # apontar o hostname público para http://app:3000 e colocar o token abaixo.
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: vistorias-cloudflared
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN}
+    depends_on:
+      - app
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:

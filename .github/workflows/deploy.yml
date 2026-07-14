@@ -1,0 +1,26 @@
+name: Deploy para produção
+
+# Roda automaticamente toda vez que algo é enviado (push) para a branch main.
+# Ou seja: você dá "Sync Changes" no VS Code -> isso dispara este workflow ->
+# que conecta no seu servidor via SSH e roda o deploy.sh.
+on:
+  push:
+    branches:
+      - main
+  # também permite disparar manualmente pela aba "Actions" do GitHub, sem precisar de push
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Conectar no servidor via SSH e rodar o deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          script: |
+            cd ${{ secrets.DEPLOY_PATH }}
+            bash scripts/deploy.sh

@@ -1,0 +1,37 @@
+# Dependências
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Variáveis de ambiente (NUNCA versionar)
+.env
+.env.local
+.env.production
+
+# Build
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# SO
+.DS_Store
+Thumbs.db
+
+# Prisma
+prisma/*.db
+
+# Testes/coverage
+coverage/
+
+# Docker (arquivos locais de volumes, se houver)
+.docker/

@@ -1,0 +1,268 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Empresa (tenant principal)
+model Empresa {
+  id        String   @id @default(uuid())
+  nome      String   @unique
+  cnpj      String?  @unique
+  ativa     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  usuarios      Usuario[]
+  imoveis       Imovel[]
+  vistorias     Vistoria[]
+  configuracoes ConfiguracaoEmpresa[]
+
+  @@map("empresas")
+}
+
+// Usuários (admin e vistoriadores)
+model Usuario {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  nome      String
+  senhaHash String   @map("senha_hash")
+  tipo      TipoUsuario @default(VISTORIADOR)
+  empresaId String
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  empresa   Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  vistorias Vistoria[]
+
+  @@map("usuarios")
+}
+
+// Imóveis vistoriados
+model Imovel {
+  id        String   @id @default(uuid())
+  endereco  String
+  numero    String?
+  complemento String?
+  bairro    String
+  cidade    String
+  estado    String  @db.Char(2)
+  cep       String  @db.Char(8)
+  empresaId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  empresa     Empresa   @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  vistorias   Vistoria[]
+  pessoas     Pessoa[]
+
+  @@map("imoveis")
+}
+
+// Pessoas (locador e locatário)
+model Pessoa {
+  id        String   @id @default(uuid())
+  nome      String
+  email     String?
+  telefone  String?
+  documento String?  // CPF/CNPJ
+  tipo      TipoPessoa
+  imovelId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  imovel    Imovel   @relation(fields: [imovelId], references: [id], onDelete: Cascade)
+
+  @@map("pessoas")
+}
+
+// Vistoria principal
+model Vistoria {
+  id        String   @id @default(uuid())
+  codigo    String   @unique
+  tipo      TipoVistoria
+  data      DateTime
+  status    StatusVistoria @default(AGENDADA)
+  imovelId  String
+  empresaId String
+  usuarioId String  // vistoriador responsável
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  imovel    Imovel   @relation(fields: [imovelId], references: [id], onDelete: Cascade)
+  empresa   Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  ambientes Ambiente[]
+  tokenPublico String? @unique @map("token_publico") // JWT para acesso público
+  expiracaoToken DateTime? @map("expiracao_token")
+
+  @@map("vistorias")
+}
+
+// Ambientes do imóvel (sala, cozinha, banheiro, etc.)
+model Ambiente {
+  id         String   @id @default(uuid())
+  nome       String
+  ordem      Int
+  vistoriaId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  vistoria Vistoria @relation(fields: [vistoriaId], references: [id], onDelete: Cascade)
+  items    Item[]
+
+  @@map("ambientes")
+}
+
+// Itens vistoriados (porta, piso, parede, etc.)
+model Item {
+  id          String   @id @default(uuid())
+  nome        String
+  descricao   String?  // descrição editada pelo vistoriador/admin
+  descricaoFinal String? @map("descricao_final") // descrição final após IA + revisão
+  status      StatusItem @default(PENDENTE)
+  ambienteId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  analisadoEm DateTime? @map("analisado_em")
+
+  ambiente      Ambiente      @relation(fields: [ambienteId], references: [id], onDelete: Cascade)
+  midias       Midia[]
+  analisesIa   AnaliseIa[]
+  contestacoes Contestacao[]
+
+  @@map("items")
+}
+
+// Mídias (fotos e áudios)
+model Midia {
+  id        String   @id @default(uuid())
+  tipo      TipoMidia
+  url       String   // URL no storage (MinIO/R2)
+  key       String   // Chave no storage
+  itemId    String
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+  syncStatus SyncStatus @default(PENDENTE)
+
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@map("midias")
+}
+
+// Análises de IA
+model AnaliseIa {
+  id        String   @id @default(uuid())
+  itemId    String
+  provedor  ProvedorIa
+  input     Json     // prompt + metadados
+  output    Json     // resposta bruta da IA
+  analise   String   // texto extraído e validado
+  confianca Float?
+  custo     Float?   // em USD
+  tokens    Int?
+  createdAt DateTime @default(now())
+
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@map("analises_ia")
+}
+
+// Contestação de itens pelo cliente
+model Contestacao {
+  id        String   @id @default(uuid())
+  itemId    String
+  motivo    String
+  status    StatusContestacao @default(PENDENTE)
+  createdAt DateTime @default(now())
+  resolvidoEm DateTime? @map("resolvido_em")
+  resposta  String?
+
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@map("contestacoes")
+}
+
+// Configurações por empresa
+model ConfiguracaoEmpresa {
+  id        String   @id @default(uuid())
+  empresaId String
+  chave     String
+  valor     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+
+  @@unique([empresaId, chave])
+  @@map("configuracoes_empresa")
+}
+
+// Enums
+enum TipoUsuario {
+  ADMIN
+  VISTORIADOR
+}
+
+enum TipoPessoa {
+  LOCADOR
+  LOCATARIO
+  PROPRIETARIO
+  FIADOR
+}
+
+enum TipoVistoria {
+  ENTRADA
+  SAIDA
+  PERIODICA
+  ESPECIAL
+}
+
+enum StatusVistoria {
+  AGENDADA
+  EM_ANDAMENTO
+  FINALIZADA
+  CANCELADA
+}
+
+enum StatusItem {
+  PENDENTE
+  CAPTURADO      // foto/áudio capturado
+  EM_ANALISE     // na fila de IA
+  ANALISADO      // IA processou
+  REVISADO       // humano revisou
+  FINALIZADO     // pronto para relatório
+}
+
+enum TipoMidia {
+  FOTO
+  AUDIO
+}
+
+enum SyncStatus {
+  PENDENTE       // salvo apenas local (IndexedDB)
+  UPLOADING      // enviando para storage
+  UPLOADED       // upload completo
+  SYNCED         // referência salva no banco
+  ERROR
+}
+
+enum ProvedorIa {
+  GEMINI
+  OPENAI
+  CLAUDE
+}
+
+enum StatusContestacao {
+  PENDENTE
+  EM_ANALISE
+  ACEITA
+  REJEITADA
+  RESOLVIDA
+}
