@@ -3,8 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // PWA configuration (will be enhanced by next-pwa)
   experimental: {
-    // Enable PWA features
-    ppr: true,
+    // Disable PPR since we are using stable Next.js 15
+    ppr: false,
   },
 
   // Disable strict mode for development with certain libraries
