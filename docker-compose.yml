@@ -63,8 +63,8 @@ services:
     volumes:
       - minio_data:/data
     ports:
-      - "9000:9000" # API S3
-      - "9001:9001" # console web
+      - "9010:9000" # API S3
+      - "9011:9001" # console web
 
   # Túnel Cloudflare — expõe o app no subdomínio sem abrir portas no firewall.
   # Criar o túnel no dashboard da Cloudflare (Zero Trust > Networks > Tunnels),
