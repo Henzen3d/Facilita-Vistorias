@@ -55,8 +55,18 @@ final compartilhável.
    locador/locatário).
 2. **Execução em campo (PWA offline-first)**
    - Vistoriador abre a vistoria do dia (dados já em cache local).
-   - Para cada ambiente (ex.: "Quarto 1"), cria itens (piso, paredes, portas,
-     mobiliário etc.).
+   - **Protocolo de Chegada (Segurança e Ativação Antecipada):** Antes de iniciar as vistorias nos ambientes, o vistoriador realiza um checklist rápido na chegada do imóvel:
+     - Sentir se há cheiro de gás (segurança obrigatória antes de acender interruptores).
+     - Ligar todas as luzes (identifica lâmpadas queimadas e melhora a iluminação para fotos).
+     - Abrir todas as janelas (evita esquecer de checar e areja o imóvel).
+     - Ligar aparelhos de ar-condicionado (aparelhos demoram a funcionar/gelar, evitando espera no final).
+     - Abrir torneiras e chuveiros de água quente (se houver aquecimento a gás, para dar tempo de aquecer).
+     - Dar descarga em todos os vasos sanitários (verifica pressão e vazamento, dando tempo de encher o reservatório).
+     - Testar chuveiros elétricos individualmente (verifica resistências queimadas).
+     - Abrir quadro de disjuntores (checar se algum está desarmado, evitando falso diagnóstico de tomada quebrada).
+     - Testar interfone/campainha e portão eletrônico da garagem (se aplicável).
+     - Ligar exaustores e bomba de piscina (se aplicável).
+   - Para cada ambiente (ex.: "Quarto 1"), cria itens (piso, paredes, portas, mobiliário etc.).
    - Para cada item: tira 1+ fotos e grava um áudio curto narrando o que vê.
    - Tudo fica salvo localmente (IndexedDB) e entra numa fila de
      processamento — não depende de internet no momento da captura.
@@ -85,6 +95,7 @@ final compartilhável.
 - [ ] Autenticação com papéis: admin, vistoriador, acesso público por token (cliente)
 - [ ] CRUD de imóveis, locadores/locatários, agendamentos
 - [ ] App de campo (PWA) com captura de foto + áudio por item, offline-first
+- [ ] Tela de checklist do Protocolo de Chegada no PWA (ativação antecipada e segurança)
 - [ ] Pipeline de IA: transcrição + descrição consolidada por item
 - [ ] Tela de revisão/edição do relatório antes de finalizar
 - [ ] Geração de PDF + link público com token + QR code

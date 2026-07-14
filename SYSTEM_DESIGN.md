@@ -71,6 +71,7 @@ erDiagram
     MIDIA ||--o| ANALISE_IA : gera
     VISTORIA ||--o| RELATORIO : gera
     ITEM ||--o{ CONTESTACAO : pode_ter
+    VISTORIA ||--o| CHECKLIST_CHEGADA : possui
  
     EMPRESA {
       uuid id
@@ -146,6 +147,22 @@ erDiagram
       enum status "pendente|aceita|recusada"
       string nome_quem_contestou
     }
+    CHECKLIST_CHEGADA {
+      uuid id
+      uuid vistoria_id
+      boolean cheiro_gas_ok
+      boolean luzes_ligadas
+      boolean janelas_abertas
+      boolean ar_condicionado_ligado
+      boolean agua_quente_ligada
+      boolean descargas_testadas
+      boolean chuveiros_testados
+      boolean disjuntores_checados
+      boolean interfone_testado
+      boolean portao_garagem_testado
+      jsonb outros_itens
+      datetime ativado_em
+    }
 ```
  
 Observações importantes:
@@ -165,6 +182,7 @@ Observações importantes:
 - `ITEM.descricao_editada` vira `true` assim que o vistoriador/admin altera
   o texto sugerido pela IA — é a base da métrica "% aceito sem edição" do
   dashboard (§11), sem precisar comparar strings em tempo de consulta.
+- `ChecklistChegada` gerencia o Protocolo de Chegada (segurança e ativação antecipada) com registros de ativação e estados individuais. É persistido offline no IndexedDB e sincronizado com o servidor.
 
 ## 4. Pipeline de IA (foto + áudio → descrição do item)
  

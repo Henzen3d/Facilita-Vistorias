@@ -12,7 +12,7 @@ apenas escrito.
 - [ ] Estrutura de pastas conforme `SYSTEM_DESIGN.md` §1
 
 ## Fase 1 — Núcleo de dados e auth
-- [ ] Schema Prisma: Empresa, Usuario, Imovel, Pessoa, Vistoria, Ambiente, Item
+- [ ] Schema Prisma: Empresa, Usuario, Imovel, Pessoa, Vistoria, Ambiente, Item, Relatorio, ChecklistChegada
 - [ ] Migrations iniciais + seed de dados de teste (baseado nos PDFs de exemplo)
 - [ ] NextAuth: login admin/vistoriador (credentials)
 - [ ] CRUD de imóveis e pessoas (locador/locatário)
@@ -22,9 +22,10 @@ apenas escrito.
 ## Fase 2 — App de campo (PWA) — núcleo offline
 - [ ] Configurar `next-pwa` + manifest (ícone, nome, cores da marca)
 - [ ] Tela de vistoria em campo: navegação por ambiente → item
+- [ ] Tela e fluxo do Protocolo de Chegada (Checklist de ativação antecipada e segurança)
 - [ ] Captura de foto (câmera nativa via `<input capture>` ou MediaDevices API)
 - [ ] Gravação de áudio (MediaRecorder API)
-- [ ] Camada IndexedDB (`idb`): fila local de mídia pendente
+- [ ] Camada IndexedDB (`idb`): fila local de mídia e checklist pendente
 - [ ] Indicador visual de status (salvo local / sincronizando / sincronizado)
 - [ ] Background sync ao reconectar (ou fallback com polling)
 - [ ] Testar em campo real com sinal ruim/instável (teste manual crítico)
