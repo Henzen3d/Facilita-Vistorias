@@ -89,5 +89,55 @@ bash
 docker compose up -d --build
 
 6.Rode as migrações do banco de dados (Prisma):
-bash
+```bash
 docker compose exec app npm run prisma:deploy
+```
+
+---
+
+### 🔄 Fluxo de Atualização de Código (Git & GitHub)
+As modificações **não vão automaticamente**. Quando você ou eu fizermos alterações nos arquivos locais aqui no computador, para mandá-las para o servidor você deve:
+
+1. **Enviar as modificações locais para o GitHub** (eu costumo fazer isso para você no VS Code, mas se quiser fazer manualmente no terminal local):
+   ```powershell
+   git add .
+   git commit -m "Descrição das suas alterações"
+   git push
+   ```
+2. **Puxar e aplicar as modificações no servidor (via Putty)**:
+   ```bash
+   cd ~/facilita-vistorias
+   git pull origin main
+   docker compose up -d --build
+   docker compose exec app npm run prisma:deploy
+   ```
+
+---
+
+### 🐳 Como gerenciar o Docker no Putty
+Se o servidor reiniciar ou você precisar iniciar/parar o serviço do Docker e a aplicação:
+
+* **Iniciar o serviço do Docker no servidor (se estiver desligado):**
+  ```bash
+  sudo systemctl start docker
+  ```
+* **Verificar se o Docker está ativo:**
+  ```bash
+  sudo systemctl status docker
+  ```
+* **Subir a aplicação (dentro da pasta `~/facilita-vistorias`):**
+  ```bash
+  docker compose up -d
+  ```
+* **Parar a aplicação (sem apagar os dados):**
+  ```bash
+  docker compose down
+  ```
+* **Ver se os containers estão rodando e saudáveis:**
+  ```bash
+  docker compose ps
+  ```
+* **Olhar os logs do aplicativo para debugar:**
+  ```bash
+  docker compose logs -f app
+  ```
