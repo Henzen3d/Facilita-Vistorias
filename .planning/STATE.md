@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-07-15)
 ## Current Position
 
 Phase: 3 of 4 (Relatório, PDF e Pipeline de IA — planned)
-Plan: 1 of 1 in current phase (complete)
+Plan: 0 of 5 in current phase (ready to execute)
 Status: Ready to execute
 Last activity: 2026-07-15 -- Phase 3 planning complete
 
@@ -46,6 +46,7 @@ Progress: [██████████░░░░░░░░░░] 50%
 |-------|-------|-------|----------|
 | 1 | 1/1 | — | — |
 | 2 | 1/1 | — | — |
+| 3 | 0/5 | — | — |
 
 *Updated after each plan completion*
 
