@@ -9,9 +9,9 @@ See: .planning/PROJECT.md (updated 2026-07-15)
 
 ## Current Position
 
-Phase: 2 of 4 (App de Campo (PWA) e Núcleo Offline — concluída)
+Phase: 3 of 4 (Relatório, PDF e Pipeline de IA — planned)
 Plan: 1 of 1 in current phase (complete)
-Status: Phase 2 complete — ready to discuss Phase 3
+Status: Phase 3 planned — ready to execute
 Last activity: 2026-07-15 — Fase 2 (PWA offline-first) executada e verificada
 
 Progress: [██████████░░░░░░░░░░] 50%
@@ -65,3 +65,4 @@ Items acknowledged and carried forward:
 Last session: 2026-07-15
 Stopped at: Reconciliação do estado GSD — PROJECT.md, ROADMAP.md e STATE.md recriados após estarem ausentes.
 Resume file: None
+
