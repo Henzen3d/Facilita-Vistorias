@@ -131,6 +131,7 @@ model Item {
   descricao   String?  // descrição editada pelo vistoriador/admin
   descricaoFinal String? @map("descricao_final") // descrição final após IA + revisão
   descricaoEditada Boolean @default(false) @map("descricao_editada")
+  estadoConservacao EstadoConservacao? @map("estado_conservacao")
   status      StatusItem @default(PENDENTE)
   ambienteId  String
   createdAt   DateTime @default(now())
@@ -152,6 +153,7 @@ model Midia {
   url       String   // URL no storage (MinIO/R2)
   key       String   // Chave no storage
   itemId    String
+  transcricao String? @db.Text // STT text for AUDIO; null for FOTO
   uploadedAt DateTime @default(now()) @map("uploaded_at")
   syncStatus SyncStatus @default(PENDENTE)
 
@@ -171,6 +173,10 @@ model AnaliseIa {
   confianca Float?
   custo     Float?   // em USD
   tokens    Int?
+  latencyMs    Int?     @map("latency_ms")
+  usedFallback Boolean  @default(false) @map("used_fallback")
+  guardrailHit Boolean  @default(false) @map("guardrail_hit")
+  stage        String?  // e.g. "stt" | "describe" | "full"
   createdAt DateTime @default(now())
 
   item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
@@ -279,8 +285,16 @@ enum TipoVistoria {
 enum StatusVistoria {
   AGENDADA
   EM_ANDAMENTO
+  EM_REVISAO
   FINALIZADA
   CANCELADA
+}
+
+enum EstadoConservacao {
+  NOVO
+  BOM
+  REGULAR
+  RUIM
 }
 
 enum StatusItem {
