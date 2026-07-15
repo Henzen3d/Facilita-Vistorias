@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — MVP
 status: executing
-stopped_at: Completed 03-01-PLAN.md (db push deferred by operator)
-last_updated: "2026-07-15T21:46:07.400Z"
-last_activity: 2026-07-15 -- Completed plan 03-01
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-07-15T21:54:36.106Z"
+last_activity: 2026-07-15
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 7
-  completed_plans: 3
-  percent: 43
+  completed_plans: 4
+  percent: 57
 ---
 
 # Project State
@@ -26,17 +26,17 @@ See: .planning/PROJECT.md (updated 2026-07-15)
 ## Current Position
 
 Phase: 3 (Relatório, PDF e Pipeline de IA) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Ready to execute
-Last activity: 2026-07-15 -- Completed plan 03-01
+Last activity: 2026-07-15 -- Completed plan 03-02
 
-Progress: [████░░░░░░] 43%
+Progress: [██████░░░░] 57%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 3
+- Total plans completed: 4
 - Average duration: — (parcial)
 - Total execution time: —
 
@@ -46,7 +46,12 @@ Progress: [████░░░░░░] 43%
 |-------|-------|-------|----------|
 | 1 | 1/1 | — | — |
 | 2 | 1/1 | — | — |
-| 3 | 1/5 | ~25min (03-01) | ~25min |
+| 3 | 2/5 | ~31min (03-01+03-02) | ~15min |
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| Phase 03 P01 | ~25min | 3 tasks | 8 files |
+| Phase 03 P02 | 6min | 3 tasks | 12 files |
 
 *Updated after each plan completion*
 
@@ -60,6 +65,9 @@ Recent decisions affecting current work:
 - [Phase 2]: PWA + IndexedDB para offline-first; `<input capture>` + MediaRecorder para mídia; next-pwa para service worker.
 - [Phase 3/03-01]: Lazy Proxy BullMQ queues + StorageProvider R2/MinIO factory (`STORAGE_PROVIDER`) for Phase 3 infra.
 - [Phase 3/03-01]: Operator deferred live `prisma db push` until Postgres/Docker available; `prisma generate` already done — run `npx prisma generate && npx prisma db push` with reachable `DATABASE_URL` before runtime.
+- [Phase 03]: AIRouter returns { data, meta } only — no lastRunMeta dual contract
+- [Phase 03]: Gemini free-tier first (gemini-2.0-flash) → OpenAI Whisper/gpt-4o-mini → optional Claude
+- [Phase 03]: CREA sanitize: laudo→documentação técnica, perícia→constatação via enforceDescriptionOutput
 
 ### Pending Todos
 
@@ -84,6 +92,6 @@ Items acknowledged and carried forward:
 
 ## Session Continuity
 
-Last session: 2026-07-15T21:46:07.379Z
-Stopped at: Completed 03-01-PLAN.md (db push deferred by operator)
+Last session: 2026-07-15T21:54:34.931Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
