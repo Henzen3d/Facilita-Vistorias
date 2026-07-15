@@ -24,6 +24,7 @@ async function authorizeVistoriaAccess(
       data: true,
       empresaId: true,
       usuarioId: true,
+      tokenPublico: true,
       imovel: {
         select: {
           endereco: true,
@@ -38,6 +39,16 @@ async function authorizeVistoriaAccess(
         select: { id: true, nome: true },
       },
       checklistChegada: true,
+      relatorio: {
+        select: {
+          status: true,
+          geradoEm: true,
+          urlPublica: true,
+          pdfStorageKey: true,
+          versaoAtual: true,
+          historicoGeracoes: true,
+        },
+      },
       ambientes: {
         orderBy: { ordem: "asc" },
         include: {
@@ -163,6 +174,17 @@ export async function GET(
       }),
     }));
 
+    const appUrl = (process.env.APP_URL || "http://localhost:3000").replace(
+      /\/$/,
+      "",
+    );
+    const urlPublica = vistoria.tokenPublico
+      ? `${appUrl}/public/r/${vistoria.tokenPublico}`
+      : vistoria.relatorio?.urlPublica ?? null;
+
+    const historicoRaw = vistoria.relatorio?.historicoGeracoes;
+    const historicoGeracoes = Array.isArray(historicoRaw) ? historicoRaw : [];
+
     return NextResponse.json({
       vistoria: {
         id: vistoria.id,
@@ -170,12 +192,25 @@ export async function GET(
         tipo: vistoria.tipo,
         status: vistoria.status,
         data: vistoria.data,
+        tokenPublico: vistoria.tokenPublico,
       },
       imovel: vistoria.imovel,
       vistoriador: vistoria.usuario,
       ambientes,
       progress: { total, analisados, revisados, pendentes },
       checklistChegada: vistoria.checklistChegada,
+      // D-19: regen history visible to admin and vistoriador
+      relatorio: vistoria.relatorio
+        ? {
+            status: vistoria.relatorio.status,
+            geradoEm: vistoria.relatorio.geradoEm,
+            urlPublica,
+            pdfStorageKey: vistoria.relatorio.pdfStorageKey,
+            versaoAtual: vistoria.relatorio.versaoAtual,
+            historicoGeracoes,
+          }
+        : null,
+      urlPublica,
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);

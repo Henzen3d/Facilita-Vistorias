@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useCallback, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/app/Icon";
 import { ItemDescricaoEditor } from "@/components/report/ItemDescricaoEditor";
@@ -41,6 +41,15 @@ type Ambiente = {
   items: ReviewItem[];
 };
 
+type HistoricoGeracao = {
+  versionNumber?: number;
+  userId?: string | null;
+  userNome?: string | null;
+  motivo?: string | null;
+  createdAt?: string;
+  pdfStorageKey?: string | null;
+};
+
 type ReviewPayload = {
   vistoria: {
     id: string;
@@ -48,6 +57,7 @@ type ReviewPayload = {
     tipo: string;
     status: string;
     data: string;
+    tokenPublico?: string | null;
   };
   imovel: {
     endereco: string;
@@ -66,6 +76,15 @@ type ReviewPayload = {
     pendentes: number;
   };
   checklistChegada: Record<string, unknown> | null;
+  urlPublica?: string | null;
+  relatorio?: {
+    status: string;
+    geradoEm: string | null;
+    urlPublica: string | null;
+    pdfStorageKey: string | null;
+    versaoAtual: number;
+    historicoGeracoes: HistoricoGeracao[];
+  } | null;
 };
 
 function firstFotoUrl(midias: Midia[]): string | undefined {
@@ -75,6 +94,13 @@ function firstFotoUrl(midias: Midia[]): string | undefined {
 function audioTranscricao(midias: Midia[]): string | null {
   const audio = midias.find((m) => m.tipo === "AUDIO" && m.transcricao);
   return audio?.transcricao ?? null;
+}
+
+function hasFullMedia(midias: Midia[]): boolean {
+  return (
+    midias.some((m) => m.tipo === "FOTO") &&
+    midias.some((m) => m.tipo === "AUDIO")
+  );
 }
 
 function formatEndereco(imovel: ReviewPayload["imovel"]): string {
@@ -88,6 +114,15 @@ function formatEndereco(imovel: ReviewPayload["imovel"]): string {
   return parts.join(", ");
 }
 
+function formatWhen(iso?: string | null): string {
+  if (!iso) return "—";
+  try {
+    return new Date(iso).toLocaleString("pt-BR");
+  } catch {
+    return iso;
+  }
+}
+
 export default function AdminVistoriaDetail({ params }: PageProps) {
   const resolvedParams = use(params);
   const { id } = resolvedParams;
@@ -95,7 +130,14 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
   const [data, setData] = useState<ReviewPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [openAmbientes, setOpenAmbientes] = useState<Record<string, boolean>>({});
+  const [openAmbientes, setOpenAmbientes] = useState<Record<string, boolean>>(
+    {},
+  );
+  const [finalizing, setFinalizing] = useState(false);
+  const [finalizeError, setFinalizeError] = useState<string | null>(null);
+  const [publicUrl, setPublicUrl] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [regenMotivo, setRegenMotivo] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -108,6 +150,7 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
       }
       const payload = (await res.json()) as ReviewPayload;
       setData(payload);
+      if (payload.urlPublica) setPublicUrl(payload.urlPublica);
       const open: Record<string, boolean> = {};
       for (const a of payload.ambientes) open[a.id] = true;
       setOpenAmbientes(open);
@@ -160,7 +203,8 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
       for (const a of ambientes) {
         for (const it of a.items) {
           total += 1;
-          if (it.status === "REVISADO" || it.status === "FINALIZADO") revisados += 1;
+          if (it.status === "REVISADO" || it.status === "FINALIZADO")
+            revisados += 1;
           else if (it.status === "ANALISADO" || it.status === "EM_ANALISE")
             analisados += 1;
           else pendentes += 1;
@@ -175,8 +219,65 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
     });
   };
 
-  const allReviewed =
-    !!data && data.progress.total > 0 && data.progress.revisados === data.progress.total;
+  /** D-16: gate on items with full media only */
+  const mediaItems = useMemo(() => {
+    if (!data) return [];
+    return data.ambientes.flatMap((a) =>
+      a.items.filter((it) => hasFullMedia(it.midias)),
+    );
+  }, [data]);
+
+  const mediaReviewed = mediaItems.filter(
+    (it) => it.status === "REVISADO" || it.status === "FINALIZADO",
+  ).length;
+
+  const canFinalize =
+    mediaItems.length > 0 && mediaReviewed === mediaItems.length;
+
+  const hasExistingReport = !!data?.relatorio;
+
+  const handleFinalize = async () => {
+    setFinalizing(true);
+    setFinalizeError(null);
+    setCopied(false);
+    try {
+      const res = await fetch(`/api/vistorias/${id}/finalizar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          motivo: hasExistingReport
+            ? regenMotivo.trim() || "Regeneração manual do PDF"
+            : undefined,
+        }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const pending = Array.isArray(body?.pending)
+          ? ` (${body.pending.map((p: { nome: string }) => p.nome).join(", ")})`
+          : "";
+        throw new Error((body?.error || `Erro ${res.status}`) + pending);
+      }
+      if (body.urlPublica) setPublicUrl(body.urlPublica as string);
+      await load();
+    } catch (e: unknown) {
+      setFinalizeError(
+        e instanceof Error ? e.message : "Falha ao finalizar relatório",
+      );
+    } finally {
+      setFinalizing(false);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    if (!publicUrl) return;
+    try {
+      await navigator.clipboard.writeText(publicUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans text-[#1A2B3C] p-8">
@@ -187,7 +288,8 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
             {data ? ` — ${data.vistoria.codigo}` : ""}
           </h1>
           <p className="text-sm text-slate-500">
-            Revisão das descrições técnicas geradas pela IA, ambiente por ambiente
+            Revisão das descrições técnicas geradas pela IA, ambiente por
+            ambiente
           </p>
         </div>
         <div className="flex gap-3">
@@ -210,7 +312,10 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
 
       {loading && (
         <div className="flex items-center justify-center py-24 text-slate-400 gap-2">
-          <Icon name="progress_activity" className="text-3xl animate-spin text-[#00AEEF]" />
+          <Icon
+            name="progress_activity"
+            className="text-3xl animate-spin text-[#00AEEF]"
+          />
           <span className="text-sm">Carregando revisão…</span>
         </div>
       )}
@@ -232,20 +337,36 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
       {data && !loading && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            {allReviewed && (
+            {canFinalize && (
               <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-emerald-900 text-sm font-medium">
-                Todas as descrições revisadas — pronto para gerar o relatório
+                Itens com mídia revisados ({mediaReviewed}/{mediaItems.length}) —
+                pronto para{" "}
+                {hasExistingReport ? "regenerar" : "gerar"} o relatório
                 fotográfico
-                <span className="block text-xs font-normal text-emerald-700 mt-1">
-                  A geração do PDF será liberada na próxima etapa.
-                </span>
+              </div>
+            )}
+
+            {!canFinalize && mediaItems.length > 0 && (
+              <div className="rounded-2xl border border-amber-100 bg-amber-50 px-5 py-4 text-amber-900 text-sm">
+                Revise todos os itens com foto e áudio antes de finalizar (
+                {mediaReviewed}/{mediaItems.length} revisados).
               </div>
             )}
 
             <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-wrap gap-4 text-sm">
               <div>
-                <span className="text-slate-400 text-xs uppercase font-bold">Total</span>
+                <span className="text-slate-400 text-xs uppercase font-bold">
+                  Total
+                </span>
                 <p className="font-bold text-lg">{data.progress.total}</p>
+              </div>
+              <div>
+                <span className="text-slate-400 text-xs uppercase font-bold">
+                  Com mídia
+                </span>
+                <p className="font-bold text-lg text-[#00AEEF]">
+                  {mediaItems.length}
+                </p>
               </div>
               <div>
                 <span className="text-slate-400 text-xs uppercase font-bold">
@@ -314,7 +435,9 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
                   {open && (
                     <div className="mt-4 space-y-4">
                       {ambiente.items.length === 0 && (
-                        <p className="text-xs text-slate-400">Sem itens neste ambiente.</p>
+                        <p className="text-xs text-slate-400">
+                          Sem itens neste ambiente.
+                        </p>
                       )}
                       {ambiente.items.map((item) => {
                         const baseline =
@@ -348,15 +471,131 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
           </div>
 
           <div className="space-y-6">
+            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+              <h3 className="text-lg font-bold">
+                {hasExistingReport
+                  ? "Regenerar PDF"
+                  : "Finalizar e gerar PDF"}
+              </h3>
+              <p className="text-xs text-slate-500">
+                Gera o relatório fotográfico (PDF) e o link público com token.
+                Requer worker ativo (`npm run worker`).
+              </p>
+
+              {hasExistingReport && (
+                <div>
+                  <label className="text-[10px] uppercase font-bold text-slate-400">
+                    Motivo da regeneração
+                  </label>
+                  <input
+                    type="text"
+                    value={regenMotivo}
+                    onChange={(e) => setRegenMotivo(e.target.value)}
+                    placeholder="Ex.: correção de descrição"
+                    className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+                  />
+                </div>
+              )}
+
+              <button
+                type="button"
+                disabled={!canFinalize || finalizing}
+                onClick={handleFinalize}
+                className="w-full rounded-full bg-[#00AEEF] hover:bg-[#009ACD] disabled:bg-slate-200 disabled:text-slate-400 text-white px-5 py-3 text-sm font-semibold transition-colors"
+              >
+                {finalizing
+                  ? "Enfileirando…"
+                  : hasExistingReport
+                    ? "Regenerar PDF"
+                    : "Finalizar e gerar PDF"}
+              </button>
+
+              {finalizeError && (
+                <p className="text-xs text-red-600">{finalizeError}</p>
+              )}
+
+              {publicUrl && (
+                <div className="rounded-xl bg-slate-50 border border-slate-100 p-3 space-y-2">
+                  <p className="text-[10px] uppercase font-bold text-slate-400">
+                    Link público
+                  </p>
+                  <p className="text-xs break-all font-mono text-slate-700">
+                    {publicUrl}
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={handleCopyLink}
+                      className="text-xs font-semibold text-[#00AEEF] hover:underline"
+                    >
+                      {copied ? "Copiado!" : "Copiar link"}
+                    </button>
+                    <a
+                      href={publicUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs font-semibold text-slate-600 hover:underline"
+                    >
+                      Abrir
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {data.relatorio && (
+                <p className="text-[11px] text-slate-400">
+                  Versão atual: {data.relatorio.versaoAtual}
+                  {data.relatorio.geradoEm
+                    ? ` · ${formatWhen(data.relatorio.geradoEm)}`
+                    : ""}
+                </p>
+              )}
+            </div>
+
+            {/* D-19: regeneration history */}
+            {data.relatorio?.historicoGeracoes &&
+              data.relatorio.historicoGeracoes.length > 0 && (
+                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                  <h3 className="text-lg font-bold mb-3">
+                    Histórico de gerações
+                  </h3>
+                  <ul className="space-y-3 text-xs">
+                    {[...data.relatorio.historicoGeracoes]
+                      .reverse()
+                      .map((h, idx) => (
+                        <li
+                          key={`${h.versionNumber}-${h.createdAt}-${idx}`}
+                          className="border-b border-slate-50 pb-2"
+                        >
+                          <p className="font-bold">
+                            v{h.versionNumber ?? "?"}
+                            {h.userNome ? ` · ${h.userNome}` : ""}
+                          </p>
+                          <p className="text-slate-500">
+                            {formatWhen(h.createdAt)}
+                          </p>
+                          {h.motivo && (
+                            <p className="text-slate-600 mt-0.5">{h.motivo}</p>
+                          )}
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              )}
+
             <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
               <h3 className="text-lg font-bold mb-4">Informações do Imóvel</h3>
               <div className="space-y-2 text-sm">
                 <p>
-                  <strong className="font-semibold text-slate-500">Endereço:</strong>{" "}
+                  <strong className="font-semibold text-slate-500">
+                    Endereço:
+                  </strong>{" "}
                   {formatEndereco(data.imovel)}
                 </p>
                 <p>
-                  <strong className="font-semibold text-slate-500">Código:</strong>{" "}
+                  <strong className="font-semibold text-slate-500">
+                    Código:
+                  </strong>{" "}
                   {data.vistoria.codigo}
                 </p>
                 <p>
@@ -364,11 +603,15 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
                   {data.vistoria.tipo}
                 </p>
                 <p>
-                  <strong className="font-semibold text-slate-500">Status:</strong>{" "}
+                  <strong className="font-semibold text-slate-500">
+                    Status:
+                  </strong>{" "}
                   {data.vistoria.status}
                 </p>
                 <p>
-                  <strong className="font-semibold text-slate-500">Vistoriador:</strong>{" "}
+                  <strong className="font-semibold text-slate-500">
+                    Vistoriador:
+                  </strong>{" "}
                   {data.vistoriador.nome}
                 </p>
               </div>
