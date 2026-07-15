@@ -52,10 +52,14 @@ Plans:
   1. Áudio de cada item é transcrito e a IA gera uma descrição técnica editável combinando foto + fala
   2. Admin/vistoriador revisa e edita todas as descrições antes de finalizar
   3. Sistema gera PDF do relatório + link público com token e QR code
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 03-01: TBD (definir em /gsd:discuss-phase 3)
+- [ ] 03-01-PLAN.md — Schema + Storage + BullMQ contracts + db push
+- [ ] 03-02-PLAN.md — AIRouter (Gemini→OpenAI), Zod/CREA guardrails, vitest evals
+- [ ] 03-03-PLAN.md — Worker STT→descrição + enqueue on media sync
+- [ ] 03-04-PLAN.md — Review APIs + admin/field human edit gate
+- [ ] 03-05-PLAN.md — Finalize + PDF Puppeteer + token público + QR
 
 ### Phase 4: Envio e Contestação
 **Goal**: Permitir o envio do relatório ao cliente e a contestação de itens específicos dentro de um prazo.
@@ -78,5 +82,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Núcleo de Dados e Auth | 1/1 | Complete | 2026-07-14 |
 | 2. App de Campo (PWA) | 1/1 | Complete | 2026-07-15 |
-| 3. Relatório, PDF e IA | 0/0 | Not started | - |
+| 3. Relatório, PDF e IA | 0/5 | Planned | - |
 | 4. Envio e Contestação | 0/0 | Not started | - |
+
