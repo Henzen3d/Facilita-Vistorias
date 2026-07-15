@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — MVP
-status: executing
-stopped_at: Completed 03-04-PLAN.md
-last_updated: "2026-07-15T22:10:00.000Z"
+status: verifying
+stopped_at: Completed 03-05-PLAN.md
+last_updated: "2026-07-15T22:18:00.000Z"
 last_activity: 2026-07-15
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 7
-  completed_plans: 6
-  percent: 86
+  completed_plans: 7
+  percent: 100
 ---
 
 # Project State
@@ -21,22 +21,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-15)
 
 **Core value:** Vistoriador executa vistoria completa no celular, offline, e obtém um relatório fotográfico pronto com descrições geradas por IA.
-**Current focus:** Phase 3 — Relatório, PDF e Pipeline de IA
+**Current focus:** Phase 3 — Relatório, PDF e Pipeline de IA (ready for verification)
 
 ## Current Position
 
-Phase: 3 (Relatório, PDF e Pipeline de IA) — EXECUTING
+Phase: 3 (Relatório, PDF e Pipeline de IA) — VERIFYING
 Plan: 5 of 5
-Status: Ready to execute
-Last activity: 2026-07-15 -- Completed plan 03-04
+Status: Phase complete — ready for verification
+Last activity: 2026-07-15 -- Completed plan 03-05
 
-Progress: [█████████░] 86%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 6
+- Total plans completed: 7
 - Average duration: — (parcial)
 - Total execution time: —
 
@@ -46,7 +46,7 @@ Progress: [█████████░] 86%
 |-------|-------|-------|----------|
 | 1 | 1/1 | — | — |
 | 2 | 1/1 | — | — |
-| 3 | 4/5 | ~40min (03-01..03-04) | ~10min |
+| 3 | 5/5 | ~47min (03-01..03-05) | ~9min |
 
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
@@ -54,6 +54,7 @@ Progress: [█████████░] 86%
 | Phase 03 P02 | 6min | 3 tasks | 12 files |
 | Phase 03 P03 | 5min | 3 tasks | 7 files |
 | Phase 03 P04 | ~4min | 3 tasks | 8 files |
+| Phase 03 P05 | 7min | 3 tasks | 16 files |
 
 *Updated after each plan completion*
 
@@ -76,6 +77,9 @@ Recent decisions affecting current work:
 - [Phase 3/03-04]: session.user.id from JWT sub for vistoriador review authz
 - [Phase 3/03-04]: Review GET includes midia.transcricao (D-03); Plan 04 no PDF finalize button (Plan 05)
 - [Phase 3/03-04]: Human review online-only on field; descricaoEditada from text vs item.descricao baseline
+- [Phase 3/03-05]: D-14 public page minimal cover+PDF download; print mode for Puppeteer full layout
+- [Phase 3/03-05]: Finalize gate only media-complete items REVISADO (D-16); opaque UUID token no expiry (D-17)
+- [Phase 3/03-05]: Relatorio versaoAtual+historicoGeracoes for PDF regenerate audit (D-18/D-19)
 
 ### Pending Todos
 
@@ -85,8 +89,8 @@ None yet.
 
 - Phase 1: rodar `npx prisma db seed` e validar login com PostgreSQL ativo (não bloqueia Phase 3 code).
 - Phase 2: Wave 0 de testes (Vitest) ainda não criada — ver `02-VALIDATION.md`.
-- Phase 3: **live DB schema not pushed** — new enums/columns exist in `schema.prisma` + generated client only until Postgres is up.
-- Phase 3: worker needs Redis + GEMINI_API_KEY at runtime (`npm run worker`).
+- Phase 3: **live DB schema not pushed** — new enums/columns exist in `schema.prisma` + generated client only until Postgres is up (includes Relatorio.versaoAtual/historicoGeracoes).
+- Phase 3: worker needs Redis + GEMINI_API_KEY + APP_URL at runtime (`npm run worker`) for AI and PDF.
 
 ## Deferred Items
 
@@ -98,10 +102,11 @@ Items acknowledged and carried forward:
 | Feature | Assinatura digital | Backlog | Phase 2 |
 | Feature | Modo de revisão da IA no app de campo | **Done in 03-04** | Phase 2 |
 | Infra | `npx prisma db push` (schema Phase 3 additive) | Deferred — operator approved | 03-01 |
-| Feature | UI reprocess button after AI failure (D-07 full) | Still open — not in 03-04 task list; carry to 03-05/follow-up | 03-03 |
+| Feature | UI reprocess button after AI failure (D-07 full) | Still open — carry to Phase 4/follow-up | 03-03 |
+| Feature | Public gallery item-by-item + contestação CTAs | Phase 4 (D-14 deferred full gallery) | 03-05 |
 
 ## Session Continuity
 
-Last session: 2026-07-15T22:10:00.000Z
-Stopped at: Completed 03-04-PLAN.md
+Last session: 2026-07-15T22:18:00.000Z
+Stopped at: Completed 03-05-PLAN.md
 Resume file: None

@@ -17,7 +17,7 @@ Do núcleo de dados ao relatório compartilhável: construir primeiro a fundaç�
 
 - [x] **Phase 1: Núcleo de Dados e Auth** - Schema Prisma, NextAuth, APIs CRUD, painel admin
 - [x] **Phase 2: App de Campo (PWA) e Núcleo Offline** - PWA offline-first, IndexedDB, captura foto/áudio, sync em background
-- [ ] **Phase 3: Relatório, PDF e Pipeline de IA** - Transcrição + descrição por IA, revisão, geração de PDF com link público
+- [x] **Phase 3: Relatório, PDF e Pipeline de IA** - Transcrição + descrição por IA, revisão, geração de PDF com link público (completed 2026-07-15)
 - [ ] **Phase 4: Envio e Contestação** - Envio por WhatsApp, link público com token, contestação pelo cliente
 
 ## Phase Details
@@ -85,7 +85,7 @@ Plans:
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
-- [ ] 03-05-PLAN.md — Finalize + PDF Puppeteer + token público + QR
+- [x] 03-05-PLAN.md — Finalize + PDF Puppeteer + token público + QR
 
 ### Phase 4: Envio e Contestação
 
@@ -112,5 +112,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Núcleo de Dados e Auth | 1/1 | Complete | 2026-07-14 |
 | 2. App de Campo (PWA) | 1/1 | Complete | 2026-07-15 |
-| 3. Relatório, PDF e IA | 4/5 | In Progress|  |
+| 3. Relatório, PDF e IA | 5/5 | Complete   | 2026-07-15 |
 | 4. Envio e Contestação | 0/0 | Not started | - |
