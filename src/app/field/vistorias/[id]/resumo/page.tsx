@@ -59,19 +59,19 @@ export default function FieldVistoriaSummary({ params }: PageProps) {
     try {
       const db = await getDB();
       if (db) {
-        // 1. Update local vistoria status to CONCLUIDA
+        // 1. Field capture complete → EM_REVISAO (D-04); never CONCLUIDA/FINALIZADA here
         const vistoria = await db.get("vistorias", id);
         if (vistoria) {
-          vistoria.status = "CONCLUIDA";
+          vistoria.status = "EM_REVISAO";
           await db.put("vistorias", vistoria);
         }
 
-        // 2. Queue mutation to update status in backend PostgreSQL
+        // 2. Dedicated status-only mutation (T-03-18) — NEVER UPDATE_CHECKLIST
         await db.put("mutation_queue", {
-          action: "UPDATE_CHECKLIST", // Or we can use an update checklist action which has broader payloads, wait, let's create a dedicated PUT action or reuse PUT path
+          action: "UPDATE_VISTORIA_STATUS",
           vistoriaId: id,
-          payload: { status: "CONCLUIDA" },
-          timestamp: Date.now()
+          payload: { status: "EM_REVISAO" },
+          timestamp: Date.now(),
         });
 
         // 3. Navigate to success page

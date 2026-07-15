@@ -5,7 +5,7 @@ export interface LocalVistoria {
   codigo: string;
   tipo: "ENTRADA" | "SAIDA" | "CONTRA_VISTORIA";
   data: string;
-  status: "AGENDADA" | "EM_ANDAMENTO" | "CONCLUIDA" | "CANCELADA";
+  status: "AGENDADA" | "EM_ANDAMENTO" | "EM_REVISAO" | "CONCLUIDA" | "CANCELADA";
   imovelId: string;
   empresaId: string;
   usuarioId: string;
@@ -81,7 +81,13 @@ export interface LocalChecklistChegada {
 
 export interface MutationQueueItem {
   id?: number; // Auto-increment key in IndexedDB
-  action: "CREATE_MIDIA" | "DELETE_MIDIA" | "UPDATE_ITEM_STATUS" | "UPDATE_CHECKLIST";
+  action:
+    | "CREATE_MIDIA"
+    | "DELETE_MIDIA"
+    | "UPDATE_ITEM_STATUS"
+    | "UPDATE_CHECKLIST"
+    | "UPDATE_VISTORIA_STATUS"
+    | "FINALIZAR_CAMPO";
   vistoriaId: string;
   payload: any;
   timestamp: number;
