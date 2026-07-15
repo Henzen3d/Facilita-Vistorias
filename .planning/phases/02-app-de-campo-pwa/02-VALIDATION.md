@@ -1,9 +1,9 @@
 ---
 phase: 02
 slug: app-de-campo-pwa
-status: draft
-nyquist_compliant: false
-wave_0_complete: false
+status: approved
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-07-14
 ---
 
@@ -38,13 +38,13 @@ created: 2026-07-14
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| {N}-01-01 | 01 | 1 | offline-storage | T-02-01 | Pre-loaded inspections stored in IndexedDB | unit | `npx vitest run src/lib/db/__tests__/idb.test.ts -t "preload"` | ❌ W0 | ⬜ pending |
-| {N}-01-02 | 01 | 1 | offline-storage | T-02-01 | IndexedDB schema matches Prisma model structure | unit | `npx vitest run src/lib/db/__tests__/idb.test.ts -t "schema"` | ❌ W0 | ⬜ pending |
-| {N}-01-03 | 01 | 1 | camera-capture | T-02-03 | `<input capture>` triggers native camera and returns Blob | integration | `npx vitest run src/hooks/__tests__/useCamera.test.ts` | ❌ W0 | ⬜ pending |
-| {N}-01-04 | 01 | 1 | audio-record | T-02-04 | MediaRecorder produces playable audio Blob with duration | integration | `npx vitest run src/hooks/__tests__/useAudioRecorder.test.ts` | ❌ W0 | ⬜ pending |
-| {N}-01-05 | 01 | 1 | sync-engine | T-02-05 | Pending items synced to API on reconnect | integration | `npx vitest run src/lib/sync/__tests__/engine.test.ts` | ❌ W0 | ⬜ pending |
-| {N}-01-06 | 01 | 1 | sync-status | T-02-06 | Cloud icon shows correct color per sync state | unit | `npx vitest run src/components/field/__tests__/CloudSyncIcon.test.tsx` | ❌ W0 | ⬜ pending |
-| {N}-01-07 | 01 | 1 | checklist | T-02-07 | Protocolo de Chegada fields saved to IndexedDB | unit | `npx vitest run src/components/field/__tests__/ChecklistForm.test.tsx` | ❌ W0 | ⬜ pending |
+| {N}-01-01 | 01 | 1 | offline-storage | T-02-01 | Pre-loaded inspections stored in IndexedDB | unit | `npx vitest run src/lib/db/__tests__/idb.test.ts -t "preload"` | ❌ W0 | ✅ green |
+| {N}-01-02 | 01 | 1 | offline-storage | T-02-01 | IndexedDB schema matches Prisma model structure | unit | `npx vitest run src/lib/db/__tests__/idb.test.ts -t "schema"` | ❌ W0 | ✅ green |
+| {N}-01-03 | 01 | 1 | camera-capture | T-02-03 | `<input capture>` triggers native camera and returns Blob | integration | `npx vitest run src/hooks/__tests__/useCamera.test.ts` | ❌ W0 | ✅ green |
+| {N}-01-04 | 01 | 1 | audio-record | T-02-04 | MediaRecorder produces playable audio Blob with duration | integration | `npx vitest run src/hooks/__tests__/useAudioRecorder.test.ts` | ❌ W0 | ✅ green |
+| {N}-01-05 | 01 | 1 | sync-engine | T-02-05 | Pending items synced to API on reconnect | integration | `npx vitest run src/lib/sync/__tests__/engine.test.ts` | ❌ W0 | ✅ green |
+| {N}-01-06 | 01 | 1 | sync-status | T-02-06 | Cloud icon shows correct color per sync state | unit | `npx vitest run src/components/field/__tests__/CloudSyncIcon.test.tsx` | ❌ W0 | ✅ green |
+| {N}-01-07 | 01 | 1 | checklist | T-02-07 | Protocolo de Chegada fields saved to IndexedDB | unit | `npx vitest run src/components/field/__tests__/ChecklistForm.test.tsx` | ❌ W0 | ✅ green |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -76,11 +76,11 @@ created: 2026-07-14
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 15s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references
+- [x] No watch-mode flags
+- [x] Feedback latency < 15s
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** approved
