@@ -11,6 +11,7 @@ Do núcleo de dados ao relatório compartilhável: construir primeiro a fundaç�
 ## Phases
 
 **Phase Numbering:**
+
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
@@ -22,55 +23,84 @@ Do núcleo de dados ao relatório compartilhável: construir primeiro a fundaç�
 ## Phase Details
 
 ### Phase 1: Núcleo de Dados e Auth
+
 **Goal**: Estabelecer a fundação do sistema com modelo de dados completo, autenticação por roles, APIs CRUD e painel administrativo.
 **Depends on**: Nothing (first phase)
 **Success Criteria** (what must be TRUE):
+
   1. Login de admin acessa o painel admin; vistoriador não acessa
   2. APIs CRUD de imóveis, pessoas e agendamentos respondem com dados reais do Prisma
   3. Dashboard mostra métricas reais do banco
+
 **Plans**: 1/1 plans complete
 
 Plans:
+
 - [x] 01-01: Schema Prisma + NextAuth + APIs CRUD + painel admin
 
 ### Phase 2: App de Campo (PWA) e Núcleo Offline
+
 **Goal**: Transformar as telas placeholder em um PWA funcional que executa vistorias 100% offline com captura de foto/áudio e sincronização automática em background.
 **Depends on**: Phase 1
 **Success Criteria** (what must be TRUE):
+
   1. Vistoriador consegue abrir as vistorias do dia offline (IndexedDB pré-carregado)
   2. Fotos e áudios são capturados por item e salvos localmente
   3. Itens sincronizam automaticamente quando a conexão retorna, com indicadores visuais de status
+
 **Plans**: 1/1 plans complete
 
 Plans:
+
 - [x] 02-01: PWA (next-pwa) + IndexedDB + captura foto/áudio + sync engine
 
 ### Phase 3: Relatório, PDF e Pipeline de IA
+
 **Goal**: Gerar descrições técnicas automáticas (foto + áudio) via IA e produzir o relatório fotográfico em PDF com versão digital pública.
 **Depends on**: Phase 2
 **Success Criteria** (what must be TRUE):
+
   1. Áudio de cada item é transcrito e a IA gera uma descrição técnica editável combinando foto + fala
   2. Admin/vistoriador revisa e edita todas as descrições antes de finalizar
   3. Sistema gera PDF do relatório + link público com token e QR code
+
 **Plans**: 5 plans
 
 Plans:
+**Wave 1**
+
 - [ ] 03-01-PLAN.md — Schema + Storage + BullMQ contracts + db push
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 03-02-PLAN.md — AIRouter (Gemini→OpenAI), Zod/CREA guardrails, vitest evals
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
 - [ ] 03-03-PLAN.md — Worker STT→descrição + enqueue on media sync
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
 - [ ] 03-04-PLAN.md — Review APIs + admin/field human edit gate
+
+**Wave 5** *(blocked on Wave 4 completion)*
+
 - [ ] 03-05-PLAN.md — Finalize + PDF Puppeteer + token público + QR
 
 ### Phase 4: Envio e Contestação
+
 **Goal**: Permitir o envio do relatório ao cliente e a contestação de itens específicos dentro de um prazo.
 **Depends on**: Phase 3
 **Success Criteria** (what must be TRUE):
+
   1. Link do relatório é enviado por WhatsApp (deep link wa.me)
   2. Cliente acessa a versão digital por token e visualiza fotos/descrições
   3. Cliente pode contestar itens específicos dentro do prazo configurado
+
 **Plans**: TBD
 
 Plans:
+
 - [ ] 04-01: TBD (definir em /gsd:discuss-phase 4)
 
 ## Progress
@@ -84,4 +114,3 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 2. App de Campo (PWA) | 1/1 | Complete | 2026-07-15 |
 | 3. Relatório, PDF e IA | 0/5 | Planned | - |
 | 4. Envio e Contestação | 0/0 | Not started | - |
-
