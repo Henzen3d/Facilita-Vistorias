@@ -1,0 +1,18 @@
+{
+  "name": "Facilita Vistorias",
+  "short_name": "Facilita",
+  "description": "Plataforma de vistorias residenciais offline-first",
+  "start_url": "/field",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8fafc",
+  "theme_color": "#00AEEF",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

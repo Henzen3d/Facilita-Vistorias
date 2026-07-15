@@ -43,3 +43,7 @@ free-claude.md
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Design references
+/Referencias/
+

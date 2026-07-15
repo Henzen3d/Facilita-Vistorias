@@ -1,40 +1,51 @@
+"use client";
+
+import React, { use } from "react";
 import Link from "next/link";
+import { PhoneShell } from "@/components/app/PhoneShell";
+import { Icon } from "@/components/app/Icon";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function FieldVistoriaSuccess({ params }: PageProps) {
-  const resolvedParams = await params;
+export default function FieldVistoriaSuccess({ params }: PageProps) {
+  const resolvedParams = use(params);
   const { id } = resolvedParams;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans text-[#1A2B3C] flex flex-col justify-center p-6">
-      <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm w-full max-w-sm mx-auto text-center space-y-6">
-        <div className="text-4xl text-green-500">🎉</div>
-        <div className="space-y-2">
-          <h2 className="text-xl font-bold tracking-tight">Vistoria #{id} Concluída!</h2>
-          <p className="text-xs text-slate-400">Os dados foram compilados e enviados para revisão no painel da Vera Lúcia.</p>
+    <PhoneShell showNav={false} bg="white">
+      <div className="flex-1 flex flex-col justify-center px-6 text-center space-y-6">
+        <div className="h-20 w-20 bg-status-good/10 text-status-good rounded-full flex items-center justify-center mx-auto shadow-sm select-none">
+          <Icon name="check_circle" filled className="text-[44px]" />
+        </div>
+        
+        <div className="space-y-2.5">
+          <h2 className="text-xl font-bold tracking-tight text-secondary">Vistoria Finalizada!</h2>
+          <p className="text-xs text-slate-400 leading-relaxed px-4">
+            A vistoria do imóvel foi concluída com sucesso e os dados locais estão prontos para envio ao painel da administração.
+          </p>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-3.5 pt-4">
           <a
-            href="https://wa.me/5547999999999?text=Olá,%20a%20vistoria%20já%20foi%20realizada!"
+            href="https://wa.me/5547999999999?text=Ol%C3%A1%2C%20a%20vistoria%20residencial%20j%C3%A1%20foi%20conclu%C3%ADda!"
             target="_blank"
             rel="noopener noreferrer"
-            className="block text-center w-full rounded-full bg-[#25D366] hover:bg-[#20ba56] py-2.5 text-white font-medium text-xs transition-colors shadow-sm"
+            className="w-full h-14 rounded-full bg-[#25D366] hover:bg-[#20ba56] text-white font-bold text-sm shadow-md shadow-emerald-500/10 flex items-center justify-center gap-2 transition-all"
           >
-            💬 Enviar pelo WhatsApp
+            <Icon name="chat" className="text-[20px]" />
+            Notificar pelo WhatsApp
           </a>
 
           <Link
             href="/field"
-            className="block text-center w-full rounded-full bg-slate-800 hover:bg-slate-900 py-2.5 text-white font-medium text-xs transition-colors"
+            className="w-full h-14 rounded-full bg-secondary hover:bg-slate-800 text-white font-bold text-sm shadow-md flex items-center justify-center transition-all"
           >
             Voltar ao Início
           </Link>
         </div>
       </div>
-    </div>
+    </PhoneShell>
   );
 }

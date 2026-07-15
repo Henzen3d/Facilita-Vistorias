@@ -6,7 +6,12 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
+  content: [
+    "./src/app/**/*.{ts,tsx}",
+    "./src/components/**/*.{ts,tsx}",
+    "./src/hooks/**/*.{ts,tsx}",
+    "./src/lib/**/*.{ts,tsx}"
+  ],
   theme: {
     extend: {
       colors: {
@@ -17,8 +22,13 @@ const config: Config = {
         "primary-hover": "#009ACD",
         secondary: "#1A2B3C",
         accent: "#FFB703",
+        "brand-accent": "#FFB703",
         "background-light": "#F8FAFC",
         "background-dark": "#1A2B3C",
+        // Cores de status compatíveis com Lovable
+        "status-good": "#16A34A",
+        "status-warn": "#D97706",
+        "status-bad": "#DC2626",
         // Descoberto via footer_modelo.html — mais escuro que "secondary",
         // usado só no rodapé (ver DESIGN.md §2.2)
         ink: "#050505",

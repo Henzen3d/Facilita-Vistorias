@@ -788,15 +788,34 @@ function useOnlineStatus() {
 **Research date:** 2026-07-14
 **Valid until:** 2026-08-14 (30 days -- next-pwa and idb are stable; browser APIs change slowly)
 
-## Project Constraints (from CLAUDE.md)
-
-The CLAUDE.md references `@AGENTS.md`, which states:
-
-> This is NOT the Next.js you know. This version has breaking changes -- APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-
-**Actionable directives:**
-1. Read `node_modules/next/dist/docs/` for current Next.js 15 API reference before implementing any page or API route
-2. Do not assume training-data Next.js patterns are valid
-3. Check for deprecation notices in the Next.js documentation
-
 **Impact on Phase 2:** The primary risk is client/server component boundary handling. The field pages require `'use client'` directive. Next.js 15 uses `params: Promise<{...}>` for dynamic routes (already confirmed in existing field pages). Turbopack vs webpack for dev may affect next-pwa's webpack plugin behavior.
+
+## UI Architecture (from Lovable reference)
+
+### Layout Pattern
+- **Mockup Container:** `max-w-[430px] mx-auto` e bordas arredondadas simulam o mockup mobile. Em ambiente desktop, isso centraliza a aplicação garantindo a experiência mobile-first.
+- **Status Bar:** Falsa barra com hora (9:41) e ícones de sinal, wi-fi e bateria (definidos em `PhoneShell.tsx`).
+- **Navegação Inferior (Bottom Nav):** 4 abas (Home, Rooms, Sync, Report) com estilo ativo `text-primary`. A área útil de scroll do conteúdo precisa de `pb-24` para evitar sobreposição da barra.
+- **TopBar:** Padrão `← [Título] [Ação]` onde o botão esquerdo aponta para a rota anterior (`backTo`) e o direito possui opções de contexto.
+
+### Capture Screen Architecture
+- **Viewfinder Escuro:** Estilo fotográfico com fundo gradiente escuro (`#16222f` a `#0b1119`) e proporção vertical esticada.
+- **Grid de Enquadramento:** Divisão 3x3 para auxiliar no alinhamento das fotos dos itens.
+- **Marcadores de Canto (Corner brackets):** Elementos absolutos com bordas parciais de `2px` em branco com opacidade.
+- **Waveform de Áudio:** Painel flutuante com waveform simulado em progresso (25 barras verticais com opacidade dinâmica) e contador de tempo no formato `MM:SS`.
+- **FAB Row:** Menu flutuante inferior com ações rápidas para Notas, Áudio e Etiquetas/Avarias.
+
+### Color Token Mapping (hex → Tailwind CSS)
+| Decision / UI Element | Variable in `styles.css` | Value (oklch / hex) | Usage in Project |
+|---|---|---|---|
+| Primary CTA | `--primary` | `#00aeef` | `bg-primary` / `text-primary` |
+| Hover state | -- | `#009acd` | Botões ativos hover |
+| Main Dark Texts & Headers | `--secondary` | `#1a2b3c` | `text-secondary` / `bg-secondary` |
+| Background color | `--background` | `#f8fafc` | Fundo principal da página |
+| Accent highlight | `--brand-accent` | `#ffb703` | Ícone do calendário, status de aviso |
+| Sync: OK | `--status-good` | `#16a34a` | Badge de sincronizado |
+| Sync: Local | `--status-warn` | `#d97706` | Badge de salvo no aparelho |
+| Sync: Erro | `--status-bad` | `#dc2626` | Badge de erro de rede |
+| Audio recording active | `--whatsapp` | `#25d366` | Cor do botão de gravação |
+| Material Symbols icon standard | `--font-sans` | "Inter" | Fonte principal |
+

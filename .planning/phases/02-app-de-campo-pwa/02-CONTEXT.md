@@ -105,6 +105,16 @@ O vistoriador deve conseguir executar uma vistoria completa sem internet — nav
 - O Protocolo de Chegada tem um trigger "Iniciar Protocolo de Chegada" na tela de detalhe da vistoria, apontando para `/field/vistorias/[id]/ambientes`
 - O app deve funcionar como PWA instalável (ícone na tela inicial, tela cheia, sem barra de navegador)
 
+### UI Reference Patterns (Lovable)
+- **Caminho das referências:** `j:\Arquivos Osmar\Vistoria Residêncial - NOVO SERVIÇO\App Vistorias\Producao\Referencias\Design\Lovable`
+- **Design System:** `src/styles.css` define cores de marca, de status de sync e de gravação de áudio.
+- **Layout base:** `src/components/app/PhoneShell.tsx` fornece o mockup mobile-first com aba de navegação inferior (Home, Rooms, Sync, Report) e componente TopBar reutilizável.
+- **Dashboard (Home):** `src/routes/home.tsx` com widgets de agenda semanal, estatísticas (StatCard) e lista de vistorias agendadas.
+- **Detalhe da Vistoria:** `src/routes/inspection.tsx` com mini cards de dados do imóvel (MiniFact), lista de contatos dos clientes (PersonRow) e sitemap em SVG.
+- **Ambientes & Cômodos:** `src/routes/rooms.tsx` mostrando progresso, lista de ambientes e botões com badges semânticos de sync por item.
+- **Captura Integrada:** `src/routes/capture.tsx` definindo layout do viewfinder com grid (3x3), controle de flash, waveform para gravação de áudio em progresso e FAB de ações rápidas.
+- **Status de Sync:** `src/routes/sync.tsx` definindo badges visuais e barra de progresso para itens locais, enviando e sincronizados (conforme D-10).
+
 </specifics>
 
 <deferred>
