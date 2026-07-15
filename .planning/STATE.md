@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — MVP
 status: executing
-stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-07-15T22:02:30.000Z"
+stopped_at: Completed 03-04-PLAN.md
+last_updated: "2026-07-15T22:10:00.000Z"
 last_activity: 2026-07-15
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 7
-  completed_plans: 5
-  percent: 71
+  completed_plans: 6
+  percent: 86
 ---
 
 # Project State
@@ -26,17 +26,17 @@ See: .planning/PROJECT.md (updated 2026-07-15)
 ## Current Position
 
 Phase: 3 (Relatório, PDF e Pipeline de IA) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
-Last activity: 2026-07-15 -- Completed plan 03-03
+Last activity: 2026-07-15 -- Completed plan 03-04
 
-Progress: [███████░░░] 71%
+Progress: [█████████░] 86%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 5
+- Total plans completed: 6
 - Average duration: — (parcial)
 - Total execution time: —
 
@@ -46,13 +46,14 @@ Progress: [███████░░░] 71%
 |-------|-------|-------|----------|
 | 1 | 1/1 | — | — |
 | 2 | 1/1 | — | — |
-| 3 | 3/5 | ~36min (03-01+03-02+03-03) | ~12min |
+| 3 | 4/5 | ~40min (03-01..03-04) | ~10min |
 
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | Phase 03 P01 | ~25min | 3 tasks | 8 files |
 | Phase 03 P02 | 6min | 3 tasks | 12 files |
 | Phase 03 P03 | 5min | 3 tasks | 7 files |
+| Phase 03 P04 | ~4min | 3 tasks | 8 files |
 
 *Updated after each plan completion*
 
@@ -72,6 +73,9 @@ Recent decisions affecting current work:
 - [Phase 3/03-03]: First FOTO (D-08) + latest AUDIO for multimodal; CAPTURADO on final AI failure
 - [Phase 3/03-03]: Media enqueue soft-fail keeps midia 201 with aiEnqueue:false
 - [Phase 3/03-03]: Field finalize UPDATE_VISTORIA_STATUS → EM_REVISAO only (never status via UPDATE_CHECKLIST)
+- [Phase 3/03-04]: session.user.id from JWT sub for vistoriador review authz
+- [Phase 3/03-04]: Review GET includes midia.transcricao (D-03); Plan 04 no PDF finalize button (Plan 05)
+- [Phase 3/03-04]: Human review online-only on field; descricaoEditada from text vs item.descricao baseline
 
 ### Pending Todos
 
@@ -92,12 +96,12 @@ Items acknowledged and carried forward:
 |----------|------|--------|-------------|
 | Feature | Comparação automática entrada x saída | Backlog | Phase 2 |
 | Feature | Assinatura digital | Backlog | Phase 2 |
-| Feature | Modo de revisão da IA no app de campo | Phase 3 | Phase 2 |
+| Feature | Modo de revisão da IA no app de campo | **Done in 03-04** | Phase 2 |
 | Infra | `npx prisma db push` (schema Phase 3 additive) | Deferred — operator approved | 03-01 |
-| Feature | UI reprocess button after AI failure (D-07 full) | Plan 03-04 | 03-03 |
+| Feature | UI reprocess button after AI failure (D-07 full) | Still open — not in 03-04 task list; carry to 03-05/follow-up | 03-03 |
 
 ## Session Continuity
 
-Last session: 2026-07-15T22:02:30.000Z
-Stopped at: Completed 03-03-PLAN.md
+Last session: 2026-07-15T22:10:00.000Z
+Stopped at: Completed 03-04-PLAN.md
 Resume file: None
