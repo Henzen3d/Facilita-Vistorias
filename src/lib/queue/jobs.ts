@@ -19,4 +19,6 @@ export type AiDescribeItemJob = {
 export type GeneratePdfJob = {
   vistoriaId: string;
   requestedByUserId?: string;
+  /** Optional reason stored in Relatorio.historicoGeracoes (D-18). */
+  motivo?: string;
 };

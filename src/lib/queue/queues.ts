@@ -74,9 +74,23 @@ export async function enqueueAiDescribeItem(data: AiDescribeItemJob) {
   });
 }
 
-/** Enqueue PDF generation; jobId `pdf-${vistoriaId}` avoids duplicate in-flight jobs. */
+/**
+ * Enqueue PDF generation; jobId `pdf-${vistoriaId}` avoids duplicate in-flight jobs.
+ * Removes a prior completed/failed job with the same id so regenerate works (D-18).
+ */
 export async function enqueueGeneratePdf(data: GeneratePdfJob) {
-  return generatePdfQueue.add("generate-pdf", data, {
-    jobId: `pdf-${data.vistoriaId}`,
-  });
+  const jobId = `pdf-${data.vistoriaId}`;
+  const existing = await generatePdfQueue.getJob(jobId);
+  if (existing) {
+    const state = await existing.getState();
+    if (state === "completed" || state === "failed") {
+      await existing.remove();
+    } else if (state === "active" || state === "waiting" || state === "delayed") {
+      // Already queued/running — do not duplicate
+      return existing;
+    } else {
+      await existing.remove().catch(() => undefined);
+    }
+  }
+  return generatePdfQueue.add("generate-pdf", data, { jobId });
 }
