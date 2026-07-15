@@ -171,9 +171,16 @@ export default function FieldVistoriaSummary({ params }: PageProps) {
             </div>
             <h3 className="font-bold text-sm text-secondary">Tudo pronto para finalizar?</h3>
             <p className="text-xs text-slate-400 leading-relaxed px-2">
-              Ao finalizar, a vistoria será concluída e enviada para revisão no painel da administração.
+              Ao finalizar, a captura em campo entra em revisão (EM_REVISAO). Depois você pode revisar as descrições técnicas online.
             </p>
           </div>
+
+          <Link
+            href={`/field/vistorias/${id}/revisao-ia`}
+            className="block w-full text-center text-primary text-xs font-bold hover:underline py-1"
+          >
+            Revisar descrições (online)
+          </Link>
         </div>
 
         {/* CTA finalize button */}

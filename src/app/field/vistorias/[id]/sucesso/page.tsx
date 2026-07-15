@@ -28,6 +28,14 @@ export default function FieldVistoriaSuccess({ params }: PageProps) {
         </div>
 
         <div className="space-y-3.5 pt-4">
+          <Link
+            href={`/field/vistorias/${id}/revisao-ia`}
+            className="w-full h-14 rounded-full bg-primary hover:bg-[#009acd] text-white font-bold text-sm shadow-md shadow-primary/20 flex items-center justify-center gap-2 transition-all"
+          >
+            <Icon name="rate_review" className="text-[20px]" />
+            Revisar descrições (online)
+          </Link>
+
           <a
             href="https://wa.me/5547999999999?text=Ol%C3%A1%2C%20a%20vistoria%20residencial%20j%C3%A1%20foi%20conclu%C3%ADda!"
             target="_blank"
