@@ -77,7 +77,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 03-03-PLAN.md — Worker STT→descrição + enqueue on media sync
+- [x] 03-03-PLAN.md — Worker STT→descrição + enqueue on media sync
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
@@ -112,5 +112,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Núcleo de Dados e Auth | 1/1 | Complete | 2026-07-14 |
 | 2. App de Campo (PWA) | 1/1 | Complete | 2026-07-15 |
-| 3. Relatório, PDF e IA | 2/5 | In Progress|  |
+| 3. Relatório, PDF e IA | 3/5 | In Progress|  |
 | 4. Envio e Contestação | 0/0 | Not started | - |

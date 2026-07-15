@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — MVP
 status: executing
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-07-15T21:54:36.106Z"
+stopped_at: Completed 03-03-PLAN.md
+last_updated: "2026-07-15T22:02:30.000Z"
 last_activity: 2026-07-15
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 7
-  completed_plans: 4
-  percent: 57
+  completed_plans: 5
+  percent: 71
 ---
 
 # Project State
@@ -26,17 +26,17 @@ See: .planning/PROJECT.md (updated 2026-07-15)
 ## Current Position
 
 Phase: 3 (Relatório, PDF e Pipeline de IA) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 Status: Ready to execute
-Last activity: 2026-07-15 -- Completed plan 03-02
+Last activity: 2026-07-15 -- Completed plan 03-03
 
-Progress: [██████░░░░] 57%
+Progress: [███████░░░] 71%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 4
+- Total plans completed: 5
 - Average duration: — (parcial)
 - Total execution time: —
 
@@ -46,12 +46,13 @@ Progress: [██████░░░░] 57%
 |-------|-------|-------|----------|
 | 1 | 1/1 | — | — |
 | 2 | 1/1 | — | — |
-| 3 | 2/5 | ~31min (03-01+03-02) | ~15min |
+| 3 | 3/5 | ~36min (03-01+03-02+03-03) | ~12min |
 
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | Phase 03 P01 | ~25min | 3 tasks | 8 files |
 | Phase 03 P02 | 6min | 3 tasks | 12 files |
+| Phase 03 P03 | 5min | 3 tasks | 7 files |
 
 *Updated after each plan completion*
 
@@ -68,6 +69,9 @@ Recent decisions affecting current work:
 - [Phase 03]: AIRouter returns { data, meta } only — no lastRunMeta dual contract
 - [Phase 03]: Gemini free-tier first (gemini-2.0-flash) → OpenAI Whisper/gpt-4o-mini → optional Claude
 - [Phase 03]: CREA sanitize: laudo→documentação técnica, perícia→constatação via enforceDescriptionOutput
+- [Phase 3/03-03]: First FOTO (D-08) + latest AUDIO for multimodal; CAPTURADO on final AI failure
+- [Phase 3/03-03]: Media enqueue soft-fail keeps midia 201 with aiEnqueue:false
+- [Phase 3/03-03]: Field finalize UPDATE_VISTORIA_STATUS → EM_REVISAO only (never status via UPDATE_CHECKLIST)
 
 ### Pending Todos
 
@@ -78,6 +82,7 @@ None yet.
 - Phase 1: rodar `npx prisma db seed` e validar login com PostgreSQL ativo (não bloqueia Phase 3 code).
 - Phase 2: Wave 0 de testes (Vitest) ainda não criada — ver `02-VALIDATION.md`.
 - Phase 3: **live DB schema not pushed** — new enums/columns exist in `schema.prisma` + generated client only until Postgres is up.
+- Phase 3: worker needs Redis + GEMINI_API_KEY at runtime (`npm run worker`).
 
 ## Deferred Items
 
@@ -89,9 +94,10 @@ Items acknowledged and carried forward:
 | Feature | Assinatura digital | Backlog | Phase 2 |
 | Feature | Modo de revisão da IA no app de campo | Phase 3 | Phase 2 |
 | Infra | `npx prisma db push` (schema Phase 3 additive) | Deferred — operator approved | 03-01 |
+| Feature | UI reprocess button after AI failure (D-07 full) | Plan 03-04 | 03-03 |
 
 ## Session Continuity
 
-Last session: 2026-07-15T21:54:34.931Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-07-15T22:02:30.000Z
+Stopped at: Completed 03-03-PLAN.md
 Resume file: None
