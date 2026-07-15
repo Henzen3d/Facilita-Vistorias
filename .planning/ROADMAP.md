@@ -69,7 +69,7 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 03-01-PLAN.md — Schema + Storage + BullMQ contracts + db push
+- [x] 03-01-PLAN.md — Schema + Storage + BullMQ contracts + db push
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -112,5 +112,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Núcleo de Dados e Auth | 1/1 | Complete | 2026-07-14 |
 | 2. App de Campo (PWA) | 1/1 | Complete | 2026-07-15 |
-| 3. Relatório, PDF e IA | 0/5 | Planned | - |
+| 3. Relatório, PDF e IA | 1/5 | In Progress|  |
 | 4. Envio e Contestação | 0/0 | Not started | - |
