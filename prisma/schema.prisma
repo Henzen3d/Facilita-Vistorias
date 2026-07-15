@@ -227,6 +227,10 @@ model Relatorio {
   confirmadoEm       DateTime?        @map("confirmado_em")
   nomeQuemConfirmou  String?          @map("nome_quem_confirmou")
   totalVisualizacoes Int              @default(0) @map("total_visualizacoes")
+  /// Current PDF version count (D-18); increments on each regenerate
+  versaoAtual        Int              @default(1) @map("versao_atual")
+  /// Audit log of generations: [{ versionNumber, userId, userNome?, motivo, createdAt, pdfStorageKey }]
+  historicoGeracoes  Json             @default("[]") @map("historico_geracoes")
   createdAt          DateTime         @default(now()) @map("created_at")
   updatedAt          DateTime         @updatedAt @map("updated_at")
 
