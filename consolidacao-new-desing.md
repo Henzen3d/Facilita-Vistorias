@@ -15,7 +15,7 @@
 | Feat 4 — Criar vistoria do zero (campo) | ✅ Concluído |
 | Design 5 — Melhorias visuais baseadas em studio-google | ◆ Em progresso |
 | Sprint 3A — Login field + home `/field` | ✅ Concluído |
-| Sprint 3B — Captura item (foto+áudio) | ⬜ Pendente |
+| Sprint 3B — Captura item (foto+áudio) | ✅ Concluído |
 | Sprint 3C — Ambientes / itens / progress | ⬜ Pendente |
 
 ---
@@ -278,7 +278,7 @@ O dashboard só mostra vistorias baixadas do servidor. Não há como criar uma v
 | 2026-07-16 | Etapa 3: Adicionar cômodo | ✅ Concluído | Modal com picker de ícone + salvamento no IDB |
 | 2026-07-16 | Etapa 4: Criar vistoria | ✅ Concluído | Nova página /field/vistorias/nova + botão no dashboard |
 | 2026-07-16 | Sprint 3A: Login + Home field | ✅ Concluído | Tokens DESIGN.md, UI Button/Badge/Progress, progresso por card, CTA continuar, nav shell polish |
-| — | Sprint 3B: Captura item | ⬜ Pendente | — |
+| 2026-07-16 | Sprint 3B: Captura item | ✅ Concluído | Cards de seção, readiness chips foto/áudio/estado, touch ≥44px, FAB de câmera, label a11y no textarea |
 | — | Sprint 3C: Ambientes/itens | ⬜ Pendente | — |
 | — | Etapa 5 restante (3D–3G) | ⬜ Pendente | — |
 
