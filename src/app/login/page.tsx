@@ -68,17 +68,24 @@ export default function LoginPage() {
         - No desktop: Coluna visual fixa na esquerda.
         - No mobile: Imagem de fundo cobrindo a tela toda, visível apenas quando showForm for falso.
       */}
+      {/* Imagem de fundo no Mobile (Fundo Claro Recortado, sem overlay escuro) */}
       <div
-        className={`absolute inset-0 lg:relative lg:col-span-1 bg-cover bg-[position:50%_90%] lg:bg-center bg-no-repeat transition-all duration-500 ease-out ${
-          showForm ? "opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto" : "opacity-100 pointer-events-auto"
+        className={`absolute inset-0 lg:hidden bg-cover bg-center bg-no-repeat transition-all duration-500 ease-out ${
+          showForm ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"
         }`}
+        style={{ backgroundImage: "url('/tela-mobile-final.jpg')" }}
+      />
+
+      {/* Imagem de fundo e painel visual no Desktop (Lado Esquerdo, com overlay escuro) */}
+      <div
+        className="hidden lg:flex lg:relative lg:col-span-1 bg-cover bg-center bg-no-repeat flex-col justify-between h-full p-12 text-white"
         style={{ backgroundImage: "url('/tela-final.jpg')" }}
       >
-        {/* Overlay escuro para contraste - Apenas no Desktop */}
-        <div className="hidden lg:block absolute inset-0 lg:bg-slate-950/50" />
+        {/* Overlay escuro de contraste - Apenas no Desktop */}
+        <div className="absolute inset-0 bg-slate-950/50 z-0" />
         
-        {/* Conteúdo visível apenas no desktop */}
-        <div className="hidden lg:flex flex-col justify-between h-full p-12 relative z-10 text-white">
+        {/* Conteúdo exclusivo da coluna esquerda no desktop */}
+        <div className="flex flex-col justify-between h-full w-full relative z-10">
           <Link href="/" className="flex items-center gap-3 w-fit">
             <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg shadow-black/10">
               <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
