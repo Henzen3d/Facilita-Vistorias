@@ -1,22 +1,42 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@layer base {
+  html {
+    font-family: theme("fontFamily.sans");
+  }
 
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    /* tokens reais confirmados em DESIGN.md §2.1 — não usar bg-base/text-base
+       (não existem mais no tailwind.config.ts, eram estimativas da v1) */
+    @apply bg-background-light text-secondary;
+    /* corpo nunca abaixo de 16px — app usado em campo, ver DESIGN.md §3.3 */
+    font-size: 16px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Acento editorial (Instrument Serif itálico) — restrito à página de
+   relatório público, ver DESIGN.md §3.2. Não usar no app operacional. */
+.text-accent-editorial {
+  font-family: theme("fontFamily.serif-accent");
+  font-style: italic;
+  font-weight: 400;
+}
+
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
 }

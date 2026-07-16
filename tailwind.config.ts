@@ -4,6 +4,9 @@
 // estimado). Qualquer mudança de paleta/tipografia deve ser feita nos dois
 // lugares (fonte da verdade é o DESIGN.md).
 import type { Config } from "tailwindcss";
+import forms from "@tailwindcss/forms";
+import containerQueries from "@tailwindcss/container-queries";
+import typography from "@tailwindcss/typography";
 
 const config: Config = {
   content: [
@@ -70,9 +73,9 @@ const config: Config = {
     },
   },
   plugins: [
-    require("@tailwindcss/forms"),
-    require("@tailwindcss/container-queries"),
-    require("@tailwindcss/typography"),
+    forms,
+    containerQueries,
+    typography,
   ],
 };
 
