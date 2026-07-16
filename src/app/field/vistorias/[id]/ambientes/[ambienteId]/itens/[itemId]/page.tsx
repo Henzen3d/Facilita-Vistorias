@@ -3,7 +3,7 @@
 import React, { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { PhoneShell } from "@/components/app/PhoneShell";
+import { PhoneShell, TopBar } from "@/components/app/PhoneShell";
 import { Icon } from "@/components/app/Icon";
 import { useCamera } from "@/hooks/useCamera";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
@@ -29,8 +29,10 @@ export default function FieldItemCapture({ params }: PageProps) {
   // Media state
   const [midiasItem, setMidiasItem] = useState<LocalMidia[]>([]);
 
-  // Media hooks
+  // Camera hook
   const { capturePhoto, loading: cameraLoading } = useCamera();
+  
+  // Audio hook
   const {
     isRecording,
     recordingTime,
@@ -73,7 +75,7 @@ export default function FieldItemCapture({ params }: PageProps) {
     loadData();
   }, [itemId]);
 
-  // Handle Photo Capture
+  // Handle Photo Capture (Natively opens device camera)
   const handlePhotoCapture = async () => {
     try {
       const captured = await capturePhoto();
@@ -109,7 +111,7 @@ export default function FieldItemCapture({ params }: PageProps) {
     }
   };
 
-  // Handle Gallery Selection (Alternative if camera fails)
+  // Handle Gallery Selection (Alternative/fallback)
   const handleGalleryCapture = async () => {
     try {
       const db = await getDB();
@@ -282,250 +284,252 @@ export default function FieldItemCapture({ params }: PageProps) {
     );
   }
 
-  // Waveform styling
-  const waveformHeights = [10, 22, 32, 18, 28, 40, 24, 34, 20, 30, 42, 26, 18, 32, 24, 38, 20, 28, 34, 22, 30, 18, 26, 40, 24];
-
   const fotos = midiasItem.filter(m => m.tipo === "FOTO");
-  const ultimaFoto = fotos[fotos.length - 1];
+  const audios = midiasItem.filter(m => m.tipo === "AUDIO");
+  
+  // Waveform heights for simulation
+  const waveformHeights = [8, 18, 28, 14, 24, 34, 20, 30, 16, 26, 36, 22, 14, 28, 20, 32, 16, 24, 30, 18, 26];
 
   return (
-    <PhoneShell showNav={false} bg="dark">
-      <div className="relative flex-1 flex flex-col text-white min-h-[700px]">
-        {/* Background Viewfinder simulator / Última foto tirada */}
-        <div
-          className="absolute inset-0 z-0 bg-cover bg-center transition-all duration-300"
-          style={{
-            backgroundImage: ultimaFoto ? `url(${ultimaFoto.url})` : "none",
-            background: !ultimaFoto 
-              ? "radial-gradient(120% 80% at 30% 20%, #2c3e52 0%, #16222f 55%, #0b1119 100%)" 
-              : undefined,
-          }}
-        />
+    <PhoneShell showNav={false}>
+      <TopBar title="Vistoriar Item" backTo={`/field/vistorias/${id}/ambientes/${ambienteId}`} />
 
-        {!ultimaFoto && (
-          <svg viewBox="0 0 400 700" className="absolute inset-0 h-full w-full opacity-60 z-0 pointer-events-none select-none">
-            <rect x="60" y="180" width="280" height="340" fill="#3a4a5c" />
-            <rect x="90" y="220" width="100" height="130" fill="#5a6e83" />
-            <rect x="220" y="220" width="100" height="130" fill="#5a6e83" />
-            <rect x="90" y="380" width="230" height="120" fill="#455668" />
-          </svg>
-        )}
-
-        {/* Top bar controls */}
-        <div className="relative z-10 flex items-center justify-between px-4 pt-3 select-none">
-          <Link
-            href={`/field/vistorias/${id}/ambientes/${ambienteId}`}
-            aria-label="Fechar"
-            className="h-11 w-11 rounded-full bg-black/40 backdrop-blur flex items-center justify-center hover:bg-black/50 transition-colors"
-          >
-            <Icon name="close" className="text-[24px]" />
-          </Link>
-          
-          <div className="px-3.5 h-9 rounded-full bg-black/40 backdrop-blur flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
-            <span className={`h-1.5 w-1.5 rounded-full bg-status-bad ${isRecording ? "animate-pulse" : ""}`} />
-            {ambiente.nome}
+      <main className="flex-1 px-5 pt-2 pb-32 space-y-6">
+        
+        {/* Item Header */}
+        <div className="bg-slate-50 border border-slate-100 rounded-3xl p-4 flex items-center justify-between">
+          <div>
+            <span className="text-[10px] uppercase tracking-wider font-bold text-primary">Ambiente: {ambiente.nome}</span>
+            <h2 className="text-base font-bold text-secondary">{item.nome}</h2>
           </div>
-          
-          <button className="h-11 w-11 rounded-full bg-black/40 backdrop-blur flex items-center justify-center hover:bg-black/50 transition-colors">
-            <Icon name="flash_on" className="text-[22px] text-brand-accent" />
-          </button>
-        </div>
-
-        {/* Framing Grid overlay */}
-        <div className="relative z-10 mx-6 mt-6 mb-4 flex-1 rounded-3xl border-2 border-white/20 border-dashed relative select-none min-h-[220px]">
-          <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none">
-            {Array.from({ length: 9 }).map((_, i) => (
-              <div key={i} className="border border-white/5" />
-            ))}
-          </div>
-          
-          {/* Corner brackets */}
-          <span className="absolute h-6 w-6 border-white/60 rounded-sm top-3 left-3 border-l-2 border-t-2" />
-          <span className="absolute h-6 w-6 border-white/60 rounded-sm top-3 right-3 border-r-2 border-t-2" />
-          <span className="absolute h-6 w-6 border-white/60 rounded-sm bottom-3 left-3 border-l-2 border-b-2" />
-          <span className="absolute h-6 w-6 border-white/60 rounded-sm bottom-3 right-3 border-r-2 border-b-2" />
-          
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 h-8 rounded-full bg-black/50 backdrop-blur flex items-center gap-2 text-[10px] uppercase font-bold tracking-wide">
-            <Icon name="photo_camera" className="text-primary text-[16px]" />
-            {item.nome}
+          <div className="h-10 w-10 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
+            <Icon name="inventory_2" className="text-[20px]" />
           </div>
         </div>
 
-        {/* Dynamic Waveform Card (WhatsApp Style) */}
-        {isRecording && (
-          <div className="relative z-10 mx-5 mb-4 rounded-3xl bg-white border border-white/10 px-4 py-3 flex items-center gap-3 animate-slide-up shadow-lg">
-            <div className="h-10 w-10 rounded-full bg-status-bad flex items-center justify-center animate-pulse">
-              <Icon name="mic" filled className="text-white text-[20px]" />
+        {/* Section 1: Photo Proof */}
+        <section className="space-y-3">
+          <div className="flex justify-between items-center">
+            <h3 className="text-xs uppercase tracking-wider font-bold text-slate-400 flex items-center gap-1.5">
+              <Icon name="photo_camera" className="text-[16px] text-primary" />
+              Evidências Fotográficas ({fotos.length})
+            </h3>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={handleGalleryCapture}
+                className="text-[11px] font-bold text-primary hover:underline flex items-center gap-1"
+              >
+                <Icon name="photo_library" className="text-[14px]" />
+                Galeria
+              </button>
             </div>
-            <div className="flex-1 flex items-end gap-[3px] h-10 pb-1 overflow-hidden select-none">
-              {waveformHeights.map((h, i) => {
-                // Waveform animation simulation
-                const randomOffset = Math.sin(recordingTime * 2 + i) * 10;
-                const animatedHeight = Math.max(4, h + (isRecording ? randomOffset : 0));
+          </div>
+
+          {/* Grid of photos */}
+          <div className="grid grid-cols-2 gap-3">
+            {fotos.map((foto, index) => (
+              <div key={foto.id} className="relative aspect-[4/3] rounded-3xl overflow-hidden border border-slate-100 bg-slate-50 shadow-sm group">
+                <img src={foto.url} alt={`Foto ${index + 1}`} className="w-full h-full object-cover" />
                 
-                return (
-                  <span
-                    key={i}
-                    className="w-[3px] rounded-full bg-primary transition-all duration-150"
-                    style={{ height: `${animatedHeight}px`, opacity: i > 15 ? 0.35 : 1 }}
-                  />
-                );
-              })}
-            </div>
-            <div className="text-secondary font-bold text-sm tabular-nums select-none">
-              {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, "0")}
-            </div>
-          </div>
-        )}
-
-        {/* Miniaturas de mídias tiradas */}
-        {midiasItem.length > 0 && (
-          <div className="relative z-10 mx-5 mb-3 p-3 bg-black/60 backdrop-blur border border-white/10 rounded-3xl space-y-2 select-none">
-            <p className="text-[9px] uppercase tracking-wider font-bold text-white/50">Mídias do Item ({midiasItem.length})</p>
-            <div className="flex items-center gap-3 overflow-x-auto pb-1 scrollbar-none">
-              {midiasItem.map((midia) => (
-                <div key={midia.id} className="relative shrink-0">
-                  {midia.tipo === "FOTO" ? (
-                    <div className="relative h-14 w-14 rounded-xl overflow-hidden border border-white/20">
-                      <img src={midia.url} alt="Foto item" className="h-full w-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteMidia(midia.id)}
-                        className="absolute top-0.5 right-0.5 h-4 w-4 bg-status-bad text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 shadow-sm"
-                      >
-                        <Icon name="close" className="text-[10px]" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="relative h-14 px-3 rounded-xl bg-primary/20 border border-primary/30 flex items-center gap-1.5 text-white">
-                      <Icon name="graphic_eq" className="text-[16px] text-primary" />
-                      <span className="text-[10px] font-bold">Áudio</span>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteMidia(midia.id)}
-                        className="absolute -top-1.5 -right-1.5 h-4.5 w-4.5 bg-status-bad text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 shadow-sm border border-black/10"
-                      >
-                        <Icon name="close" className="text-[10px]" />
-                      </button>
-                    </div>
-                  )}
+                {/* Meta time indicator */}
+                <div className="absolute bottom-2 right-2 bg-black/40 backdrop-blur px-2 py-0.5 rounded-full text-[9px] text-white flex items-center gap-1">
+                  <Icon name="schedule" className="text-[10px]" />
+                  Foto {index + 1}
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
 
-        {/* Inputs panel (Description & Status) */}
-        <div className="relative z-10 mx-5 mb-4 p-4 bg-white/95 backdrop-blur text-secondary rounded-3xl shadow-lg space-y-4">
-          {/* Note Input */}
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Anotações / Descrição</label>
-            <textarea
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
-              placeholder="Descreva as condições deste item (ex: desgaste, arranhões, etc.)"
-              rows={2}
-              className="w-full text-xs p-2.5 rounded-2xl border border-slate-100 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-secondary placeholder-slate-400"
-            />
-          </div>
+                {/* Delete button */}
+                <button
+                  type="button"
+                  onClick={() => handleDeleteMidia(foto.id)}
+                  className="absolute top-2 right-2 h-7 w-7 bg-status-bad text-white rounded-full flex items-center justify-center shadow-md active:scale-95 transition-transform"
+                >
+                  <Icon name="close" className="text-[16px]" />
+                </button>
+              </div>
+            ))}
 
-          {/* Status selector */}
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Avaliação do Estado</label>
-            <div className="grid grid-cols-3 gap-2 select-none">
-              <button
-                type="button"
-                onClick={() => setStatus("BOM")}
-                className={`py-2 rounded-2xl text-xs font-bold border transition-colors ${
-                  status === "BOM"
-                    ? "bg-status-good text-white border-status-good"
-                    : "bg-slate-50 border-slate-100 text-slate-500"
-                }`}
-              >
-                Bom
-              </button>
-              <button
-                type="button"
-                onClick={() => setStatus("REGULAR")}
-                className={`py-2 rounded-2xl text-xs font-bold border transition-colors ${
-                  status === "REGULAR"
-                    ? "bg-status-warn text-white border-status-warn"
-                    : "bg-slate-50 border-slate-100 text-slate-500"
-                }`}
-              >
-                Regular
-              </button>
-              <button
-                type="button"
-                onClick={() => setStatus("RUIM")}
-                className={`py-2 rounded-2xl text-xs font-bold border transition-colors ${
-                  status === "RUIM"
-                    ? "bg-status-bad text-white border-status-bad"
-                    : "bg-slate-50 border-slate-100 text-slate-500"
-                }`}
-              >
-                Ruim
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Floating actions & Shutter row */}
-        <div className="relative z-10 pb-8 pt-2 select-none">
-          {/* Microphone controls (simulate tap-hold / tap start) */}
-          <div className="mx-5 mb-4 rounded-3xl bg-white/90 backdrop-blur px-3 py-3 flex items-center justify-around text-secondary shadow-md">
-            <button 
-              type="button"
-              onClick={isRecording ? stopRecording : startRecording}
-              className={`flex flex-col items-center gap-1 min-w-[64px] min-h-[44px] ${isRecording ? "text-status-bad" : "text-secondary"}`}
-            >
-              <span className={`h-10 w-10 rounded-full flex items-center justify-center ${isRecording ? "bg-status-bad text-white animate-pulse" : "bg-slate-50 border border-slate-100 text-secondary"}`}>
-                <Icon name="mic" filled={isRecording} className="text-[20px]" />
-              </span>
-              <span className="text-[10px] font-bold uppercase tracking-wider">{isRecording ? "Parar" : "Gravar Áudio"}</span>
-            </button>
-
-            {/* Save Item Action */}
-            <button
-              type="button"
-              onClick={handleSaveItem}
-              className="flex flex-col items-center gap-1 min-w-[64px] min-h-[44px]"
-            >
-              <span className="h-10 w-10 rounded-full bg-status-good text-white flex items-center justify-center shadow hover:bg-emerald-600 transition-colors">
-                <Icon name="save" className="text-[20px]" />
-              </span>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-status-good">Salvar</span>
-            </button>
-          </div>
-
-          {/* Shutter camera trigger */}
-          <div className="flex items-center justify-around px-8">
-            <button 
-              type="button"
-              onClick={handleGalleryCapture}
-              aria-label="Selecionar da Galeria" 
-              className="h-12 w-12 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center hover:bg-white/20 active:scale-95 transition-all"
-            >
-              <Icon name="photo_library" className="text-[22px]" />
-            </button>
-            
+            {/* Add Photo Button (Trigger native camera selection) */}
             <button
               type="button"
               onClick={handlePhotoCapture}
               disabled={cameraLoading}
-              aria-label="Capturar foto"
-              className="h-20 w-20 rounded-full bg-white flex items-center justify-center ring-4 ring-white/30 hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+              className="relative aspect-[4/3] rounded-3xl border-2 border-primary/20 border-dashed hover:border-primary/50 hover:bg-primary/5 transition-all flex flex-col items-center justify-center text-primary gap-1 cursor-pointer"
             >
-              <span className="h-16 w-16 rounded-full bg-primary flex items-center justify-center">
-                <Icon name="photo_camera" filled className="text-white text-[30px]" />
-              </span>
-            </button>
-            
-            <button aria-label="Virar câmera" className="h-12 w-12 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center">
-              <Icon name="cameraswitch" className="text-[22px]" />
+              {cameraLoading ? (
+                <Icon name="progress_activity" className="text-[28px] animate-spin" />
+              ) : (
+                <>
+                  <Icon name="add_a_photo" className="text-[28px]" />
+                  <span className="text-[11px] font-bold">Tirar Foto</span>
+                </>
+              )}
             </button>
           </div>
-        </div>
+        </section>
+
+        {/* Section 2: Audio observations */}
+        <section className="space-y-3">
+          <h3 className="text-xs uppercase tracking-wider font-bold text-slate-400 flex items-center gap-1.5">
+            <Icon name="graphic_eq" className="text-[16px] text-primary" />
+            Observações em Áudio ({audios.length})
+          </h3>
+
+          <div className="space-y-2">
+            {/* Audio waveform recording block */}
+            {isRecording && (
+              <div className="bg-slate-50 border border-slate-100 p-3 rounded-2xl flex items-center gap-3 animate-pulse">
+                <div className="h-8 w-8 rounded-full bg-status-bad text-white flex items-center justify-center">
+                  <Icon name="mic" filled className="text-[16px]" />
+                </div>
+                <div className="flex-1 flex items-end gap-[2px] h-8 pb-1 overflow-hidden">
+                  {waveformHeights.map((h, i) => {
+                    const animatedHeight = Math.max(4, h + Math.sin(recordingTime * 3 + i) * 6);
+                    return (
+                      <span
+                        key={i}
+                        className="w-[2.5px] rounded-full bg-primary"
+                        style={{ height: `${animatedHeight}px` }}
+                      />
+                    );
+                  })}
+                </div>
+                <span className="text-xs font-bold text-secondary tabular-nums">
+                  {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, "0")}
+                </span>
+              </div>
+            )}
+
+            {/* List of saved audios */}
+            {audios.map((audio, index) => (
+              <div key={audio.id} className="bg-slate-50 border border-slate-100 p-3 rounded-2xl flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span className="h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                    <Icon name="volume_up" className="text-[18px]" />
+                  </span>
+                  <div className="text-left">
+                    <span className="text-xs font-bold text-secondary block">Áudio {index + 1}</span>
+                    <span className="text-[10px] text-slate-400">Gravado localmente</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <audio src={audio.url} className="hidden" id={`audio-player-${audio.id}`} controls />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const el = document.getElementById(`audio-player-${audio.id}`) as HTMLAudioElement;
+                      if (el) el.play();
+                    }}
+                    className="h-8 w-8 rounded-full bg-white border border-slate-100 text-primary flex items-center justify-center hover:bg-slate-50 shadow-sm active:scale-95"
+                  >
+                    <Icon name="play_arrow" className="text-[18px]" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteMidia(audio.id)}
+                    className="h-8 w-8 rounded-full bg-white border border-slate-100 text-status-bad flex items-center justify-center hover:bg-red-50 shadow-sm active:scale-95"
+                  >
+                    <Icon name="delete" className="text-[18px]" />
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {/* Audio trigger button */}
+            <button
+              type="button"
+              onClick={isRecording ? stopRecording : startRecording}
+              className={`w-full h-12 rounded-2xl border font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all ${
+                isRecording
+                  ? "bg-status-bad border-status-bad text-white"
+                  : "bg-white border-slate-200 text-secondary hover:bg-slate-50"
+              }`}
+            >
+              <Icon name="mic" filled={isRecording} className="text-[18px]" />
+              {isRecording ? "Parar Gravação" : "Gravar Anotação por Voz"}
+            </button>
+          </div>
+        </section>
+
+        {/* Section 3: Condition Rating */}
+        <section className="space-y-3">
+          <h3 className="text-xs uppercase tracking-wider font-bold text-slate-400 flex items-center gap-1.5">
+            <Icon name="stars" className="text-[16px] text-primary" />
+            Avaliação do Estado
+          </h3>
+          
+          <div className="grid grid-cols-3 gap-2.5">
+            {/* Bom (Good) */}
+            <button
+              type="button"
+              onClick={() => setStatus("BOM")}
+              className={`py-3.5 px-3 rounded-2xl border-2 flex flex-col items-center justify-center gap-1.5 transition-all text-xs font-bold ${
+                status === "BOM"
+                  ? "bg-status-good/8 border-status-good text-status-good"
+                  : "bg-white border-slate-100 text-slate-400 hover:border-slate-200"
+              }`}
+            >
+              <Icon name="check_circle" filled={status === "BOM"} className={status === "BOM" ? "text-status-good" : "text-slate-300"} />
+              Bom Estado
+            </button>
+
+            {/* Regular */}
+            <button
+              type="button"
+              onClick={() => setStatus("REGULAR")}
+              className={`py-3.5 px-3 rounded-2xl border-2 flex flex-col items-center justify-center gap-1.5 transition-all text-xs font-bold ${
+                status === "REGULAR"
+                  ? "bg-status-warn/8 border-status-warn text-status-warn"
+                  : "bg-white border-slate-100 text-slate-400 hover:border-slate-200"
+              }`}
+            >
+              <Icon name="remove_circle" filled={status === "REGULAR"} className={status === "REGULAR" ? "text-status-warn" : "text-slate-300"} />
+              Regular
+            </button>
+
+            {/* Ruim (Bad) */}
+            <button
+              type="button"
+              onClick={() => setStatus("RUIM")}
+              className={`py-3.5 px-3 rounded-2xl border-2 flex flex-col items-center justify-center gap-1.5 transition-all text-xs font-bold ${
+                status === "RUIM"
+                  ? "bg-status-bad/8 border-status-bad text-status-bad"
+                  : "bg-white border-slate-100 text-slate-400 hover:border-slate-200"
+              }`}
+            >
+              <Icon name="cancel" filled={status === "RUIM"} className={status === "RUIM" ? "text-status-bad" : "text-slate-300"} />
+              Avariado
+            </button>
+          </div>
+        </section>
+
+        {/* Section 4: Observation Notes */}
+        <section className="space-y-3">
+          <h3 className="text-xs uppercase tracking-wider font-bold text-slate-400 flex items-center gap-1.5">
+            <Icon name="rate_review" className="text-[16px] text-primary" />
+            Anotações Adicionais
+          </h3>
+          <textarea
+            value={descricao}
+            onChange={(e) => setDescricao(e.target.value)}
+            placeholder="Digite aqui observações detalhadas sobre o estado ou avarias encontradas neste item..."
+            rows={4}
+            className="w-full text-sm p-4 rounded-3xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-secondary placeholder-slate-400 bg-white shadow-sm leading-relaxed"
+          />
+        </section>
+
+      </main>
+
+      {/* Sticky Bottom Actions */}
+      <div className="fixed bottom-0 left-0 right-0 px-5 py-4 bg-gradient-to-t from-background-light via-background-light to-transparent md:max-w-md md:mx-auto z-20">
+        <button
+          type="button"
+          onClick={handleSaveItem}
+          className="w-full h-16 rounded-full bg-primary text-white text-base font-bold shadow-lg shadow-primary/25 flex items-center justify-center gap-2 hover:bg-[#009acd] transition-all active:scale-[0.98]"
+        >
+          <Icon name="save" className="text-[22px]" />
+          Salvar Avaliação do Item
+        </button>
       </div>
     </PhoneShell>
   );
