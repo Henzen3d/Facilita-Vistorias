@@ -7,6 +7,7 @@ const withPWA = withPWAInit({
   disable: process.env.NODE_ENV === "development",
   register: true,
   skipWaiting: true,
+  customWorkerDir: "src/pwa-worker", // Evita que o next-pwa confunda o nosso worker Node.js backend (worker/index.ts) com um Service Worker de PWA
 });
 
 const nextConfig: NextConfig = {
