@@ -96,7 +96,7 @@ export default function Home() {
           {/* Botões de Ação */}
           <div className="w-full space-y-4">
             <Link
-              href="/login"
+              href="/login?show=form"
               className="flex h-12 w-full items-center justify-center rounded-full bg-primary text-white font-bold tracking-wide transition-all duration-200 hover:bg-primary-hover hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             >
               Entrar no Sistema

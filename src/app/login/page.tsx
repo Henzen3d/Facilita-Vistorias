@@ -1,7 +1,7 @@
 "use client"
 
 import { getSession, signIn } from "next-auth/react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 
@@ -11,6 +11,19 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  
+  // Estado para alternar entre a tela de boas-vindas e o formulário de login no mobile
+  const [showForm, setShowForm] = useState(false)
+
+  // Verifica se veio da página inicial pedindo para exibir o formulário direto
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get("show") === "form") {
+        setShowForm(true)
+      }
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -47,21 +60,25 @@ export default function LoginPage() {
 
   return (
     <main className="relative min-h-screen lg:h-screen lg:grid lg:grid-cols-2 bg-slate-50 overflow-hidden">
+      
       {/* 
-        ESQUERDA (DESKTOP)
-        - Coluna visual idêntica à página de boas-vindas para criar uma transição perfeita.
-        - Oculta no mobile para manter o formulário de login limpo e focado.
+        ========================================================================
+        ESQUERDA (DESKTOP) / FUNDO COMPLETO (MOBILE - TELA DE BOAS-VINDAS)
+        ========================================================================
+        - No desktop: Coluna visual fixa na esquerda.
+        - No mobile: Imagem de fundo cobrindo a tela toda, visível apenas quando showForm for falso.
       */}
       <div
-        className="hidden lg:block lg:relative lg:col-span-1 bg-cover bg-center bg-no-repeat"
+        className={`absolute inset-0 lg:relative lg:col-span-1 bg-cover bg-center bg-no-repeat transition-all duration-500 ease-out ${
+          showForm ? "opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto" : "opacity-100 pointer-events-auto"
+        }`}
         style={{ backgroundImage: "url('/tela-final.jpg')" }}
       >
         {/* Overlay escuro para contraste */}
-        <div className="absolute inset-0 bg-slate-950/50 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[1px] lg:bg-slate-950/50" />
         
-        {/* Conteúdo do lado esquerdo (Desktop) */}
-        <div className="flex flex-col justify-between h-full p-12 relative z-10 text-white">
-          {/* Logo compacta */}
+        {/* Conteúdo visível apenas no desktop */}
+        <div className="hidden lg:flex flex-col justify-between h-full p-12 relative z-10 text-white">
           <Link href="/" className="flex items-center gap-3 w-fit">
             <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg shadow-black/10">
               <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -73,7 +90,6 @@ export default function LoginPage() {
             </span>
           </Link>
 
-          {/* Headline Centralizada */}
           <div className="max-w-md my-auto space-y-6">
             <h1 className="text-5xl font-black leading-tight tracking-tight text-white">
               Bem-vindo ao <br />
@@ -86,7 +102,6 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Rodapé */}
           <div className="text-sm text-white/50 font-medium">
             v1.0.0 • Facilita Vistorias © 2026
           </div>
@@ -94,14 +109,89 @@ export default function LoginPage() {
       </div>
 
       {/* 
-        DIREITA (DESKTOP) / TELA CHEIA (MOBILE)
-        - Lado do formulário de login.
+        ========================================================================
+        MOBILE - TELA DE BOAS-VINDAS (CARD INFERIOR)
+        ========================================================================
+        - Visível apenas no mobile (`lg:hidden`) e quando `showForm === false`.
+        - Replica visualmente o design solicitado da tela de boas-vindas com dois botões.
       */}
-      <div className="flex flex-col justify-center items-center min-h-screen lg:min-h-0 lg:col-span-1 p-6 sm:p-12 lg:p-16 bg-slate-50 w-full">
-        {/* Card do Formulário */}
+      {!showForm && (
+        <div className="lg:hidden absolute bottom-0 left-0 right-0 w-full max-w-md bg-white rounded-t-[2.5rem] p-8 shadow-2xl flex flex-col items-center text-center mx-auto z-20 animate-fade-in-up">
+          {/* Barra sutil iOS style */}
+          <div className="w-12 h-1.5 bg-slate-200 rounded-full mb-6" />
+
+          {/* Logo circular */}
+          <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-6 shadow-soft shadow-primary/30">
+            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+          </div>
+
+          {/* Título de Boas-Vindas */}
+          <h1 className="text-3xl font-extrabold text-secondary tracking-tight mb-3">
+            Bem-vindo ao{" "}
+            <span className="block mt-1 font-serif-accent italic font-normal text-primary text-4xl capitalize">
+              Facilita Vistorias
+            </span>
+          </h1>
+
+          <p className="text-base text-secondary/70 max-w-[28ch] mb-8 leading-relaxed">
+            A plataforma inteligente para vistorias residenciais rápidas, seguras e detalhadas.
+          </p>
+
+          {/* Botões de Ação */}
+          <div className="w-full space-y-4">
+            <button
+              onClick={() => setShowForm(true)}
+              className="flex h-12 w-full items-center justify-center rounded-full bg-primary text-white font-bold tracking-wide transition-all duration-200 hover:bg-primary-hover hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              Entrar no Sistema
+            </button>
+
+            <a
+              href="https://wa.me/5547999999999"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-12 w-full items-center justify-center rounded-full border border-secondary/20 bg-transparent text-secondary font-semibold transition-all duration-200 hover:bg-secondary/5 hover:border-secondary/40"
+            >
+              Falar com o Suporte
+            </a>
+          </div>
+
+          <div className="mt-8 text-xs text-secondary/40 font-medium">
+            v1.0.0 • Facilita Vistorias © 2026
+          </div>
+        </div>
+      )}
+
+      {/* 
+        ========================================================================
+        FORMULÁRIO DE LOGIN
+        ========================================================================
+        - No desktop: Sempre visível na coluna da direita.
+        - No mobile: Visível em tela cheia apenas quando `showForm === true`.
+      */}
+      <div
+        className={`flex flex-col justify-center items-center min-h-screen lg:min-h-0 lg:col-span-1 p-6 sm:p-12 lg:p-16 bg-slate-50 w-full transition-all duration-500 ${
+          showForm ? "opacity-100 scale-100 z-10" : "opacity-0 scale-95 pointer-events-none lg:opacity-100 lg:scale-100 lg:pointer-events-auto"
+        }`}
+      >
         <div className="w-full max-w-md bg-white rounded-3xl p-8 sm:p-10 shadow-soft border border-slate-100/80 flex flex-col">
           
-          {/* Logo (Visível no Mobile no topo do card) */}
+          {/* Botão de voltar no mobile */}
+          {showForm && (
+            <button
+              onClick={() => setShowForm(false)}
+              className="flex items-center gap-1 text-xs font-semibold text-secondary/60 hover:text-secondary mb-4 self-start lg:hidden transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+              Voltar para boas-vindas
+            </button>
+          )}
+
+          {/* Logo e cabeçalho */}
           <div className="flex flex-col items-center mb-6">
             <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center mb-4 shadow-soft shadow-primary/20">
               <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -117,7 +207,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Formulário de Login */}
+          {/* Formulário */}
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-secondary mb-1">
@@ -168,7 +258,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Dicas de Acesso / Credenciais de Teste */}
+          {/* Credenciais de Teste */}
           <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col gap-2">
             <h4 className="text-xs font-bold text-secondary uppercase tracking-wider mb-1">
               Credenciais de Teste:
