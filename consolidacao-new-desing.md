@@ -13,10 +13,10 @@
 | Bug 2 — Cômodo cadastrado não funciona | ✅ Concluído |
 | Bug 3 — Adicionar novos cômodos durante vistoria | ✅ Concluído |
 | Feat 4 — Criar vistoria do zero (campo) | ✅ Concluído |
-| Design 5 — Melhorias visuais baseadas em studio-google | ◆ Em progresso |
+| Design 5 — Melhorias visuais baseadas em studio-google | ◆ Em progresso (3A–3C ok) |
 | Sprint 3A — Login field + home `/field` | ✅ Concluído |
 | Sprint 3B — Captura item (foto+áudio) | ✅ Concluído |
-| Sprint 3C — Ambientes / itens / progress | ⬜ Pendente |
+| Sprint 3C — Ambientes / itens / progress | ✅ Concluído |
 
 ---
 
@@ -202,18 +202,18 @@ O dashboard só mostra vistorias baixadas do servidor. Não há como criar uma v
   - Melhorar o stepper de progresso (1. Info → 2. Protocolo → 3. Cômodos → 4. Fim)
   - Tornar o stepper visual — item atual em destaque colorido
 
-- [ ] 5.3 — **Protocolo de chegada** (seção em `ambientes/page.tsx`)
+- [x] 5.3 — **Protocolo de chegada** (seção em `ambientes/page.tsx`) — Sprint 3C
   - Redesenhar checkboxes como cards clicáveis (toggle card) com ícone por item
   - Ícones sugeridos: 🛡️ gás, 💡 luzes, 🪟 janelas, ❄️ ar-condicionado, 🚿 chuveiro, 🚽 descarga, ⚡ disjuntores, 📞 interfone, 🚪 portão
   - Exibir barra de progresso do protocolo em destaque: "X / 10 concluídos"
   - Ao completar 100%: animação suave + badge "✓ Protocolo Concluído"
 
-- [ ] 5.4 — **Lista de cômodos** (`ambientes/page.tsx`)
+- [x] 5.4 — **Lista de cômodos** (`ambientes/page.tsx`) — Sprint 3C
   - Cards de cômodo mais expressivos: status visual com cor dominante no card
   - Botão "+ Adicionar Cômodo" (vem da Etapa 3)
   - Melhorar chips de filtro
 
-- [ ] 5.5 — **Detalhe do cômodo** (`ambientes/[ambienteId]/page.tsx`)
+- [x] 5.5 — **Detalhe do cômodo** (`ambientes/[ambienteId]/page.tsx`) — Sprint 3C
   - Header com nome do cômodo e progresso (X/Y itens vistoriados)
   - Empty state quando não há itens (vem da Etapa 2)
   - Cards de item com status badge mais visível
@@ -279,7 +279,7 @@ O dashboard só mostra vistorias baixadas do servidor. Não há como criar uma v
 | 2026-07-16 | Etapa 4: Criar vistoria | ✅ Concluído | Nova página /field/vistorias/nova + botão no dashboard |
 | 2026-07-16 | Sprint 3A: Login + Home field | ✅ Concluído | Tokens DESIGN.md, UI Button/Badge/Progress, progresso por card, CTA continuar, nav shell polish |
 | 2026-07-16 | Sprint 3B: Captura item | ✅ Concluído | Cards de seção, readiness chips foto/áudio/estado, touch ≥44px, FAB de câmera, label a11y no textarea |
-| — | Sprint 3C: Ambientes/itens | ⬜ Pendente | — |
+| 2026-07-16 | Sprint 3C: Ambientes/itens | ✅ Concluído | Progresso com mini-métricas, cards com borda de status, filtros Hick, detalhe com próximo item + badges |
 | — | Etapa 5 restante (3D–3G) | ⬜ Pendente | — |
 
 
