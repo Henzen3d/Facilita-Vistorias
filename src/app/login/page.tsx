@@ -69,13 +69,13 @@ export default function LoginPage() {
         - No mobile: Imagem de fundo cobrindo a tela toda, visível apenas quando showForm for falso.
       */}
       <div
-        className={`absolute inset-0 lg:relative lg:col-span-1 bg-cover bg-center bg-no-repeat transition-all duration-500 ease-out ${
+        className={`absolute inset-0 lg:relative lg:col-span-1 bg-cover bg-[position:50%_90%] lg:bg-center bg-no-repeat transition-all duration-500 ease-out ${
           showForm ? "opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto" : "opacity-100 pointer-events-auto"
         }`}
         style={{ backgroundImage: "url('/tela-final.jpg')" }}
       >
-        {/* Overlay escuro para contraste */}
-        <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[1px] lg:bg-slate-950/50" />
+        {/* Overlay escuro para contraste - Apenas no Desktop */}
+        <div className="hidden lg:block absolute inset-0 lg:bg-slate-950/50" />
         
         {/* Conteúdo visível apenas no desktop */}
         <div className="hidden lg:flex flex-col justify-between h-full p-12 relative z-10 text-white">
@@ -118,16 +118,16 @@ export default function LoginPage() {
       {!showForm && (
         <div className="lg:hidden absolute bottom-0 left-0 right-0 w-full max-w-md bg-transparent p-8 flex flex-col items-center text-center mx-auto z-20 animate-fade-in-up">
           
-          {/* Título de Boas-Vindas (em branco para contraste) */}
-          <h1 className="text-3xl font-extrabold text-white tracking-tight mb-3">
+          {/* Título de Boas-Vindas (em escuro para contraste no fundo claro) */}
+          <h1 className="text-3xl font-extrabold text-secondary tracking-tight mb-3">
             Bem-vindo ao{" "}
             <span className="block mt-1 font-serif-accent italic font-normal text-primary text-4xl capitalize">
               Facilita Vistorias
             </span>
           </h1>
 
-          {/* Texto descritivo reduzido e em branco */}
-          <p className="text-base text-white/85 max-w-[28ch] mb-8 leading-relaxed">
+          {/* Texto descritivo reduzido e em escuro */}
+          <p className="text-base text-secondary/75 max-w-[28ch] mb-8 leading-relaxed">
             A plataforma inteligente para vistorias residenciais rápidas.
           </p>
 
@@ -141,17 +141,17 @@ export default function LoginPage() {
             </button>
 
             <a
-              href="https://wa.me/5547999999999"
+              href="https://wa.me/5547999999999?text=Olá!%20Gostaria%20de%20solicitar%20o%20meu%20cadastro%20no%20Facilita%20Vistorias."
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-12 w-full items-center justify-center rounded-full border border-white/30 bg-transparent text-white font-semibold transition-all duration-200 hover:bg-white/10"
+              className="flex h-12 w-full items-center justify-center rounded-full border border-secondary/20 bg-transparent text-secondary font-semibold transition-all duration-200 hover:bg-secondary/5 hover:border-secondary/40"
             >
-              Falar com o Suporte
+              Fazer Cadastro
             </a>
           </div>
 
-          {/* Rodapé interno mobile (margem reduzida mt-4 e texto branco) */}
-          <div className="mt-4 text-xs text-white/50 font-medium">
+          {/* Rodapé interno mobile (margem reduzida mt-4 e texto escuro) */}
+          <div className="mt-4 text-xs text-secondary/40 font-medium">
             v1.0.0 • Facilita Vistorias © 2026
           </div>
         </div>

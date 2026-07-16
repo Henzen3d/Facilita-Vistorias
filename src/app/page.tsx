@@ -9,11 +9,11 @@ export default function Home() {
         - No desktop, fica confinado à primeira coluna do grid (lado esquerdo).
       */}
       <div
-        className="absolute inset-0 lg:relative lg:col-span-1 bg-cover bg-center bg-no-repeat transition-transform duration-1000 ease-out"
+        className="absolute inset-0 lg:relative lg:col-span-1 bg-cover bg-[position:50%_90%] lg:bg-center bg-no-repeat transition-transform duration-1000 ease-out"
         style={{ backgroundImage: "url('/tela-final.jpg')" }}
       >
-        {/* Overlay escuro semi-transparente para contraste */}
-        <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[1px] lg:bg-slate-950/50" />
+        {/* Overlay escuro de contraste - Apenas no Desktop */}
+        <div className="hidden lg:block absolute inset-0 lg:bg-slate-950/50" />
         
         {/* Conteúdo exclusivo da coluna esquerda no desktop (oculto no mobile) */}
         <div className="hidden lg:flex flex-col justify-between h-full p-12 relative z-10 text-white">
@@ -38,7 +38,7 @@ export default function Home() {
               </span>
             </h1>
             <p className="text-lg text-white/80 leading-relaxed max-w-[32ch]">
-              A plataforma inteligente para vistorias residenciais rápidas, seguras e detalhadas.
+              A plataforma inteligente para vistorias residenciais rápidas.
             </p>
           </div>
 
@@ -74,8 +74,8 @@ export default function Home() {
             </svg>
           </div>
 
-          {/* Título visível no mobile (texto branco para contraste), oculto no desktop */}
-          <h1 className="text-3xl font-extrabold text-white tracking-tight mb-3 lg:hidden">
+          {/* Título visível no mobile (texto escuro para contraste no fundo claro), oculto no desktop */}
+          <h1 className="text-3xl font-extrabold text-secondary tracking-tight mb-3 lg:hidden">
             Bem-vindo ao{" "}
             <span className="block mt-1 font-serif-accent italic font-normal text-primary text-4xl capitalize">
               Facilita Vistorias
@@ -87,8 +87,8 @@ export default function Home() {
             Acessar Plataforma
           </h2>
 
-          {/* Texto descritivo reduzido */}
-          <p className="text-base text-white/85 lg:text-secondary/70 max-w-[28ch] mb-8 leading-relaxed">
+          {/* Texto descritivo reduzido (em escuro para mobile sobre o fundo branco) */}
+          <p className="text-base text-secondary/75 max-w-[28ch] mb-8 leading-relaxed">
             A plataforma inteligente para vistorias residenciais rápidas.
           </p>
 
@@ -102,17 +102,17 @@ export default function Home() {
             </Link>
 
             <a
-              href="https://wa.me/5547999999999"
+              href="https://wa.me/5547999999999?text=Olá!%20Gostaria%20de%20solicitar%20o%20meu%20cadastro%20no%20Facilita%20Vistorias."
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-12 w-full items-center justify-center rounded-full border border-white/30 lg:border-secondary/20 bg-transparent text-white lg:text-secondary font-semibold transition-all duration-200 hover:bg-white/10 lg:hover:bg-secondary/5 hover:border-white/50 lg:hover:border-secondary/40 focus:outline-none focus:ring-2 focus:ring-white/20 lg:focus:ring-secondary/20"
+              className="flex h-12 w-full items-center justify-center rounded-full border border-secondary/20 bg-transparent text-secondary font-semibold transition-all duration-200 hover:bg-secondary/5 hover:border-secondary/40 focus:outline-none focus:ring-2 focus:ring-secondary/20"
             >
-              Falar com o Suporte
+              Fazer Cadastro
             </a>
           </div>
 
           {/* Rodapé interno (apenas mobile, com margem e cor ajustadas para espaço) */}
-          <div className="mt-4 text-xs text-white/50 font-medium lg:hidden">
+          <div className="mt-4 text-xs text-secondary/40 font-medium lg:hidden">
             v1.0.0 • Facilita Vistorias © 2026
           </div>
         </div>
