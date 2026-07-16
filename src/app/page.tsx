@@ -50,19 +50,17 @@ export default function Home() {
       </div>
 
       {/* 
-        DIREITA (DESKTOP) / CARD FLUTUANTE (MOBILE)
-        - No mobile, é um card branco posicionado no fundo da tela de forma absoluta.
-        - No desktop, é a coluna da direita com fundo cinza-claro, centralizando o conteúdo.
+        DIREITA (DESKTOP) / CONTEÚDO DIRETO (MOBILE)
+        - No mobile: Conteúdo renderizado de forma transparente diretamente sobre a imagem de fundo.
+        - No desktop: Coluna da direita cinza-clara com o card de ações branco centralizado.
       */}
-      <div className="relative w-full max-w-md lg:max-w-none bg-white rounded-t-[2.5rem] lg:rounded-none p-8 md:p-10 lg:p-16 shadow-2xl lg:shadow-none flex flex-col justify-center items-center text-center mx-auto z-10 md:mb-0 lg:col-span-1 lg:bg-slate-50 transition-all duration-300">
-        {/* Barra indicadora mobile (iOS style) */}
-        <div className="w-12 h-1.5 bg-slate-200 rounded-full mb-6 lg:hidden" />
-
-        {/* Card interno para agrupar conteúdo e dar elevação no desktop */}
-        <div className="w-full max-w-sm lg:bg-white lg:p-10 lg:rounded-[2rem] lg:shadow-soft lg:border lg:border-slate-100 flex flex-col items-center">
+      <div className="relative w-full max-w-md lg:max-w-none bg-transparent lg:bg-slate-50 p-8 md:p-10 lg:p-16 flex flex-col justify-center items-center text-center mx-auto z-10 md:mb-0 lg:col-span-1 transition-all duration-300">
+        
+        {/* Card interno: transparente no mobile, branco com sombra no desktop */}
+        <div className="w-full max-w-sm bg-transparent lg:bg-white lg:p-10 lg:rounded-[2rem] lg:shadow-soft lg:border lg:border-slate-100 flex flex-col items-center">
           
-          {/* Logo circular visível no mobile e no topo do card no desktop */}
-          <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-6 shadow-soft shadow-primary/30">
+          {/* Logo circular: oculto no mobile, visível no desktop */}
+          <div className="hidden lg:flex w-16 h-16 rounded-full bg-primary items-center justify-center mb-6 shadow-soft shadow-primary/30">
             <svg
               className="w-8 h-8 text-white"
               fill="none"
@@ -76,8 +74,8 @@ export default function Home() {
             </svg>
           </div>
 
-          {/* Título visível no mobile, oculto no desktop pois o título principal está na esquerda */}
-          <h1 className="text-3xl font-extrabold text-secondary tracking-tight mb-3 lg:hidden">
+          {/* Título visível no mobile (texto branco para contraste), oculto no desktop */}
+          <h1 className="text-3xl font-extrabold text-white tracking-tight mb-3 lg:hidden">
             Bem-vindo ao{" "}
             <span className="block mt-1 font-serif-accent italic font-normal text-primary text-4xl capitalize">
               Facilita Vistorias
@@ -89,8 +87,9 @@ export default function Home() {
             Acessar Plataforma
           </h2>
 
-          <p className="text-base text-secondary/70 max-w-[28ch] mb-8 leading-relaxed">
-            Selecione uma das opções abaixo para entrar no sistema ou falar com nossa equipe.
+          {/* Texto descritivo reduzido */}
+          <p className="text-base text-white/85 lg:text-secondary/70 max-w-[28ch] mb-8 leading-relaxed">
+            A plataforma inteligente para vistorias residenciais rápidas.
           </p>
 
           {/* Botões de Ação */}
@@ -106,14 +105,14 @@ export default function Home() {
               href="https://wa.me/5547999999999"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-12 w-full items-center justify-center rounded-full border border-secondary/20 bg-transparent text-secondary font-semibold transition-all duration-200 hover:bg-secondary/5 hover:border-secondary/40 focus:outline-none focus:ring-2 focus:ring-secondary/20"
+              className="flex h-12 w-full items-center justify-center rounded-full border border-white/30 lg:border-secondary/20 bg-transparent text-white lg:text-secondary font-semibold transition-all duration-200 hover:bg-white/10 lg:hover:bg-secondary/5 hover:border-white/50 lg:hover:border-secondary/40 focus:outline-none focus:ring-2 focus:ring-white/20 lg:focus:ring-secondary/20"
             >
               Falar com o Suporte
             </a>
           </div>
 
-          {/* Rodapé interno do card (apenas mobile, no desktop o rodapé fica na esquerda) */}
-          <div className="mt-8 text-xs text-secondary/40 font-medium lg:hidden">
+          {/* Rodapé interno (apenas mobile, com margem e cor ajustadas para espaço) */}
+          <div className="mt-4 text-xs text-white/50 font-medium lg:hidden">
             v1.0.0 • Facilita Vistorias © 2026
           </div>
         </div>

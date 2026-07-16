@@ -98,7 +98,7 @@ export default function LoginPage() {
               </span>
             </h1>
             <p className="text-lg text-white/80 leading-relaxed max-w-[32ch]">
-              A plataforma inteligente para vistorias residenciais rápidas, seguras e detalhadas.
+              A plataforma inteligente para vistorias residenciais rápidas.
             </p>
           </div>
 
@@ -110,33 +110,25 @@ export default function LoginPage() {
 
       {/* 
         ========================================================================
-        MOBILE - TELA DE BOAS-VINDAS (CARD INFERIOR)
+        MOBILE - TELA DE BOAS-VINDAS (CONTEÚDO DIRETO SOBRE A IMAGEM)
         ========================================================================
         - Visível apenas no mobile (`lg:hidden`) e quando `showForm === false`.
-        - Replica visualmente o design solicitado da tela de boas-vindas com dois botões.
+        - Conteúdo direto sobre a imagem, sem a gaveta e sem o ícone.
       */}
       {!showForm && (
-        <div className="lg:hidden absolute bottom-0 left-0 right-0 w-full max-w-md bg-white rounded-t-[2.5rem] p-8 shadow-2xl flex flex-col items-center text-center mx-auto z-20 animate-fade-in-up">
-          {/* Barra sutil iOS style */}
-          <div className="w-12 h-1.5 bg-slate-200 rounded-full mb-6" />
-
-          {/* Logo circular */}
-          <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-6 shadow-soft shadow-primary/30">
-            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
-          </div>
-
-          {/* Título de Boas-Vindas */}
-          <h1 className="text-3xl font-extrabold text-secondary tracking-tight mb-3">
+        <div className="lg:hidden absolute bottom-0 left-0 right-0 w-full max-w-md bg-transparent p-8 flex flex-col items-center text-center mx-auto z-20 animate-fade-in-up">
+          
+          {/* Título de Boas-Vindas (em branco para contraste) */}
+          <h1 className="text-3xl font-extrabold text-white tracking-tight mb-3">
             Bem-vindo ao{" "}
             <span className="block mt-1 font-serif-accent italic font-normal text-primary text-4xl capitalize">
               Facilita Vistorias
             </span>
           </h1>
 
-          <p className="text-base text-secondary/70 max-w-[28ch] mb-8 leading-relaxed">
-            A plataforma inteligente para vistorias residenciais rápidas, seguras e detalhadas.
+          {/* Texto descritivo reduzido e em branco */}
+          <p className="text-base text-white/85 max-w-[28ch] mb-8 leading-relaxed">
+            A plataforma inteligente para vistorias residenciais rápidas.
           </p>
 
           {/* Botões de Ação */}
@@ -152,13 +144,14 @@ export default function LoginPage() {
               href="https://wa.me/5547999999999"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-12 w-full items-center justify-center rounded-full border border-secondary/20 bg-transparent text-secondary font-semibold transition-all duration-200 hover:bg-secondary/5 hover:border-secondary/40"
+              className="flex h-12 w-full items-center justify-center rounded-full border border-white/30 bg-transparent text-white font-semibold transition-all duration-200 hover:bg-white/10"
             >
               Falar com o Suporte
             </a>
           </div>
 
-          <div className="mt-8 text-xs text-secondary/40 font-medium">
+          {/* Rodapé interno mobile (margem reduzida mt-4 e texto branco) */}
+          <div className="mt-4 text-xs text-white/50 font-medium">
             v1.0.0 • Facilita Vistorias © 2026
           </div>
         </div>
