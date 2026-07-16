@@ -87,7 +87,10 @@ export interface MutationQueueItem {
     | "UPDATE_ITEM_STATUS"
     | "UPDATE_CHECKLIST"
     | "UPDATE_VISTORIA_STATUS"
-    | "FINALIZAR_CAMPO";
+    | "FINALIZAR_CAMPO"
+    | "CREATE_VISTORIA_LOCAL"
+    | "CREATE_AMBIENTE_LOCAL"
+    | "CREATE_ITEM_LOCAL";
   vistoriaId: string;
   payload: any;
   timestamp: number;

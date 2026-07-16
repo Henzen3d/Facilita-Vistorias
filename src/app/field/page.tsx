@@ -84,6 +84,13 @@ export default function FieldDashboard() {
             <h1 className="text-2xl font-bold text-secondary truncate max-w-[250px]">{name}</h1>
           </div>
           <div className="flex gap-2">
+            <Link
+              href="/field/vistorias/nova"
+              title="Criar nova vistoria"
+              className="relative h-11 w-11 rounded-full bg-primary flex items-center justify-center shadow-sm hover:bg-[#009acd] transition-colors"
+            >
+              <Icon name="add" className="text-[22px] text-white" />
+            </Link>
             <button
               onClick={handlePreload}
               disabled={loading}
