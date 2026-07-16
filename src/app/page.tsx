@@ -16,7 +16,7 @@ export default function Home() {
 
       {/* Imagem de fundo e painel visual no Desktop (Lado Esquerdo, com overlay escuro) */}
       <div
-        className="hidden lg:flex lg:relative lg:col-span-1 bg-cover bg-top bg-no-repeat flex-col justify-between h-full p-12 text-white"
+        className="hidden lg:flex lg:relative lg:col-span-1 bg-cover bg-[position:50%_35%] bg-no-repeat flex-col justify-between h-full p-12 text-white"
         style={{ backgroundImage: "url('/tela-final.jpg')" }}
       >
         {/* Overlay escuro de contraste - Apenas no Desktop */}
