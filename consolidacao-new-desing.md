@@ -13,7 +13,10 @@
 | Bug 2 — Cômodo cadastrado não funciona | ✅ Concluído |
 | Bug 3 — Adicionar novos cômodos durante vistoria | ✅ Concluído |
 | Feat 4 — Criar vistoria do zero (campo) | ✅ Concluído |
-| Design 5 — Melhorias visuais baseadas em studio-google | ⬜ Pendente |
+| Design 5 — Melhorias visuais baseadas em studio-google | ◆ Em progresso |
+| Sprint 3A — Login field + home `/field` | ✅ Concluído |
+| Sprint 3B — Captura item (foto+áudio) | ⬜ Pendente |
+| Sprint 3C — Ambientes / itens / progress | ⬜ Pendente |
 
 ---
 
@@ -187,11 +190,12 @@ O dashboard só mostra vistorias baixadas do servidor. Não há como criar uma v
 ### ETAPA 5 — Melhorias de design inspiradas no studio-google
 **Referências:** `Referencias/studio-google/src/components/`
 
-- [ ] 5.1 — **Dashboard** (`/field/page.tsx`)
+- [x] 5.1 — **Dashboard** (`/field/page.tsx`) — Sprint 3A
   - Adicionar barra de progresso por vistoria no card da lista
   - Status badge colorido mais expressivo (Entrada = verde, Saída = âmbar)
   - Melhorar o empty state com ícone maior e call-to-action mais claro
   - Botão "Nova Vistoria" no header (vem da Etapa 4)
+  - Login field redesenhado com tokens DESIGN.md + touch ≥44px
 
 - [ ] 5.2 — **Detalhe da vistoria** (`/field/vistorias/[id]/page.tsx`)
   - Adicionar quick actions: "GPS / Navegar" e "WhatsApp Locatário"
@@ -273,6 +277,9 @@ O dashboard só mostra vistorias baixadas do servidor. Não há como criar uma v
 | 2026-07-16 | Etapa 2: Bug cômodo vazio | ✅ Concluído | Empty state + modal adicionar item + botão flutuante |
 | 2026-07-16 | Etapa 3: Adicionar cômodo | ✅ Concluído | Modal com picker de ícone + salvamento no IDB |
 | 2026-07-16 | Etapa 4: Criar vistoria | ✅ Concluído | Nova página /field/vistorias/nova + botão no dashboard |
-| — | Etapa 5: Melhorias design | ⬜ Pendente | — |
+| 2026-07-16 | Sprint 3A: Login + Home field | ✅ Concluído | Tokens DESIGN.md, UI Button/Badge/Progress, progresso por card, CTA continuar, nav shell polish |
+| — | Sprint 3B: Captura item | ⬜ Pendente | — |
+| — | Sprint 3C: Ambientes/itens | ⬜ Pendente | — |
+| — | Etapa 5 restante (3D–3G) | ⬜ Pendente | — |
 
 

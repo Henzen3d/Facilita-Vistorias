@@ -37,7 +37,7 @@ export function PhoneShell({ children, showNav = true, bg = "app" }: PhoneShellP
       {showNav && (
         <nav
           aria-label="Navegação Principal"
-          className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur border-t border-slate-100 px-2 pt-2 pb-4 md:pb-5 z-40 shadow-lg max-w-md md:max-w-xl mx-auto md:rounded-t-2xl"
+          className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100/80 px-2 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))] z-40 shadow-[0_-8px_30px_rgba(26,43,60,0.06)] max-w-md md:max-w-xl mx-auto md:rounded-t-2xl"
         >
           <ul className="flex items-center justify-around">
             {navItems.map((item) => {
@@ -50,11 +50,13 @@ export function PhoneShell({ children, showNav = true, bg = "app" }: PhoneShellP
                     aria-label={item.label}
                     className={cn(
                       "flex flex-col items-center gap-0.5 min-w-[64px] min-h-[44px] px-3 py-1.5 rounded-2xl transition-colors",
-                      active ? "text-primary font-semibold" : "text-slate-400 hover:text-secondary"
+                      active
+                        ? "text-primary font-semibold bg-primary/8"
+                        : "text-slate-400 hover:text-secondary"
                     )}
                   >
                     <Icon name={item.icon} filled={active} className="text-[26px]" weight={active ? 600 : 400} />
-                    <span className="text-[10px] font-medium tracking-wide mt-0.5">{item.label}</span>
+                    <span className="text-[11px] font-medium tracking-wide mt-0.5">{item.label}</span>
                   </Link>
                 </li>
               );
