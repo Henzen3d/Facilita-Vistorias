@@ -78,7 +78,7 @@ export default function LoginPage() {
 
       {/* Imagem de fundo e painel visual no Desktop (Lado Esquerdo, com overlay escuro) */}
       <div
-        className="hidden lg:flex lg:relative lg:col-span-1 bg-cover bg-center bg-no-repeat flex-col justify-between h-full p-12 text-white"
+        className="hidden lg:flex lg:relative lg:col-span-1 bg-cover bg-top bg-no-repeat flex-col justify-between h-full p-12 text-white"
         style={{ backgroundImage: "url('/tela-final.jpg')" }}
       >
         {/* Overlay escuro de contraste - Apenas no Desktop */}
@@ -99,7 +99,7 @@ export default function LoginPage() {
 
           <div className="max-w-md my-auto space-y-6">
             <h1 className="text-5xl font-black leading-tight tracking-tight text-white">
-              Bem-vindo ao <br />
+              Bem-vindo a <br />
               <span className="font-serif-accent italic font-normal text-primary text-6xl capitalize">
                 Facilita Vistorias
               </span>
@@ -127,7 +127,7 @@ export default function LoginPage() {
           
           {/* Título de Boas-Vindas (em escuro para contraste no fundo claro) */}
           <h1 className="text-3xl font-extrabold text-secondary tracking-tight mb-3">
-            Bem-vindo ao{" "}
+            Bem-vindo a{" "}
             <span className="block mt-1 font-serif-accent italic font-normal text-primary text-4xl capitalize">
               Facilita Vistorias
             </span>
