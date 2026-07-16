@@ -123,7 +123,7 @@ export default function LoginPage() {
         - Conteúdo direto sobre a imagem, sem a gaveta e sem o ícone.
       */}
       {!showForm && (
-        <div className="lg:hidden absolute bottom-0 left-0 right-0 w-full max-w-md bg-transparent p-8 flex flex-col items-center text-center mx-auto z-20 animate-fade-in-up">
+        <div className="lg:hidden absolute bottom-0 left-0 right-0 w-full max-w-md bg-transparent p-8 pb-10 flex flex-col items-center text-center mx-auto z-20 animate-fade-in-up">
           
           {/* Título de Boas-Vindas (em escuro para contraste no fundo claro) */}
           <h1 className="text-3xl font-extrabold text-secondary tracking-tight mb-3">

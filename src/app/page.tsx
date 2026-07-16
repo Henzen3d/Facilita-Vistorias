@@ -61,7 +61,7 @@ export default function Home() {
         - No mobile: Conteúdo renderizado de forma transparente diretamente sobre a imagem de fundo.
         - No desktop: Coluna da direita cinza-clara com o card de ações branco centralizado.
       */}
-      <div className="relative w-full max-w-md lg:max-w-none bg-transparent lg:bg-slate-50 p-8 md:p-10 lg:p-16 flex flex-col justify-center items-center text-center mx-auto z-10 md:mb-0 lg:col-span-1 transition-all duration-300">
+      <div className="absolute bottom-0 left-0 right-0 lg:relative lg:inset-auto w-full max-w-md lg:max-w-none bg-transparent lg:bg-slate-50 p-8 pb-10 md:p-10 lg:p-16 flex flex-col justify-end lg:justify-center items-center text-center mx-auto z-10 md:mb-0 lg:col-span-1 lg:h-full transition-all duration-300">
         
         {/* Card interno: transparente no mobile, branco com sombra no desktop */}
         <div className="w-full max-w-sm bg-transparent lg:bg-white lg:p-10 lg:rounded-[2rem] lg:shadow-soft lg:border lg:border-slate-100 flex flex-col items-center">
