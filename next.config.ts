@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-// @ts-ignore
+// @ts-expect-error next-pwa has incomplete TypeScript types for ESM default import
 import withPWAInit from "next-pwa";
 
 const withPWA = withPWAInit({
@@ -39,10 +39,8 @@ const nextConfig: NextConfig = {
   // Disable strict mode for development with certain libraries
   reactStrictMode: true,
 
-  // Images configuration
+  // Images configuration (remotePatterns only — domains is deprecated in Next 15)
   images: {
-    domains: ['localhost'],
-    // Allow images from storage providers
     remotePatterns: [
       {
         protocol: 'https',
@@ -52,6 +50,12 @@ const nextConfig: NextConfig = {
       {
         protocol: 'http',
         hostname: 'localhost',
+        port: '9000',
+        pathname: '/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
         port: '9000',
         pathname: '/**',
       },

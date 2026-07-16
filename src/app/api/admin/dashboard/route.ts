@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db/prisma";
 
 // GET /api/admin/dashboard - KPIs gerais
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const hoje = new Date();
     const seteDiasDepois = new Date();

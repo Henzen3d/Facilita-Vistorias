@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import { PhoneShell, TopBar } from "@/components/app/PhoneShell";
 import { Icon } from "@/components/app/Icon";
 import { useSyncEngine } from "@/hooks/useSyncEngine";
 import { getDB, LocalMidia } from "@/lib/db/idb";
 
 export default function FieldSync() {
-  const { syncNow, syncing, pendingCount, isOnline, error } = useSyncEngine();
+  const { syncNow, syncing, isOnline, error } = useSyncEngine();
   const [midias, setMidias] = useState<LocalMidia[]>([]);
   const [itemNames, setItemNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);

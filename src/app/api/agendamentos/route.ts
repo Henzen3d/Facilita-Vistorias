@@ -2,16 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/db"
-import { z } from "zod"
-import { TipoUsuario, TipoVistoria, StatusVistoria } from "@prisma/client"
-
-const agendamentoSchema = z.object({
-  tipo: z.nativeEnum(TipoVistoria),
-  data: z.string().transform(val => new Date(val)),
-  imovelId: z.string().uuid(),
-  usuarioId: z.string().uuid(),
-  empresaId: z.string().uuid(),
-})
+import { TipoUsuario, StatusVistoria } from "@prisma/client"
 
 // GET /api/agendamentos - Listar agendamentos (vistorias)
 export async function GET(request: NextRequest) {

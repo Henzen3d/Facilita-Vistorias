@@ -33,7 +33,7 @@ export default function FieldItemCapture({ params }: PageProps) {
     recordingTime,
     audioBlob,
     audioUrl,
-    error: audioError,
+    error: _audioError,
     startRecording,
     stopRecording,
     clearAudio,

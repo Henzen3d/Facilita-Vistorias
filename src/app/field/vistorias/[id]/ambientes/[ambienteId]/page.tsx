@@ -147,7 +147,9 @@ export default function FieldAmbienteDetail({ params }: PageProps) {
                     <div>
                       <h4 className="font-bold text-sm text-secondary leading-snug">{item.nome}</h4>
                       {item.descricao && (
-                        <p className="text-xs text-slate-400 mt-1 line-clamp-1 italic">"{item.descricao}"</p>
+                        <p className="text-xs text-slate-400 mt-1 line-clamp-1 italic">
+                          &ldquo;{item.descricao}&rdquo;
+                        </p>
                       )}
                     </div>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap uppercase tracking-wider ${getStatusBadge(item.status)}`}>

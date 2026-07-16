@@ -224,7 +224,6 @@ export function RelatorioFotograficoView({
 
               {primaryFoto ? (
                 <div className="flex-1 flex items-center justify-center bg-slate-50 rounded-xl overflow-hidden border border-slate-100 min-h-[40vh]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={primaryFoto.url}
                     alt={item.nome}
@@ -249,7 +248,6 @@ export function RelatorioFotograficoView({
               {item.fotos.length > 1 && (
                 <div className="mt-4 flex gap-2 flex-wrap">
                   {item.fotos.slice(1).map((f) => (
-                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       key={f.id}
                       src={f.url}

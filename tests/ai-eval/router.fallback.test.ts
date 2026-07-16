@@ -10,7 +10,6 @@ const chatCompletionsCreateMock = vi.fn();
 
 vi.mock("@google/generative-ai", () => {
   class GoogleGenerativeAI {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     constructor(_apiKey: string) {}
     getGenerativeModel = getGenerativeModelMock;
   }
@@ -25,7 +24,6 @@ vi.mock("@google/generative-ai", () => {
 
 vi.mock("openai", () => {
   class OpenAI {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     constructor(_opts?: unknown) {}
     audio = {
       transcriptions: {
@@ -51,7 +49,6 @@ vi.mock("openai/uploads", () => ({
 
 vi.mock("@anthropic-ai/sdk", () => {
   class Anthropic {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     constructor(_opts?: unknown) {}
     messages = {
       create: vi.fn(),

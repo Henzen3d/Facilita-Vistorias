@@ -128,7 +128,6 @@ export function ItemDescricaoEditor({
       </div>
 
       {fotoUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={fotoUrl}
           alt={`Foto — ${nome}`}

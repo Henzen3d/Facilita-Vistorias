@@ -9,6 +9,8 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
+    // PWA de campo promete sessão de 7 dias (evita re-login em obra)
+    maxAge: 7 * 24 * 60 * 60,
   },
   pages: {
     signIn: "/login",

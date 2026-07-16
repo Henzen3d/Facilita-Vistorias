@@ -1,6 +1,6 @@
 "use client"
 
-import { signIn } from "next-auth/react"
+import { getSession, signIn } from "next-auth/react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
@@ -20,15 +20,25 @@ export default function LoginPage() {
       const result = await signIn("credentials", {
         email,
         password,
-        redirect: false
+        redirect: false,
       })
 
       if (result?.error) {
         setError("Email ou senha incorretos")
+        return
+      }
+
+      const session = await getSession()
+      const role = session?.user?.role
+
+      // Evita importar @prisma/client no bundle do browser
+      if (role === "VISTORIADOR") {
+        router.push("/field")
       } else {
         router.push("/admin")
       }
-    } catch (error) {
+      router.refresh()
+    } catch {
       setError("Erro ao fazer login")
     } finally {
       setLoading(false)
@@ -50,12 +60,15 @@ export default function LoginPage() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="email" className="sr-only">Email</label>
+              <label htmlFor="email" className="sr-only">
+                Email
+              </label>
               <input
                 id="email"
                 name="email"
                 type="email"
                 required
+                autoComplete="email"
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Email"
                 value={email}
@@ -63,12 +76,15 @@ export default function LoginPage() {
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">Senha</label>
+              <label htmlFor="password" className="sr-only">
+                Senha
+              </label>
               <input
                 id="password"
                 name="password"
                 type="password"
                 required
+                autoComplete="current-password"
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Senha"
                 value={password}
@@ -78,7 +94,9 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="text-red-500 text-sm text-center">{error}</div>
+            <div className="text-red-500 text-sm text-center" role="alert">
+              {error}
+            </div>
           )}
 
           <div>

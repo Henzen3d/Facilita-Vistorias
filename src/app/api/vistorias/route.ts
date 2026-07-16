@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { TipoUsuario } from "@prisma/client";
 
 // GET /api/vistorias - Retorna vistorias com árvore de dados completa para offline-first
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
