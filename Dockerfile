@@ -1,5 +1,7 @@
 FROM node:20-slim AS builder
 WORKDIR /app
+# Install OpenSSL so Prisma finds libssl during build
+RUN apt-get update && apt-get install -y openssl --no-install-recommends && rm -rf /var/lib/apt/lists/*
 COPY package*.json ./
 RUN npm install
 COPY . .
@@ -12,9 +14,9 @@ RUN cp -r .next/static .next/standalone/.next/static
 FROM node:20-slim
 WORKDIR /app
 
-# Install Chromium and dependencies for Puppeteer
+# Install Chromium, OpenSSL and dependencies for Puppeteer
 RUN apt-get update && apt-get install -y \
-    chromium \
+    chromium openssl \
     fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
