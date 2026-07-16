@@ -6,22 +6,26 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🌱 Seeding database...')
 
-  // 1. Criar empresa principal
-  const empresa = await prisma.empresa.create({
-    data: {
+  // 1. Criar empresa principal (com upsert para não falhar se já existir)
+  const empresa = await prisma.empresa.upsert({
+    where: { nome: 'Facilita Vistorias Ltda' },
+    update: {},
+    create: {
       nome: 'Facilita Vistorias Ltda',
       cnpj: '12.345.678/0001-90',
       ativa: true,
     }
   })
 
-  console.log(`✅ Empresa criada: ${empresa.nome}`)
+  console.log(`✅ Empresa pronta: ${empresa.nome}`)
 
   // 2. Criar usuários (admin e vistoriador)
   const senhaHash = await bcrypt.hash('senha123', 10)
 
-  const admin = await prisma.usuario.create({
-    data: {
+  const admin = await prisma.usuario.upsert({
+    where: { email: 'admin@facilitavistorias.com.br' },
+    update: { senhaHash, ativo: true },
+    create: {
       email: 'admin@facilitavistorias.com.br',
       nome: 'Administrador Sistema',
       senhaHash,
@@ -31,8 +35,10 @@ async function main() {
     }
   })
 
-  const vistoriador = await prisma.usuario.create({
-    data: {
+  const vistoriador = await prisma.usuario.upsert({
+    where: { email: 'vistoriador@facilitavistorias.com.br' },
+    update: { senhaHash, ativo: true },
+    create: {
       email: 'vistoriador@facilitavistorias.com.br',
       nome: 'Osmar Gonçalves',
       senhaHash,
@@ -42,7 +48,14 @@ async function main() {
     }
   })
 
-  console.log(`✅ Usuários criados: ${admin.nome}, ${vistoriador.nome}`)
+  console.log(`✅ Usuários prontos: ${admin.nome}, ${vistoriador.nome}`)
+
+  // Verificação para não duplicar imóveis e vistorias caso o seed seja rodado de novo
+  const totalImoveis = await prisma.imovel.count()
+  if (totalImoveis > 0) {
+    console.log('ℹ️ Imóveis e vistorias já foram populados anteriormente. Seed finalizado com sucesso!')
+    return
+  }
 
   // 3. Criar imóveis de exemplo
   const imoveis = await Promise.all([
