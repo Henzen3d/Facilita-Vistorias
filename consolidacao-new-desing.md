@@ -269,9 +269,10 @@ O dashboard só mostra vistorias baixadas do servidor. Não há como criar uma v
 | Data | Etapa | Status | Observações |
 |------|-------|--------|-------------|
 | 2026-07-16 | Análise e diagnóstico | ✅ Concluído | Bugs identificados, referências analisadas, plano criado |
-| 2026-07-16 | Etapa 1: Bug progresso 0% | ✅ Concluído | Checklist redesenhado como toggle cards; progresso calculado como média ponderada |
+| 2026-07-16 | Etapa 1: Bug progresso 0% | ✅ Concluído | Fórmula de progresso rebalanceada: Cadastro base 15%, Checklist 10%, Itens 75%. Checklist colapsa ao concluir. |
 | 2026-07-16 | Etapa 2: Bug cômodo vazio | ✅ Concluído | Empty state + modal adicionar item + botão flutuante |
 | 2026-07-16 | Etapa 3: Adicionar cômodo | ✅ Concluído | Modal com picker de ícone + salvamento no IDB |
 | 2026-07-16 | Etapa 4: Criar vistoria | ✅ Concluído | Nova página /field/vistorias/nova + botão no dashboard |
 | — | Etapa 5: Melhorias design | ⬜ Pendente | — |
+
 
