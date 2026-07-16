@@ -17,7 +17,12 @@ export function usePreload() {
       // 1. Fetch data from backend API
       const response = await fetch("/api/vistorias");
       if (!response.ok) {
-        throw new Error(`Erro API: ${response.statusText}`);
+        let details = "";
+        try {
+          const body = await response.json();
+          details = body.details || body.error || "";
+        } catch (_) {}
+        throw new Error(details ? `Erro API: ${details}` : `Erro API: ${response.statusText}`);
       }
       
       const vistorias = await response.json();
