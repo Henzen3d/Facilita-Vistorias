@@ -7,7 +7,7 @@ import { PhoneShell } from "@/components/app/PhoneShell";
 import { Icon } from "@/components/app/Icon";
 import { useCamera } from "@/hooks/useCamera";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
-import { getDB, LocalItem, LocalAmbiente } from "@/lib/db/idb";
+import { getDB, LocalItem, LocalAmbiente, LocalMidia } from "@/lib/db/idb";
 
 interface PageProps {
   params: Promise<{ id: string; ambienteId: string; itemId: string }>;
@@ -25,6 +25,9 @@ export default function FieldItemCapture({ params }: PageProps) {
   // Inputs
   const [status, setStatus] = useState<LocalItem["status"]>("PENDENTE");
   const [descricao, setDescricao] = useState("");
+
+  // Media state
+  const [midiasItem, setMidiasItem] = useState<LocalMidia[]>([]);
 
   // Media hooks
   const { capturePhoto, loading: cameraLoading } = useCamera();
@@ -53,6 +56,11 @@ export default function FieldItemCapture({ params }: PageProps) {
         if (ambData) {
           setAmbiente(ambData);
         }
+
+        // Carrega mídias gravadas para este item
+        const allMidias = await db.getAll("midias");
+        const filteredMidias = allMidias.filter(m => m.itemId === itemId);
+        setMidiasItem(filteredMidias);
       }
     } catch (err) {
       console.error("Erro ao carregar dados no IDB:", err);
@@ -91,9 +99,88 @@ export default function FieldItemCapture({ params }: PageProps) {
           payload: { id: midiaId, tipo: "FOTO", key: newMidia.key, itemId },
           timestamp: Date.now()
         });
+
+        // Atualiza estado local
+        const updated = await db.getAll("midias");
+        setMidiasItem(updated.filter(m => m.itemId === itemId));
       }
     } catch (err) {
       console.log("Fluxo de foto cancelado ou falhou:", err);
+    }
+  };
+
+  // Handle Gallery Selection (Alternative if camera fails)
+  const handleGalleryCapture = async () => {
+    try {
+      const db = await getDB();
+      if (!db) return;
+
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      
+      input.onchange = async (e: Event) => {
+        const target = e.target as HTMLInputElement;
+        const file = target.files?.[0];
+
+        if (file) {
+          try {
+            const blobUrl = URL.createObjectURL(file);
+            const midiaId = `mid-f-${Date.now()}`;
+            const newMidia = {
+              id: midiaId,
+              tipo: "FOTO" as const,
+              url: blobUrl,
+              key: `${itemId}/${midiaId}.jpg`,
+              itemId: itemId,
+              uploadedAt: new Date().toISOString(),
+              syncStatus: "PENDENTE" as const,
+              blob: file,
+            };
+            await db.put("midias", newMidia);
+            
+            // Add to queue
+            await db.put("mutation_queue", {
+              action: "CREATE_MIDIA",
+              vistoriaId: id,
+              payload: { id: midiaId, tipo: "FOTO", key: newMidia.key, itemId },
+              timestamp: Date.now()
+            });
+
+            // Atualiza estado local
+            const updated = await db.getAll("midias");
+            setMidiasItem(updated.filter(m => m.itemId === itemId));
+          } catch (err) {
+            console.error("Falha ao processar arquivo selecionado:", err);
+          }
+        }
+      };
+      input.click();
+    } catch (err) {
+      console.error("Erro ao selecionar da galeria:", err);
+    }
+  };
+
+  // Handle Delete Media
+  const handleDeleteMidia = async (midiaId: string) => {
+    try {
+      const db = await getDB();
+      if (db) {
+        await db.delete("midias", midiaId);
+
+        // Queue deletion in sync queue
+        await db.put("mutation_queue", {
+          action: "DELETE_MIDIA",
+          vistoriaId: id,
+          payload: { id: midiaId, itemId },
+          timestamp: Date.now()
+        });
+
+        // Atualiza estado local
+        setMidiasItem(prev => prev.filter(m => m.id !== midiaId));
+      }
+    } catch (err) {
+      console.error("Erro ao deletar mídia do IDB:", err);
     }
   };
 
@@ -125,6 +212,10 @@ export default function FieldItemCapture({ params }: PageProps) {
           timestamp: Date.now()
         });
         
+        // Atualiza estado local
+        const updated = await db.getAll("midias");
+        setMidiasItem(updated.filter(m => m.itemId === itemId));
+
         clearAudio();
       }
     } catch (err) {
@@ -194,23 +285,31 @@ export default function FieldItemCapture({ params }: PageProps) {
   // Waveform styling
   const waveformHeights = [10, 22, 32, 18, 28, 40, 24, 34, 20, 30, 42, 26, 18, 32, 24, 38, 20, 28, 34, 22, 30, 18, 26, 40, 24];
 
+  const fotos = midiasItem.filter(m => m.tipo === "FOTO");
+  const ultimaFoto = fotos[fotos.length - 1];
+
   return (
     <PhoneShell showNav={false} bg="dark">
       <div className="relative flex-1 flex flex-col text-white min-h-[700px]">
-        {/* Background Viewfinder simulator */}
+        {/* Background Viewfinder simulator / Última foto tirada */}
         <div
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-0 bg-cover bg-center transition-all duration-300"
           style={{
-            background:
-              "radial-gradient(120% 80% at 30% 20%, #2c3e52 0%, #16222f 55%, #0b1119 100%)",
+            backgroundImage: ultimaFoto ? `url(${ultimaFoto.url})` : "none",
+            background: !ultimaFoto 
+              ? "radial-gradient(120% 80% at 30% 20%, #2c3e52 0%, #16222f 55%, #0b1119 100%)" 
+              : undefined,
           }}
         />
-        <svg viewBox="0 0 400 700" className="absolute inset-0 h-full w-full opacity-60 z-0 pointer-events-none select-none">
-          <rect x="60" y="180" width="280" height="340" fill="#3a4a5c" />
-          <rect x="90" y="220" width="100" height="130" fill="#5a6e83" />
-          <rect x="220" y="220" width="100" height="130" fill="#5a6e83" />
-          <rect x="90" y="380" width="230" height="120" fill="#455668" />
-        </svg>
+
+        {!ultimaFoto && (
+          <svg viewBox="0 0 400 700" className="absolute inset-0 h-full w-full opacity-60 z-0 pointer-events-none select-none">
+            <rect x="60" y="180" width="280" height="340" fill="#3a4a5c" />
+            <rect x="90" y="220" width="100" height="130" fill="#5a6e83" />
+            <rect x="220" y="220" width="100" height="130" fill="#5a6e83" />
+            <rect x="90" y="380" width="230" height="120" fill="#455668" />
+          </svg>
+        )}
 
         {/* Top bar controls */}
         <div className="relative z-10 flex items-center justify-between px-4 pt-3 select-none">
@@ -275,6 +374,43 @@ export default function FieldItemCapture({ params }: PageProps) {
             </div>
             <div className="text-secondary font-bold text-sm tabular-nums select-none">
               {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, "0")}
+            </div>
+          </div>
+        )}
+
+        {/* Miniaturas de mídias tiradas */}
+        {midiasItem.length > 0 && (
+          <div className="relative z-10 mx-5 mb-3 p-3 bg-black/60 backdrop-blur border border-white/10 rounded-3xl space-y-2 select-none">
+            <p className="text-[9px] uppercase tracking-wider font-bold text-white/50">Mídias do Item ({midiasItem.length})</p>
+            <div className="flex items-center gap-3 overflow-x-auto pb-1 scrollbar-none">
+              {midiasItem.map((midia) => (
+                <div key={midia.id} className="relative shrink-0">
+                  {midia.tipo === "FOTO" ? (
+                    <div className="relative h-14 w-14 rounded-xl overflow-hidden border border-white/20">
+                      <img src={midia.url} alt="Foto item" className="h-full w-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteMidia(midia.id)}
+                        className="absolute top-0.5 right-0.5 h-4 w-4 bg-status-bad text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 shadow-sm"
+                      >
+                        <Icon name="close" className="text-[10px]" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="relative h-14 px-3 rounded-xl bg-primary/20 border border-primary/30 flex items-center gap-1.5 text-white">
+                      <Icon name="graphic_eq" className="text-[16px] text-primary" />
+                      <span className="text-[10px] font-bold">Áudio</span>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteMidia(midia.id)}
+                        className="absolute -top-1.5 -right-1.5 h-4.5 w-4.5 bg-status-bad text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 shadow-sm border border-black/10"
+                      >
+                        <Icon name="close" className="text-[10px]" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -364,7 +500,12 @@ export default function FieldItemCapture({ params }: PageProps) {
 
           {/* Shutter camera trigger */}
           <div className="flex items-center justify-around px-8">
-            <button aria-label="Galeria" className="h-12 w-12 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center">
+            <button 
+              type="button"
+              onClick={handleGalleryCapture}
+              aria-label="Selecionar da Galeria" 
+              className="h-12 w-12 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center hover:bg-white/20 active:scale-95 transition-all"
+            >
               <Icon name="photo_library" className="text-[22px]" />
             </button>
             

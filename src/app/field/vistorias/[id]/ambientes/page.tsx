@@ -52,6 +52,9 @@ export default function FieldVistoriaAmbientes({ params }: PageProps) {
   const [newRoomIcon, setNewRoomIcon] = useState("meeting_room");
   const [addingRoom, setAddingRoom] = useState(false);
 
+  // Checklist collapse state
+  const [checklistCollapsed, setChecklistCollapsed] = useState(false);
+
   const loadData = async () => {
     try {
       const db = await getDB();
@@ -87,6 +90,12 @@ export default function FieldVistoriaAmbientes({ params }: PageProps) {
         setAmbientes(filteredAmbientes);
         setItems(filteredItems);
         setChecklist(localChecklist);
+
+        // Se o checklist estiver completo, colapsar por padrão
+        const chkDone = CHECKLIST_FIELDS.filter(f => localChecklist[f.key]).length;
+        if (chkDone === CHECKLIST_FIELDS.length) {
+          setChecklistCollapsed(true);
+        }
       }
     } catch (err) {
       console.error("Erro ao carregar dados do IDB:", err);
@@ -108,6 +117,12 @@ export default function FieldVistoriaAmbientes({ params }: PageProps) {
     };
 
     setChecklist(updatedChecklist);
+
+    // Se acabou de completar todos os itens, colapsar
+    const chkDone = CHECKLIST_FIELDS.filter(f => updatedChecklist[f.key]).length;
+    if (chkDone === CHECKLIST_FIELDS.length) {
+      setChecklistCollapsed(true);
+    }
 
     try {
       const db = await getDB();
@@ -194,10 +209,11 @@ export default function FieldVistoriaAmbientes({ params }: PageProps) {
   const totalItems = items.length;
   const itemsPct = totalItems > 0 ? Math.round((totalDone / totalItems) * 100) : 0;
 
-  // Combined progress: checklist 30% + ambientes 70%
-  const pct = totalItems > 0
-    ? Math.round((checklistPct * 0.3) + (itemsPct * 0.7))
-    : checklistPct;
+  // Rebalanced progress: Cadastro (15%) + Checklist (10%) + Itens Vistoriados (75%)
+  const cadastroPct = 15;
+  const checklistPctContri = Math.round(checklistPct * 0.10);
+  const itemsPctContri = totalItems > 0 ? Math.round(itemsPct * 0.75) : 0;
+  const pct = cadastroPct + checklistPctContri + itemsPctContri;
 
   // Group rooms with items details
   const roomsData = ambientes.map(amb => {
@@ -260,10 +276,13 @@ export default function FieldVistoriaAmbientes({ params }: PageProps) {
       {/* Protocolo de Chegada — Redesigned as Toggle Cards */}
       {checklist && (
         <section className="mx-5 mb-5 bg-white border border-slate-100 p-5 rounded-3xl shadow-sm space-y-4">
-          <div className="flex items-center justify-between">
+          <div 
+            onClick={() => setChecklistCollapsed(!checklistCollapsed)}
+            className="flex items-center justify-between cursor-pointer"
+          >
             <h3 className="font-bold text-sm text-[#00AEEF] flex items-center gap-1.5 select-none">
               <Icon name="shield" filled className="text-[18px]" />
-              Protocolo de Chegada
+              Protocolo de Chegada {checklistComplete && checklistCollapsed && " (Concluído)"}
             </h3>
             <div className="flex items-center gap-2">
               {checklistComplete ? (
@@ -276,54 +295,62 @@ export default function FieldVistoriaAmbientes({ params }: PageProps) {
                   {checklistDone}/{checklistTotal}
                 </span>
               )}
-            </div>
-          </div>
-
-          {/* Checklist progress bar */}
-          <div className="space-y-1">
-            <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-500 ${checklistComplete ? "bg-status-good" : "bg-primary"}`}
-                style={{ width: `${checklistPct}%` }}
+              <Icon 
+                name={checklistCollapsed ? "keyboard_arrow_down" : "keyboard_arrow_up"} 
+                className="text-slate-400 text-[20px]" 
               />
             </div>
-            <p className="text-[10px] text-slate-400">
-              Verificações de segurança obrigatórias antes de iniciar
-            </p>
           </div>
 
-          {/* Toggle Cards */}
-          <div className="grid grid-cols-1 gap-2">
-            {CHECKLIST_FIELDS.map(({ key, label, icon }) => {
-              const checked = checklist[key] as boolean;
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => handleChecklistChange(key)}
-                  className={`flex items-center gap-3 p-3 rounded-2xl border text-left transition-all duration-200 active:scale-[0.98] ${
-                    checked
-                      ? "bg-status-good/8 border-status-good/30 text-status-good"
-                      : "bg-slate-50 border-slate-100 text-slate-500 hover:border-primary/30 hover:bg-primary/5"
-                  }`}
-                >
-                  <span className={`h-9 w-9 rounded-xl flex items-center justify-center shrink-0 ${
-                    checked ? "bg-status-good/15" : "bg-white border border-slate-100"
-                  }`}>
-                    <Icon name={icon} filled={checked} className={`text-[18px] ${checked ? "text-status-good" : "text-slate-400"}`} />
-                  </span>
-                  <span className={`flex-1 text-xs font-semibold ${checked ? "text-status-good line-through opacity-70" : "text-secondary"}`}>
-                    {label}
-                  </span>
-                  <span className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-                    checked ? "bg-status-good border-status-good" : "border-slate-300"
-                  }`}>
-                    {checked && <Icon name="check" className="text-white text-[12px]" />}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+          {!checklistCollapsed && (
+            <>
+              {/* Checklist progress bar */}
+              <div className="space-y-1">
+                <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${checklistComplete ? "bg-status-good" : "bg-primary"}`}
+                    style={{ width: `${checklistPct}%` }}
+                  />
+                </div>
+                <p className="text-[10px] text-slate-400">
+                  Verificações de segurança obrigatórias antes de iniciar
+                </p>
+              </div>
+
+              {/* Toggle Cards */}
+              <div className="grid grid-cols-1 gap-2">
+                {CHECKLIST_FIELDS.map(({ key, label, icon }) => {
+                  const checked = checklist[key] as boolean;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => handleChecklistChange(key)}
+                      className={`flex items-center gap-3 p-3 rounded-2xl border text-left transition-all duration-200 active:scale-[0.98] ${
+                        checked
+                          ? "bg-status-good/8 border-status-good/30 text-status-good"
+                          : "bg-slate-50 border-slate-100 text-slate-500 hover:border-primary/30 hover:bg-primary/5"
+                      }`}
+                    >
+                      <span className={`h-9 w-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        checked ? "bg-status-good/15" : "bg-white border border-slate-100"
+                      }`}>
+                        <Icon name={icon} filled={checked} className={`text-[18px] ${checked ? "text-status-good" : "text-slate-400"}`} />
+                      </span>
+                      <span className={`flex-1 text-xs font-semibold ${checked ? "text-status-good line-through opacity-70" : "text-secondary"}`}>
+                        {label}
+                      </span>
+                      <span className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
+                        checked ? "bg-status-good border-status-good" : "border-slate-300"
+                      }`}>
+                        {checked && <Icon name="check" className="text-white text-[12px]" />}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </section>
       )}
 
