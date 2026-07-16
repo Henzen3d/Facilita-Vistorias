@@ -5,6 +5,9 @@ RUN npm install
 COPY . .
 RUN npx prisma generate
 RUN npm run build
+# Copy public and static assets to standalone directory so Next.js server serves them
+RUN cp -r public .next/standalone/public
+RUN cp -r .next/static .next/standalone/.next/static
 
 FROM node:20-slim
 WORKDIR /app
@@ -19,7 +22,7 @@ RUN apt-get update && apt-get install -y \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-# Copy built application, node_modules, and Prisma engines cache from builder
+# Copy the entire app directory (enabling standalone app execution and worker execution)
 COPY --from=builder /app /app
 COPY --from=builder /root/.cache /root/.cache
 
