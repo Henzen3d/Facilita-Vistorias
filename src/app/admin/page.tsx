@@ -1,99 +1,181 @@
 import Link from "next/link";
+import { Icon } from "@/components/app/Icon";
+
+const navItems = [
+  { href: "/admin/agenda", icon: "calendar_month", label: "Agenda & calendário" },
+  { href: "/admin/vistorias", icon: "assignment", label: "Gerenciar vistorias" },
+  { href: "/admin/assinaturas", icon: "draw", label: "Assinaturas" },
+  { href: "/admin/contestacoes", icon: "gavel", label: "Contestações" },
+  { href: "/admin/cadastros", icon: "settings", label: "Cadastros" },
+] as const;
+
+const recent = [
+  {
+    id: "1",
+    address: "Rua XV de Novembro, 1234 — Ap 302",
+    meta: "Osmar Gonçalves · Entrada",
+    status: "Concluída",
+    tone: "good" as const,
+  },
+  {
+    id: "2",
+    address: "Alameda Rio Branco, 45 — Casa 02",
+    meta: "Osmar Gonçalves · Saída",
+    status: "Em revisão",
+    tone: "fair" as const,
+  },
+];
 
 export default function AdminDashboard() {
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans text-[#1A2B3C] p-8">
-      <header className="mb-8 flex items-center justify-between">
+    <div className="min-h-screen bg-background-light font-sans text-secondary p-6 md:p-8">
+      <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Facilita Vistorias</h1>
-          <p className="text-sm text-slate-500">Painel Administrativo — Dashboard de Métricas</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-primary mb-1">
+            Painel administrativo
+          </p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+            Facilita Vistorias
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Métricas e atalhos operacionais
+          </p>
         </div>
-        <div className="flex gap-4">
-          <Link
-            href="/admin/agenda"
-            className="rounded-full bg-[#00AEEF] px-5 py-2 text-white font-medium hover:bg-[#009ACD] transition-colors shadow-[0_4px_6px_-1px_rgba(0,174,239,0.1)]"
-          >
-            Nova Vistoria
-          </Link>
-        </div>
+        <Link
+          href="/admin/agenda"
+          className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-white text-sm font-bold hover:bg-primary-hover transition-colors shadow-soft min-h-[48px]"
+        >
+          <Icon name="add" className="text-[20px]" />
+          Nova vistoria
+        </Link>
       </header>
 
-      {/* Grid de KPIs */}
-      <section className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Vistorias Concluídas (Mês)</span>
-          <h2 className="text-3xl font-bold mt-2">42</h2>
-          <span className="text-xs text-green-600 font-medium">↑ 12% em relação a Junho</span>
-        </div>
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tempo Médio de Entrega</span>
-          <h2 className="text-3xl font-bold mt-2">1.5 dias</h2>
-          <span className="text-xs text-slate-500">Média entre campo e envio</span>
-        </div>
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Aceito sem Edição IA</span>
-          <h2 className="text-3xl font-bold mt-2">84%</h2>
-          <span className="text-xs text-slate-500">Métrica de acerto do Gemini</span>
-        </div>
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Taxa de Contestação</span>
-          <h2 className="text-3xl font-bold mt-2">4.7%</h2>
-          <span className="text-xs text-red-500 font-medium">2 vistorias contestadas</span>
-        </div>
+      <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+        <Kpi
+          label="Vistorias concluídas (mês)"
+          value="42"
+          hint="↑ 12% vs mês anterior"
+          hintTone="good"
+          icon="task_alt"
+        />
+        <Kpi
+          label="Tempo médio de entrega"
+          value="1,5 d"
+          hint="Campo → envio"
+          icon="schedule"
+        />
+        <Kpi
+          label="Aceito sem edição IA"
+          value="84%"
+          hint="Acerto do provedor"
+          icon="auto_awesome"
+        />
+        <Kpi
+          label="Taxa de contestação"
+          value="4,7%"
+          hint="2 vistorias contestadas"
+          hintTone="bad"
+          icon="gavel"
+        />
       </section>
 
-      {/* Seção Principal */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Lista de Vistorias Recentes */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm lg:col-span-2">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold">Vistorias Recentes</h3>
-            <Link href="/admin/vistorias" className="text-[#00AEEF] text-sm hover:underline font-medium">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-lg font-bold text-secondary">Vistorias recentes</h2>
+            <Link
+              href="/admin/vistorias"
+              className="text-primary text-sm hover:underline font-bold min-h-[44px] inline-flex items-center"
+            >
               Ver todas
             </Link>
           </div>
-          <div className="divide-y divide-slate-100">
-            <div className="py-4 flex justify-between items-center">
-              <div>
-                <p className="font-semibold text-sm">Rua XV de Novembro, 1234 - Ap 302</p>
-                <p className="text-xs text-slate-400">Vistoriador: Osmar Gonçalves | Entrada</p>
-              </div>
-              <span className="bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wide rounded px-2.5 py-1">
-                Concluída
-              </span>
-            </div>
-            <div className="py-4 flex justify-between items-center">
-              <div>
-                <p className="font-semibold text-sm">Alameda Rio Branco, 45 - Casa 02</p>
-                <p className="text-xs text-slate-400">Vistoriador: Osmar Gonçalves | Saída</p>
-              </div>
-              <span className="bg-amber-100 text-amber-800 text-xs font-bold uppercase tracking-wide rounded px-2.5 py-1">
-                Em Revisão
-              </span>
-            </div>
-          </div>
+          <ul className="divide-y divide-slate-100">
+            {recent.map((row) => (
+              <li key={row.id} className="py-4 flex justify-between items-center gap-3">
+                <div className="min-w-0">
+                  <p className="font-semibold text-sm text-secondary truncate">
+                    {row.address}
+                  </p>
+                  <p className="text-xs text-slate-400 mt-0.5">{row.meta}</p>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <span
+                    className={
+                      row.tone === "good"
+                        ? "bg-green-100 text-green-800 text-[11px] font-bold uppercase tracking-wide rounded-full px-2.5 py-1"
+                        : "bg-amber-100 text-amber-800 text-[11px] font-bold uppercase tracking-wide rounded-full px-2.5 py-1"
+                    }
+                  >
+                    {row.status}
+                  </span>
+                  <Link
+                    href={`/admin/vistorias/${row.id}`}
+                    className="text-sm font-bold text-primary hover:underline"
+                  >
+                    Abrir
+                  </Link>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {/* Links Rápidos do Painel */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-4">
-          <h3 className="text-lg font-bold mb-2">Navegação</h3>
-          <Link href="/admin/agenda" className="p-3 bg-[#F8FAFC] rounded-xl hover:bg-slate-100 font-medium text-sm flex items-center gap-2">
-            📅 Agenda & Calendário
-          </Link>
-          <Link href="/admin/vistorias" className="p-3 bg-[#F8FAFC] rounded-xl hover:bg-slate-100 font-medium text-sm flex items-center gap-2">
-            📋 Gerenciamento de Vistorias
-          </Link>
-          <Link href="/admin/assinaturas" className="p-3 bg-[#F8FAFC] rounded-xl hover:bg-slate-100 font-medium text-sm flex items-center gap-2">
-            ✍️ Acompanhamento de Assinaturas
-          </Link>
-          <Link href="/admin/contestacoes" className="p-3 bg-[#F8FAFC] rounded-xl hover:bg-slate-100 font-medium text-sm flex items-center gap-2">
-            ⚠️ Contestações Pendentes
-          </Link>
-          <Link href="/admin/cadastros" className="p-3 bg-[#F8FAFC] rounded-xl hover:bg-slate-100 font-medium text-sm flex items-center gap-2">
-            ⚙️ Cadastros do Sistema
-          </Link>
+        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+          <h2 className="text-lg font-bold text-secondary mb-4">Navegação</h2>
+          <nav className="flex flex-col gap-2">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="p-3 min-h-[48px] bg-background-light rounded-xl hover:bg-primary/5 hover:border-primary/20 border border-transparent font-medium text-sm flex items-center gap-3 transition-colors"
+              >
+                <span className="h-9 w-9 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-primary">
+                  <Icon name={item.icon} className="text-[20px]" />
+                </span>
+                {item.label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </div>
+    </div>
+  );
+}
+
+function Kpi({
+  label,
+  value,
+  hint,
+  hintTone,
+  icon,
+}: {
+  label: string;
+  value: string;
+  hint: string;
+  hintTone?: "good" | "bad";
+  icon: string;
+}) {
+  return (
+    <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-2">
+      <div className="flex items-start justify-between gap-2">
+        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider leading-snug">
+          {label}
+        </span>
+        <Icon name={icon} className="text-[20px] text-primary shrink-0" />
+      </div>
+      <h2 className="text-3xl font-bold text-secondary tabular-nums">{value}</h2>
+      <span
+        className={`text-xs font-medium ${
+          hintTone === "good"
+            ? "text-status-good"
+            : hintTone === "bad"
+              ? "text-status-bad"
+              : "text-slate-500"
+        }`}
+      >
+        {hint}
+      </span>
     </div>
   );
 }
