@@ -20,6 +20,127 @@ function mapFieldStatusToVistoria(
   return null;
 }
 
+async function createAmbienteLocal(
+  vistoriaId: string,
+  raw: {
+    id?: string;
+    nome?: string;
+    ordem?: number;
+    createdAt?: string;
+    updatedAt?: string;
+  },
+) {
+  if (!raw?.nome || typeof raw.nome !== "string") {
+    return NextResponse.json(
+      { error: "Ambiente inválido: nome obrigatório" },
+      { status: 400 },
+    );
+  }
+
+  const vistoria = await prisma.vistoria.findUnique({
+    where: { id: vistoriaId },
+    select: { id: true },
+  });
+  if (!vistoria) {
+    return NextResponse.json(
+      { error: "Vistoria não encontrada" },
+      { status: 404 },
+    );
+  }
+
+  const id =
+    typeof raw.id === "string" && raw.id.length > 0
+      ? raw.id
+      : undefined;
+
+  const existing = id
+    ? await prisma.ambiente.findUnique({ where: { id } })
+    : null;
+  if (existing) {
+    return NextResponse.json({ success: true, ambiente: existing, deduped: true });
+  }
+
+  const maxOrdem = await prisma.ambiente.aggregate({
+    where: { vistoriaId },
+    _max: { ordem: true },
+  });
+  const ordem =
+    typeof raw.ordem === "number" && raw.ordem > 0
+      ? raw.ordem
+      : (maxOrdem._max.ordem ?? 0) + 1;
+
+  const ambiente = await prisma.ambiente.create({
+    data: {
+      ...(id ? { id } : {}),
+      nome: raw.nome.trim(),
+      ordem,
+      vistoriaId,
+    },
+  });
+
+  return NextResponse.json({ success: true, ambiente });
+}
+
+async function createItemLocal(
+  vistoriaId: string,
+  raw: {
+    id?: string;
+    nome?: string;
+    ambienteId?: string;
+    descricao?: string | null;
+    status?: string;
+    createdAt?: string;
+    updatedAt?: string;
+  },
+) {
+  if (!raw?.nome || typeof raw.nome !== "string") {
+    return NextResponse.json(
+      { error: "Item inválido: nome obrigatório" },
+      { status: 400 },
+    );
+  }
+  if (!raw?.ambienteId || typeof raw.ambienteId !== "string") {
+    return NextResponse.json(
+      { error: "Item inválido: ambienteId obrigatório" },
+      { status: 400 },
+    );
+  }
+
+  const ambiente = await prisma.ambiente.findFirst({
+    where: { id: raw.ambienteId, vistoriaId },
+  });
+  if (!ambiente) {
+    return NextResponse.json(
+      {
+        error:
+          "Ambiente não encontrado nesta vistoria (sincronize o cômodo antes do item)",
+      },
+      { status: 404 },
+    );
+  }
+
+  const id =
+    typeof raw.id === "string" && raw.id.length > 0 ? raw.id : undefined;
+  if (id) {
+    const existing = await prisma.item.findUnique({ where: { id } });
+    if (existing) {
+      return NextResponse.json({ success: true, item: existing, deduped: true });
+    }
+  }
+
+  const item = await prisma.item.create({
+    data: {
+      ...(id ? { id } : {}),
+      nome: raw.nome.trim(),
+      descricao: raw.descricao ?? null,
+      ambienteId: raw.ambienteId,
+      status: "PENDENTE",
+    },
+  });
+
+  return NextResponse.json({ success: true, item });
+}
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -38,6 +159,15 @@ export async function PUT(
 
     if (!action || !payload) {
       return NextResponse.json({ error: "Dados inválidos" }, { status: 400 });
+    }
+
+    // Legacy mis-queued creates under UPDATE_VISTORIA_STATUS (before Phase 3.1)
+    if (
+      action === "UPDATE_VISTORIA_STATUS" &&
+      payload?.tipo === "CREATE_AMBIENTE"
+    ) {
+      const raw = payload?.ambiente ?? payload;
+      return createAmbienteLocal(vistoriaId, raw);
     }
 
     // Dedicated status-only action (T-03-18) — NEVER reuse UPDATE_CHECKLIST for status
@@ -125,6 +255,12 @@ export async function PUT(
     }
 
     if (action === "UPDATE_ITEM_STATUS") {
+      // Legacy field payloads sometimes nested create under this action
+      if (payload?.tipo === "CREATE_ITEM" && payload?.item) {
+        const raw = payload.item;
+        return createItemLocal(vistoriaId, raw);
+      }
+
       const { id: itemId, status, descricao } = payload;
 
       const existing = await prisma.item.findUnique({
@@ -154,6 +290,17 @@ export async function PUT(
       });
 
       return NextResponse.json({ success: true, item });
+    }
+
+    // Phase 3.1 — create room/item from field offline queue
+    if (action === "CREATE_AMBIENTE_LOCAL") {
+      const raw = payload?.ambiente ?? payload;
+      return createAmbienteLocal(vistoriaId, raw);
+    }
+
+    if (action === "CREATE_ITEM_LOCAL") {
+      const raw = payload?.item ?? payload;
+      return createItemLocal(vistoriaId, raw);
     }
 
     if (action === "DELETE_MIDIA") {

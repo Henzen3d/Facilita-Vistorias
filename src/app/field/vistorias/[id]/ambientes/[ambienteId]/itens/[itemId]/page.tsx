@@ -9,6 +9,10 @@ import { Button } from "@/components/ui/button";
 import { useCamera } from "@/hooks/useCamera";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 import { getDB, LocalItem, LocalAmbiente, LocalMidia } from "@/lib/db/idb";
+import {
+  buildItemPath,
+  findNextPendingAfterSave,
+} from "@/lib/field/itemNavigation";
 import { cn } from "@/lib/utils";
 
 interface PageProps {
@@ -71,7 +75,11 @@ export default function FieldItemCapture({ params }: PageProps) {
   };
 
   useEffect(() => {
+    setSaving(false);
+    setDescricao("");
+    clearAudio();
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reload when route item changes
   }, [itemId]);
 
   const handlePhotoCapture = async () => {
@@ -218,8 +226,18 @@ export default function FieldItemCapture({ params }: PageProps) {
     }
   }, [audioBlob]);
 
-  const handleSaveItem = async () => {
+  const handleSaveItem = async (mode: "next" | "list" = "next") => {
     if (!item || saving) return;
+
+    // D-05: photo required before save
+    const fotosNow = midiasItem.filter((m) => m.tipo === "FOTO");
+    if (fotosNow.length === 0) {
+      return;
+    }
+    if (!(status === "BOM" || status === "REGULAR" || status === "RUIM")) {
+      return;
+    }
+
     setSaving(true);
 
     const updatedItem = {
@@ -241,7 +259,19 @@ export default function FieldItemCapture({ params }: PageProps) {
           timestamp: Date.now(),
         });
 
-        router.push(`/field/vistorias/${id}/ambientes/${ambienteId}`);
+        if (mode === "list") {
+          router.push(`/field/vistorias/${id}/ambientes/${ambienteId}`);
+          return;
+        }
+
+        const next = await findNextPendingAfterSave(id, itemId);
+        if (next) {
+          router.replace(
+            buildItemPath(id, next.ambienteId, next.item.id),
+          );
+        } else {
+          router.push(`/field/vistorias/${id}/ambientes/${ambienteId}`);
+        }
       }
     } catch (err) {
       console.error("Erro ao salvar item:", err);
@@ -279,7 +309,8 @@ export default function FieldItemCapture({ params }: PageProps) {
   const hasPhoto = fotos.length > 0;
   const hasAudio = audios.length > 0;
   const conditionSet = status === "BOM" || status === "REGULAR" || status === "RUIM";
-  const canSave = conditionSet;
+  // D-05: report is photographic — at least one photo required to save
+  const canSave = conditionSet && hasPhoto;
 
   const waveformHeights = [8, 18, 28, 14, 24, 34, 20, 30, 16, 26, 36, 22, 14, 28, 20, 32, 16, 24, 30, 18, 26];
 
@@ -582,13 +613,23 @@ export default function FieldItemCapture({ params }: PageProps) {
 
       <div className="fixed bottom-0 left-0 right-0 px-5 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] bg-gradient-to-t from-background-light via-background-light to-transparent md:max-w-md md:mx-auto z-20 space-y-2">
         {!hasPhoto && (
+          <p className="text-center text-xs text-status-bad font-semibold bg-red-50 border border-status-bad/15 rounded-2xl px-3 py-2">
+            Tire ao menos 1 foto — o relatório precisa de evidência visual.
+          </p>
+        )}
+        {hasPhoto && !conditionSet && (
           <p className="text-center text-xs text-slate-500 font-medium">
-            Dica: foto + áudio melhoram a descrição por IA depois do sync.
+            Selecione o estado de conservação para salvar.
+          </p>
+        )}
+        {hasPhoto && conditionSet && !hasAudio && (
+          <p className="text-center text-xs text-slate-500 font-medium">
+            Áudio opcional — melhora a descrição por IA após o sync.
           </p>
         )}
         <Button
           type="button"
-          onClick={handleSaveItem}
+          onClick={() => handleSaveItem("next")}
           disabled={!canSave || saving}
           fullWidth
           size="lg"
@@ -601,11 +642,19 @@ export default function FieldItemCapture({ params }: PageProps) {
             </>
           ) : (
             <>
-              <Icon name="check_circle" className="text-[22px]" />
-              Salvar avaliação do item
+              <Icon name="arrow_forward" className="text-[22px]" />
+              Salvar e próximo
             </>
           )}
         </Button>
+        <button
+          type="button"
+          onClick={() => handleSaveItem("list")}
+          disabled={!canSave || saving}
+          className="w-full min-h-[44px] text-sm font-bold text-primary hover:underline disabled:opacity-40 disabled:no-underline"
+        >
+          Salvar e voltar à lista
+        </button>
       </div>
     </PhoneShell>
   );

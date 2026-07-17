@@ -7,7 +7,20 @@ import { Icon } from "@/components/app/Icon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { getDB, LocalAmbiente, LocalItem, LocalChecklistChegada } from "@/lib/db/idb";
+import {
+  getDB,
+  LocalAmbiente,
+  LocalItem,
+  LocalChecklistChegada,
+  LocalMidia,
+} from "@/lib/db/idb";
+import {
+  applyPropertyTemplate,
+  createAmbienteWithDefaultItems,
+  TemplateApplyError,
+} from "@/lib/field/applyTemplate";
+import { PROPERTY_TEMPLATES } from "@/lib/field/templates";
+import { computeCompletionScore } from "@/lib/field/completionScore";
 import { cn } from "@/lib/utils";
 
 interface PageProps {
@@ -56,7 +69,11 @@ export default function FieldVistoriaAmbientes({ params }: PageProps) {
   const [newRoomName, setNewRoomName] = useState("");
   const [newRoomIcon, setNewRoomIcon] = useState("meeting_room");
   const [addingRoom, setAddingRoom] = useState(false);
+  const [applyingTemplateId, setApplyingTemplateId] = useState<string | null>(null);
+  const [templateMessage, setTemplateMessage] = useState<string | null>(null);
+  const [templateError, setTemplateError] = useState<string | null>(null);
   const [checklistCollapsed, setChecklistCollapsed] = useState(false);
+  const [midias, setMidias] = useState<LocalMidia[]>([]);
 
   const loadData = async () => {
     try {
@@ -89,6 +106,10 @@ export default function FieldVistoriaAmbientes({ params }: PageProps) {
         setAmbientes(filteredAmbientes);
         setItems(filteredItems);
         setChecklist(localChecklist);
+
+        const allMidias = await db.getAll("midias");
+        const itemIds = new Set(filteredItems.map((i) => i.id));
+        setMidias(allMidias.filter((m) => itemIds.has(m.itemId)));
 
         const chkDone = CHECKLIST_FIELDS.filter((f) => localChecklist[f.key]).length;
         if (chkDone === CHECKLIST_FIELDS.length) {
@@ -140,40 +161,51 @@ export default function FieldVistoriaAmbientes({ params }: PageProps) {
     }
   };
 
+  const handleApplyTemplate = async (templateId: string) => {
+    if (applyingTemplateId) return;
+    setApplyingTemplateId(templateId);
+    setTemplateError(null);
+    setTemplateMessage(null);
+    try {
+      const result = await applyPropertyTemplate(id, templateId);
+      setTemplateMessage(
+        `${result.template.label}: ${result.ambientes} cômodos e ${result.items} itens criados`,
+      );
+      await loadData();
+    } catch (err) {
+      const msg =
+        err instanceof TemplateApplyError
+          ? err.message
+          : "Não foi possível aplicar o modelo";
+      setTemplateError(msg);
+      console.error("Erro ao aplicar template:", err);
+    } finally {
+      setApplyingTemplateId(null);
+    }
+  };
+
   const handleAddAmbiente = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newRoomName.trim() || addingRoom) return;
 
     setAddingRoom(true);
+    setTemplateError(null);
     try {
-      const db = await getDB();
-      if (db) {
-        const novoId = `amb-local-${Date.now()}`;
-        const novoAmbiente: LocalAmbiente = {
-          id: novoId,
-          nome: newRoomName.trim(),
-          ordem: ambientes.length + 1,
-          vistoriaId: id,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-
-        await db.put("ambientes", novoAmbiente);
-
-        await db.put("mutation_queue", {
-          action: "UPDATE_VISTORIA_STATUS" as "UPDATE_VISTORIA_STATUS",
-          vistoriaId: id,
-          payload: { tipo: "CREATE_AMBIENTE", ambiente: novoAmbiente },
-          timestamp: Date.now(),
-        });
-
-        setAmbientes((prev) => [...prev, novoAmbiente]);
-        setNewRoomName("");
-        setNewRoomIcon("meeting_room");
-        setShowAddModal(false);
-      }
+      const { ambiente, items: newItems } = await createAmbienteWithDefaultItems(
+        id,
+        newRoomName.trim(),
+      );
+      setAmbientes((prev) => [...prev, ambiente]);
+      setItems((prev) => [...prev, ...newItems]);
+      setNewRoomName("");
+      setNewRoomIcon("meeting_room");
+      setShowAddModal(false);
+      setTemplateMessage(
+        `${ambiente.nome}: ${newItems.length} item${newItems.length === 1 ? "" : "s"} padrão adicionado${newItems.length === 1 ? "" : "s"}`,
+      );
     } catch (err) {
       console.error("Erro ao criar ambiente no IDB:", err);
+      setTemplateError("Não foi possível criar o cômodo");
     } finally {
       setAddingRoom(false);
     }
@@ -200,12 +232,26 @@ export default function FieldVistoriaAmbientes({ params }: PageProps) {
   const itemsDone = items.filter((i) => i.status !== "PENDENTE");
   const totalDone = itemsDone.length;
   const totalItems = items.length;
-  const itemsPct = totalItems > 0 ? Math.round((totalDone / totalItems) * 100) : 0;
 
-  const cadastroPct = 15;
-  const checklistPctContri = Math.round(checklistPct * 0.1);
-  const itemsPctContri = totalItems > 0 ? Math.round(itemsPct * 0.75) : 0;
-  const pct = cadastroPct + checklistPctContri + itemsPctContri;
+  const completion = computeCompletionScore({
+    vistoriaId: id,
+    checklist,
+    ambientes,
+    items,
+    midias,
+  });
+  const pct = completion.percent;
+  const checklistPctContri = Math.round(
+    (completion.stats.checklistDone / Math.max(1, completion.stats.checklistTotal)) * 10,
+  );
+  const itemsPctContri = Math.round(
+    totalItems > 0 ? (totalDone / totalItems) * 40 : 0,
+  );
+  const fotoPctContri = Math.round(
+    totalItems > 0
+      ? ((totalItems - completion.stats.itemsWithoutPhoto) / totalItems) * 40
+      : 0,
+  );
 
   const roomsData = ambientes.map((amb) => {
     const roomItems = items.filter((i) => i.ambienteId === amb.id);
@@ -388,6 +434,70 @@ export default function FieldVistoriaAmbientes({ params }: PageProps) {
         </section>
       )}
 
+      {/* Template picker — only when no rooms yet */}
+      {ambientes.length === 0 && (
+        <section className="mx-5 mb-4 bg-white border border-primary/20 p-4 rounded-3xl shadow-sm space-y-3">
+          <div className="flex items-start gap-3">
+            <div className="h-11 w-11 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <Icon name="dashboard_customize" className="text-[22px]" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="font-bold text-sm text-secondary">Começar com um modelo</h3>
+              <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                Cria cômodos e itens padrão em um toque. Você pode ajustar depois.
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 gap-2">
+            {PROPERTY_TEMPLATES.map((t) => {
+              const busy = applyingTemplateId === t.id;
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  disabled={!!applyingTemplateId}
+                  onClick={() => handleApplyTemplate(t.id)}
+                  className={cn(
+                    "w-full text-left min-h-[52px] rounded-2xl border px-4 py-3 transition-all active:scale-[0.99]",
+                    busy
+                      ? "border-primary bg-primary/5"
+                      : "border-slate-100 bg-slate-50 hover:border-primary/40 hover:bg-primary/5",
+                    applyingTemplateId && !busy && "opacity-50",
+                  )}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-secondary">{t.label}</p>
+                      <p className="text-xs text-slate-500 truncate">{t.description}</p>
+                    </div>
+                    {busy ? (
+                      <Icon name="progress_activity" className="text-primary text-[20px] animate-spin shrink-0" />
+                    ) : (
+                      <Icon name="chevron_right" className="text-slate-400 text-[20px] shrink-0" />
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {(templateMessage || templateError) && (
+        <div className="mx-5 mb-3">
+          {templateMessage && (
+            <p className="text-xs font-semibold text-status-good bg-green-50 border border-status-good/20 rounded-2xl px-3 py-2">
+              {templateMessage}
+            </p>
+          )}
+          {templateError && (
+            <p className="text-xs font-semibold text-status-bad bg-red-50 border border-status-bad/20 rounded-2xl px-3 py-2" role="alert">
+              {templateError}
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Overall progress */}
       <div className="px-5">
         <div className="rounded-3xl bg-secondary text-white p-5 shadow-lg shadow-secondary/15">
@@ -405,6 +515,12 @@ export default function FieldVistoriaAmbientes({ params }: PageProps) {
                 <p className="text-xs text-white/60">
                   <span className="text-white/85 font-semibold">Itens</span>{" "}
                   {totalItems > 0 ? `${totalDone}/${totalItems}` : "—"}
+                </p>
+                <p className="text-xs text-white/60">
+                  <span className="text-white/85 font-semibold">Fotos</span>{" "}
+                  {totalItems > 0
+                    ? `${totalItems - completion.stats.itemsWithoutPhoto}/${totalItems}`
+                    : "—"}
                 </p>
               </div>
             </div>
@@ -437,7 +553,6 @@ export default function FieldVistoriaAmbientes({ params }: PageProps) {
           </div>
 
           <div className="mt-4 grid grid-cols-3 gap-2">
-            <MiniMetric label="Cadastro" value="15%" done />
             <MiniMetric
               label="Protocolo"
               value={`${checklistPctContri}%`}
@@ -447,6 +562,13 @@ export default function FieldVistoriaAmbientes({ params }: PageProps) {
               label="Itens"
               value={`${itemsPctContri}%`}
               done={totalItems > 0 && totalDone === totalItems}
+            />
+            <MiniMetric
+              label="Fotos"
+              value={`${fotoPctContri}%`}
+              done={
+                totalItems > 0 && completion.stats.itemsWithoutPhoto === 0
+              }
             />
           </div>
         </div>
@@ -491,8 +613,16 @@ export default function FieldVistoriaAmbientes({ params }: PageProps) {
             <div className="h-16 w-16 bg-slate-100 rounded-2xl flex items-center justify-center">
               <Icon name="meeting_room" className="text-[32px] text-slate-300" />
             </div>
-            <p className="text-base font-semibold text-slate-500">Nenhum cômodo neste filtro</p>
-            <p className="text-sm text-slate-400">Adicione cômodos ou limpe o filtro</p>
+            <p className="text-base font-semibold text-slate-500">
+              {ambientes.length === 0
+                ? "Nenhum cômodo ainda"
+                : "Nenhum cômodo neste filtro"}
+            </p>
+            <p className="text-sm text-slate-400 px-4">
+              {ambientes.length === 0
+                ? "Aplique um modelo acima ou adicione um cômodo manualmente"
+                : "Adicione cômodos ou limpe o filtro"}
+            </p>
           </li>
         )}
         {filteredRooms.map((r) => {

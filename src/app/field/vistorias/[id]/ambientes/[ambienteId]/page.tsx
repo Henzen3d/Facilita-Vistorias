@@ -78,9 +78,9 @@ export default function FieldAmbienteDetail({ params }: PageProps) {
         await db.put("items", novoItem);
 
         await db.put("mutation_queue", {
-          action: "UPDATE_ITEM_STATUS" as "UPDATE_ITEM_STATUS",
+          action: "CREATE_ITEM_LOCAL",
           vistoriaId: id,
-          payload: { tipo: "CREATE_ITEM", item: novoItem },
+          payload: { item: novoItem },
           timestamp: Date.now(),
         });
 
@@ -207,7 +207,7 @@ export default function FieldAmbienteDetail({ params }: PageProps) {
           >
             <Icon name="photo_camera" className="text-[22px] shrink-0" />
             <div className="flex-1 min-w-0 text-left">
-              <p className="text-sm font-bold">Próximo item</p>
+              <p className="text-sm font-bold">Continuar vistoria</p>
               <p className="text-xs text-white/85 truncate">{nextPending.nome}</p>
             </div>
             <Icon name="chevron_right" className="text-[20px] shrink-0" />
