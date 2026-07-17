@@ -61,6 +61,20 @@ function estadoBadgeClass(estado: string | null): string {
   }
 }
 
+function hasAnyMedidor(
+  m: NonNullable<PublicReportDto["medidores"]>,
+): boolean {
+  return Boolean(
+    m.aguaNumero ||
+      m.aguaLeitura ||
+      m.energiaNumero ||
+      m.energiaLeitura ||
+      m.gasNumero ||
+      m.gasLeitura ||
+      m.observacoes,
+  );
+}
+
 /**
  * Shared HTML template for public digital report and Puppeteer PDF (D-10).
  * Default public mode is minimal cover + PDF download (D-14).
@@ -203,6 +217,52 @@ export function RelatorioFotograficoView({
           </div>
         )}
       </section>
+
+      {/* —— PRINT: medidores page (Phase 3.2) —— */}
+      {isPrint && report.medidores && hasAnyMedidor(report.medidores) && (
+        <section className="report-page break-before-page flex flex-col min-h-[100vh] bg-white px-10 py-12">
+          <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">
+            Concessionárias
+          </p>
+          <h2 className="text-xl font-bold mt-1 mb-6">Leituras de medidores</h2>
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b border-slate-200 text-left text-[11px] uppercase tracking-wider text-slate-400">
+                <th className="py-2 pr-3 font-bold">Tipo</th>
+                <th className="py-2 pr-3 font-bold">Nº medidor</th>
+                <th className="py-2 font-bold">Leitura</th>
+              </tr>
+            </thead>
+            <tbody className="text-secondary">
+              <tr className="border-b border-slate-100">
+                <td className="py-3 pr-3 font-semibold">Água</td>
+                <td className="py-3 pr-3">{report.medidores.aguaNumero || "—"}</td>
+                <td className="py-3">{report.medidores.aguaLeitura || "—"}</td>
+              </tr>
+              <tr className="border-b border-slate-100">
+                <td className="py-3 pr-3 font-semibold">Energia</td>
+                <td className="py-3 pr-3">{report.medidores.energiaNumero || "—"}</td>
+                <td className="py-3">{report.medidores.energiaLeitura || "—"}</td>
+              </tr>
+              <tr className="border-b border-slate-100">
+                <td className="py-3 pr-3 font-semibold">Gás</td>
+                <td className="py-3 pr-3">{report.medidores.gasNumero || "—"}</td>
+                <td className="py-3">{report.medidores.gasLeitura || "—"}</td>
+              </tr>
+            </tbody>
+          </table>
+          {report.medidores.observacoes && (
+            <div className="mt-6">
+              <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">
+                Observações
+              </p>
+              <p className="text-sm text-slate-700 whitespace-pre-wrap">
+                {report.medidores.observacoes}
+              </p>
+            </div>
+          )}
+        </section>
+      )}
 
       {/* —— PRINT: one item per page (D-09) —— */}
       {isPrint &&

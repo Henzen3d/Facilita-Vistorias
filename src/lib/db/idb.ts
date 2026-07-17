@@ -5,7 +5,13 @@ export interface LocalVistoria {
   codigo: string;
   tipo: "ENTRADA" | "SAIDA" | "CONTRA_VISTORIA";
   data: string;
-  status: "AGENDADA" | "EM_ANDAMENTO" | "EM_REVISAO" | "CONCLUIDA" | "CANCELADA";
+  status:
+    | "AGENDADA"
+    | "EM_ANDAMENTO"
+    | "EM_REVISAO"
+    | "CONCLUIDA"
+    | "FINALIZADA"
+    | "CANCELADA";
   imovelId: string;
   empresaId: string;
   usuarioId: string;
@@ -79,6 +85,35 @@ export interface LocalChecklistChegada {
   outrosItens: any | null;
 }
 
+/** Utility meter readings captured at end of field visit (Phase 3.2). */
+export interface LocalMedidores {
+  id: string;
+  vistoriaId: string;
+  aguaNumero: string | null;
+  aguaLeitura: string | null;
+  energiaNumero: string | null;
+  energiaLeitura: string | null;
+  gasNumero: string | null;
+  gasLeitura: string | null;
+  observacoes: string | null;
+  updatedAt: string;
+}
+
+export function emptyLocalMedidores(vistoriaId: string): LocalMedidores {
+  return {
+    id: `med-${vistoriaId}`,
+    vistoriaId,
+    aguaNumero: null,
+    aguaLeitura: null,
+    energiaNumero: null,
+    energiaLeitura: null,
+    gasNumero: null,
+    gasLeitura: null,
+    observacoes: null,
+    updatedAt: new Date().toISOString(),
+  };
+}
+
 export interface MutationQueueItem {
   id?: number; // Auto-increment key in IndexedDB
   action:
@@ -86,6 +121,7 @@ export interface MutationQueueItem {
     | "DELETE_MIDIA"
     | "UPDATE_ITEM_STATUS"
     | "UPDATE_CHECKLIST"
+    | "UPDATE_MEDIDORES"
     | "UPDATE_VISTORIA_STATUS"
     | "FINALIZAR_CAMPO"
     | "CREATE_VISTORIA_LOCAL"
@@ -121,6 +157,11 @@ interface FacilitaVistoriasSchema extends DBSchema {
     value: LocalChecklistChegada;
     indexes: { "by-vistoria": string };
   };
+  medidores: {
+    key: string;
+    value: LocalMedidores;
+    indexes: { "by-vistoria": string };
+  };
   mutation_queue: {
     key: number;
     value: MutationQueueItem;
@@ -128,7 +169,8 @@ interface FacilitaVistoriasSchema extends DBSchema {
 }
 
 const DB_NAME = "facilita_vistorias_db";
-const DB_VERSION = 1;
+/** v2: medidores store (Phase 3.2) */
+const DB_VERSION = 2;
 
 let dbPromise: Promise<IDBPDatabase<FacilitaVistoriasSchema>> | null = null;
 
@@ -137,7 +179,7 @@ export function getDB() {
 
   if (!dbPromise) {
     dbPromise = openDB<FacilitaVistoriasSchema>(DB_NAME, DB_VERSION, {
-      upgrade(db) {
+      upgrade(db, oldVersion) {
         // vistorias store
         if (!db.objectStoreNames.contains("vistorias")) {
           db.createObjectStore("vistorias", { keyPath: "id" });
@@ -170,6 +212,12 @@ export function getDB() {
         // mutation_queue store
         if (!db.objectStoreNames.contains("mutation_queue")) {
           db.createObjectStore("mutation_queue", { keyPath: "id", autoIncrement: true });
+        }
+
+        // v2 — medidores
+        if (oldVersion < 2 && !db.objectStoreNames.contains("medidores")) {
+          const store = db.createObjectStore("medidores", { keyPath: "id" });
+          store.createIndex("by-vistoria", "vistoriaId");
         }
       },
     });

@@ -78,6 +78,12 @@ export default function FieldRevisaoIaPage({ params }: PageProps) {
   const [data, setData] = useState<ReviewPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [finalizingPdf, setFinalizingPdf] = useState(false);
+  const [pdfResult, setPdfResult] = useState<{
+    urlPublica?: string;
+    message?: string;
+  } | null>(null);
+  const [pdfError, setPdfError] = useState<string | null>(null);
 
   useEffect(() => {
     const on = () => setOnline(true);
@@ -179,6 +185,43 @@ export default function FieldRevisaoIaPage({ params }: PageProps) {
       ? Math.round((data.progress.revisados / data.progress.total) * 100)
       : 0;
 
+  const handleFinalizePdf = async () => {
+    if (!online || !allReviewed || finalizingPdf) return;
+    setFinalizingPdf(true);
+    setPdfError(null);
+    setPdfResult(null);
+    try {
+      const res = await fetch(`/api/vistorias/${id}/finalizar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          motivo: "Finalização do relatório fotográfico pelo vistoriador (campo)",
+        }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(
+          body?.error ||
+            (body?.code === "REVIEW_INCOMPLETE"
+              ? "Ainda há itens com mídia incompleta de revisão"
+              : `Erro ${res.status}`),
+        );
+      }
+      setPdfResult({
+        urlPublica: body.urlPublica as string | undefined,
+        message:
+          "Relatório enfileirado. O PDF fica disponível no link público em instantes.",
+      });
+      await load();
+    } catch (e: unknown) {
+      setPdfError(
+        e instanceof Error ? e.message : "Falha ao gerar relatório fotográfico",
+      );
+    } finally {
+      setFinalizingPdf(false);
+    }
+  };
+
   return (
     <PhoneShell showNav={false}>
       <TopBar title="Revisar descrições" backTo={`/field/vistorias/${id}/sucesso`} />
@@ -243,9 +286,58 @@ export default function FieldRevisaoIaPage({ params }: PageProps) {
                 <Metric label="Pendentes" value={data.progress.pendentes} warn />
               </div>
               {allReviewed && (
-                <p className="text-sm text-status-good bg-green-50 border border-status-good/20 rounded-2xl px-3 py-2 font-medium">
-                  Todas as descrições revisadas — pronto para o PDF no admin.
-                </p>
+                <div className="space-y-3">
+                  <p className="text-sm text-status-good bg-green-50 border border-status-good/20 rounded-2xl px-3 py-2 font-medium">
+                    Todas as descrições revisadas — você pode gerar o relatório
+                    fotográfico em PDF.
+                  </p>
+                  <Button
+                    type="button"
+                    fullWidth
+                    size="lg"
+                    disabled={finalizingPdf || !online}
+                    onClick={handleFinalizePdf}
+                    className="shadow-lg shadow-primary/20"
+                  >
+                    {finalizingPdf ? (
+                      <>
+                        <Icon
+                          name="progress_activity"
+                          className="text-[20px] animate-spin"
+                        />
+                        Gerando…
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="picture_as_pdf" className="text-[20px]" />
+                        Gerar relatório PDF
+                      </>
+                    )}
+                  </Button>
+                  {pdfError && (
+                    <p
+                      className="text-xs text-status-bad bg-red-50 border border-status-bad/20 rounded-2xl px-3 py-2"
+                      role="alert"
+                    >
+                      {pdfError}
+                    </p>
+                  )}
+                  {pdfResult && (
+                    <div className="text-xs text-status-good bg-green-50 border border-status-good/20 rounded-2xl px-3 py-2 space-y-1">
+                      <p className="font-semibold">{pdfResult.message}</p>
+                      {pdfResult.urlPublica && (
+                        <a
+                          href={pdfResult.urlPublica}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-bold text-primary underline break-all"
+                        >
+                          Abrir versão digital
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 

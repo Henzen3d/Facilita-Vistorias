@@ -57,6 +57,16 @@ export type PublicReportDto = {
   pessoas: PublicReportPessoa[];
   /** Items with full media only (D-11) */
   ambientes: PublicReportAmbiente[];
+  /** Utility meter readings (Phase 3.2); null if none recorded */
+  medidores: {
+    aguaNumero: string | null;
+    aguaLeitura: string | null;
+    energiaNumero: string | null;
+    energiaLeitura: string | null;
+    gasNumero: string | null;
+    gasLeitura: string | null;
+    observacoes: string | null;
+  } | null;
   relatorio: {
     status: string;
     geradoEm: string | null;
@@ -128,6 +138,17 @@ export async function loadPublicReportByToken(
           pessoas: {
             select: { nome: true, tipo: true },
           },
+        },
+      },
+      medidores: {
+        select: {
+          aguaNumero: true,
+          aguaLeitura: true,
+          energiaNumero: true,
+          energiaLeitura: true,
+          gasNumero: true,
+          gasLeitura: true,
+          observacoes: true,
         },
       },
       relatorio: {
@@ -211,6 +232,8 @@ export async function loadPublicReportByToken(
     }
   }
 
+  const med = vistoria.medidores;
+
   return {
     vistoria: {
       id: vistoria.id,
@@ -233,6 +256,17 @@ export async function loadPublicReportByToken(
       tipo: p.tipo,
     })),
     ambientes,
+    medidores: med
+      ? {
+          aguaNumero: med.aguaNumero,
+          aguaLeitura: med.aguaLeitura,
+          energiaNumero: med.energiaNumero,
+          energiaLeitura: med.energiaLeitura,
+          gasNumero: med.gasNumero,
+          gasLeitura: med.gasLeitura,
+          observacoes: med.observacoes,
+        }
+      : null,
     relatorio: rel
       ? {
           status: rel.status,

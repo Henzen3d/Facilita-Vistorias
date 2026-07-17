@@ -19,6 +19,7 @@ Do núcleo de dados ao relatório compartilhável: construir primeiro a fundaç�
 - [x] **Phase 2: App de Campo (PWA) e Núcleo Offline** - PWA offline-first, IndexedDB, captura foto/áudio, sync em background
 - [x] **Phase 3: Relatório, PDF e Pipeline de IA** - Transcrição + descrição por IA, revisão, geração de PDF com link público (completed 2026-07-15)
 - [x] **Phase 3.1: Produtividade em Campo** - Templates de imóvel/cômodos, próximo item, score com foto obrigatória (D-05) (code 2026-07-17; UAT em aparelho pendente)
+- [x] **Phase 3.2: Fechamento** - Medidores no resumo/PDF + gerar PDF no field + soft lock pós-finalização (code 2026-07-17; migrate DB)
 - [ ] **Phase 4: Envio e Contestação** - Envio por WhatsApp, link público com token, contestação pelo cliente
 
 ## Phase Details

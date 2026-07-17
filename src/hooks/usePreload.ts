@@ -38,7 +38,7 @@ export function usePreload() {
 
       // 3. Clear existing local cache and reload everything to maintain fresh state
       const tx = db.transaction(
-        ["vistorias", "ambientes", "items", "checklistChegada"],
+        ["vistorias", "ambientes", "items", "checklistChegada", "medidores"],
         "readwrite"
       );
 
@@ -46,13 +46,14 @@ export function usePreload() {
       await tx.objectStore("ambientes").clear();
       await tx.objectStore("items").clear();
       await tx.objectStore("checklistChegada").clear();
+      await tx.objectStore("medidores").clear();
       await tx.done;
 
       setProgress(70);
 
       // 4. Save new data inside IndexedDB
       const txSave = db.transaction(
-        ["vistorias", "ambientes", "items", "checklistChegada"],
+        ["vistorias", "ambientes", "items", "checklistChegada", "medidores"],
         "readwrite"
       );
 
@@ -60,10 +61,11 @@ export function usePreload() {
       const aStore = txSave.objectStore("ambientes");
       const iStore = txSave.objectStore("items");
       const cStore = txSave.objectStore("checklistChegada");
+      const mStore = txSave.objectStore("medidores");
 
       for (const v of vistorias) {
         // Extract embedded tables
-        const { ambientes, checklistChegada, ...vistoriaBase } = v;
+        const { ambientes, checklistChegada, medidores, ...vistoriaBase } = v;
 
         // Save base vistoria details (includes imovel and pessoas inside)
         await vStore.put(vistoriaBase);
@@ -71,6 +73,24 @@ export function usePreload() {
         // Save checklist if available
         if (checklistChegada) {
           await cStore.put(checklistChegada);
+        }
+
+        if (medidores) {
+          await mStore.put({
+            id: medidores.id,
+            vistoriaId: medidores.vistoriaId ?? v.id,
+            aguaNumero: medidores.aguaNumero ?? null,
+            aguaLeitura: medidores.aguaLeitura ?? null,
+            energiaNumero: medidores.energiaNumero ?? null,
+            energiaLeitura: medidores.energiaLeitura ?? null,
+            gasNumero: medidores.gasNumero ?? null,
+            gasLeitura: medidores.gasLeitura ?? null,
+            observacoes: medidores.observacoes ?? null,
+            updatedAt:
+              typeof medidores.updatedAt === "string"
+                ? medidores.updatedAt
+                : new Date(medidores.updatedAt || Date.now()).toISOString(),
+          });
         }
 
         // Save environments and their items

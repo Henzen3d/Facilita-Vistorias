@@ -48,6 +48,8 @@ export default function FieldItemCapture({ params }: PageProps) {
     clearAudio,
   } = useAudioRecorder();
 
+  const [locked, setLocked] = useState(false);
+
   const loadData = async () => {
     try {
       const db = await getDB();
@@ -62,6 +64,13 @@ export default function FieldItemCapture({ params }: PageProps) {
         if (ambData) {
           setAmbiente(ambData);
         }
+
+        const vistoria = await db.get("vistorias", id);
+        // Soft lock after report finalized (Phase 3.2)
+        setLocked(
+          vistoria?.status === "CONCLUIDA" ||
+            vistoria?.status === "FINALIZADA",
+        );
 
         const allMidias = await db.getAll("midias");
         const filteredMidias = allMidias.filter((m) => m.itemId === itemId);
@@ -83,6 +92,7 @@ export default function FieldItemCapture({ params }: PageProps) {
   }, [itemId]);
 
   const handlePhotoCapture = async () => {
+    if (locked) return;
     try {
       const captured = await capturePhoto();
       const db = await getDB();
@@ -227,7 +237,7 @@ export default function FieldItemCapture({ params }: PageProps) {
   }, [audioBlob]);
 
   const handleSaveItem = async (mode: "next" | "list" = "next") => {
-    if (!item || saving) return;
+    if (!item || saving || locked) return;
 
     // D-05: photo required before save
     const fotosNow = midiasItem.filter((m) => m.tipo === "FOTO");
@@ -310,7 +320,7 @@ export default function FieldItemCapture({ params }: PageProps) {
   const hasAudio = audios.length > 0;
   const conditionSet = status === "BOM" || status === "REGULAR" || status === "RUIM";
   // D-05: report is photographic — at least one photo required to save
-  const canSave = conditionSet && hasPhoto;
+  const canSave = conditionSet && hasPhoto && !locked;
 
   const waveformHeights = [8, 18, 28, 14, 24, 34, 20, 30, 16, 26, 36, 22, 14, 28, 20, 32, 16, 24, 30, 18, 26];
 
@@ -352,6 +362,12 @@ export default function FieldItemCapture({ params }: PageProps) {
       />
 
       <main className="flex-1 px-5 pt-1 pb-36 space-y-5">
+        {locked && (
+          <div className="bg-slate-100 border border-slate-200 text-slate-600 rounded-2xl px-4 py-3 text-xs font-semibold">
+            Captura bloqueada — relatório já finalizado. Edição de mídia e
+            avaliação não estão disponíveis.
+          </div>
+        )}
         {/* Item identity */}
         <div className="bg-white border border-slate-100 rounded-3xl p-4 shadow-sm flex items-center gap-3">
           <div className="h-12 w-12 shrink-0 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">

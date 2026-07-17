@@ -7,8 +7,10 @@ import { PhoneShell, TopBar } from "@/components/app/PhoneShell";
 import { Icon } from "@/components/app/Icon";
 import { Progress } from "@/components/ui/progress";
 import {
+  emptyLocalMedidores,
   getDB,
   LocalChecklistChegada,
+  LocalMedidores,
   LocalMidia,
 } from "@/lib/db/idb";
 import {
@@ -21,6 +23,15 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+type MedidorField =
+  | "aguaNumero"
+  | "aguaLeitura"
+  | "energiaNumero"
+  | "energiaLeitura"
+  | "gasNumero"
+  | "gasLeitura"
+  | "observacoes";
+
 export default function FieldVistoriaSummary({ params }: PageProps) {
   const resolvedParams = use(params);
   const id = resolvedParams.id;
@@ -30,6 +41,7 @@ export default function FieldVistoriaSummary({ params }: PageProps) {
   const [checklist, setChecklist] = useState<LocalChecklistChegada | null>(
     null,
   );
+  const [medidores, setMedidores] = useState<LocalMedidores | null>(null);
   const [loading, setLoading] = useState(true);
   const [finalizing, setFinalizing] = useState(false);
   const [score, setScore] = useState<CompletionScore | null>(null);
@@ -61,6 +73,12 @@ export default function FieldVistoriaSummary({ params }: PageProps) {
           checklists.find((c) => c.vistoriaId === id) || null;
         setChecklist(localChecklist);
 
+        const allMed = await db.getAll("medidores");
+        const localMed =
+          allMed.find((m) => m.vistoriaId === id) ||
+          emptyLocalMedidores(id);
+        setMedidores(localMed);
+
         setScore(
           computeCompletionScore({
             vistoriaId: id,
@@ -81,6 +99,44 @@ export default function FieldVistoriaSummary({ params }: PageProps) {
   useEffect(() => {
     loadData();
   }, [id]);
+
+  const saveMedidores = async (next: LocalMedidores) => {
+    const db = await getDB();
+    if (!db) return;
+    const payload: LocalMedidores = {
+      ...next,
+      updatedAt: new Date().toISOString(),
+    };
+    await db.put("medidores", payload);
+    await db.put("mutation_queue", {
+      action: "UPDATE_MEDIDORES",
+      vistoriaId: id,
+      payload: {
+        aguaNumero: payload.aguaNumero,
+        aguaLeitura: payload.aguaLeitura,
+        energiaNumero: payload.energiaNumero,
+        energiaLeitura: payload.energiaLeitura,
+        gasNumero: payload.gasNumero,
+        gasLeitura: payload.gasLeitura,
+        observacoes: payload.observacoes,
+      },
+      timestamp: Date.now(),
+    });
+    setMedidores(payload);
+  };
+
+  const handleMedidorChange = (field: MedidorField, value: string) => {
+    if (!medidores) return;
+    const next: LocalMedidores = {
+      ...medidores,
+      [field]: value.trim() ? value : null,
+    };
+    setMedidores(next);
+  };
+
+  const handleMedidorBlur = () => {
+    if (medidores) void saveMedidores(medidores);
+  };
 
   const handleFinalize = async () => {
     if (!score?.canFinalize) return;
@@ -108,6 +164,10 @@ export default function FieldVistoriaSummary({ params }: PageProps) {
           setScore(fresh);
           setFinalizing(false);
           return;
+        }
+
+        if (medidores) {
+          await saveMedidores(medidores);
         }
 
         const vistoria = await db.get("vistorias", id);
@@ -251,6 +311,74 @@ export default function FieldVistoriaSummary({ params }: PageProps) {
             </div>
           </div>
 
+          {/* Medidores (Phase 3.2) — optional, included in PDF when filled */}
+          {medidores && (
+            <div className="bg-white border border-slate-100 p-5 rounded-3xl shadow-sm space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="h-10 w-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <Icon name="speed" className="text-[22px]" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-sm font-bold text-secondary">
+                    Medidores (concessionárias)
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                    Opcional no campo — se preenchido, entra no relatório
+                    fotográfico (água, energia e gás).
+                  </p>
+                </div>
+              </div>
+
+              <MedidorPair
+                title="Água"
+                icon="water_drop"
+                numero={medidores.aguaNumero ?? ""}
+                leitura={medidores.aguaLeitura ?? ""}
+                onNumero={(v) => handleMedidorChange("aguaNumero", v)}
+                onLeitura={(v) => handleMedidorChange("aguaLeitura", v)}
+                onBlur={handleMedidorBlur}
+              />
+              <MedidorPair
+                title="Energia"
+                icon="bolt"
+                numero={medidores.energiaNumero ?? ""}
+                leitura={medidores.energiaLeitura ?? ""}
+                onNumero={(v) => handleMedidorChange("energiaNumero", v)}
+                onLeitura={(v) => handleMedidorChange("energiaLeitura", v)}
+                onBlur={handleMedidorBlur}
+              />
+              <MedidorPair
+                title="Gás"
+                icon="local_fire_department"
+                numero={medidores.gasNumero ?? ""}
+                leitura={medidores.gasLeitura ?? ""}
+                onNumero={(v) => handleMedidorChange("gasNumero", v)}
+                onLeitura={(v) => handleMedidorChange("gasLeitura", v)}
+                onBlur={handleMedidorBlur}
+              />
+
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="med-obs"
+                  className="text-[10px] uppercase tracking-wider font-bold text-slate-400"
+                >
+                  Observações dos medidores
+                </label>
+                <textarea
+                  id="med-obs"
+                  rows={2}
+                  value={medidores.observacoes ?? ""}
+                  onChange={(e) =>
+                    handleMedidorChange("observacoes", e.target.value)
+                  }
+                  onBlur={handleMedidorBlur}
+                  placeholder="Ex.: medidor de gás lacrado, leitura estimada…"
+                  className="w-full min-h-[72px] text-sm p-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-secondary placeholder:text-slate-400 bg-slate-50 resize-y"
+                />
+              </div>
+            </div>
+          )}
+
           {/* Actionable issues */}
           {issues.length > 0 && (
             <div className="bg-white border border-slate-100 rounded-3xl shadow-sm overflow-hidden">
@@ -363,5 +491,62 @@ export default function FieldVistoriaSummary({ params }: PageProps) {
         </div>
       </main>
     </PhoneShell>
+  );
+}
+
+function MedidorPair({
+  title,
+  icon,
+  numero,
+  leitura,
+  onNumero,
+  onLeitura,
+  onBlur,
+}: {
+  title: string;
+  icon: string;
+  numero: string;
+  leitura: string;
+  onNumero: (v: string) => void;
+  onLeitura: (v: string) => void;
+  onBlur: () => void;
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-3 space-y-2">
+      <p className="text-xs font-bold text-secondary flex items-center gap-1.5">
+        <Icon name={icon} className="text-[16px] text-primary" />
+        {title}
+      </p>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-1">
+          <label className="text-[10px] uppercase tracking-wider font-bold text-slate-400">
+            Nº medidor
+          </label>
+          <input
+            type="text"
+            inputMode="text"
+            value={numero}
+            onChange={(e) => onNumero(e.target.value)}
+            onBlur={onBlur}
+            placeholder="Opcional"
+            className="w-full h-11 min-h-[44px] px-3 rounded-xl border border-slate-200 bg-white text-sm text-secondary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="text-[10px] uppercase tracking-wider font-bold text-slate-400">
+            Leitura
+          </label>
+          <input
+            type="text"
+            inputMode="decimal"
+            value={leitura}
+            onChange={(e) => onLeitura(e.target.value)}
+            onBlur={onBlur}
+            placeholder="Ex.: 1234"
+            className="w-full h-11 min-h-[44px] px-3 rounded-xl border border-slate-200 bg-white text-sm text-secondary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          />
+        </div>
+      </div>
+    </div>
   );
 }

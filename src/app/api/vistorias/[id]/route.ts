@@ -204,6 +204,43 @@ export async function PUT(
       return NextResponse.json({ success: true, vistoria });
     }
 
+    if (action === "UPDATE_MEDIDORES") {
+      const {
+        aguaNumero,
+        aguaLeitura,
+        energiaNumero,
+        energiaLeitura,
+        gasNumero,
+        gasLeitura,
+        observacoes,
+      } = payload;
+
+      const medidores = await prisma.medidores.upsert({
+        where: { vistoriaId },
+        update: {
+          aguaNumero: aguaNumero ?? null,
+          aguaLeitura: aguaLeitura ?? null,
+          energiaNumero: energiaNumero ?? null,
+          energiaLeitura: energiaLeitura ?? null,
+          gasNumero: gasNumero ?? null,
+          gasLeitura: gasLeitura ?? null,
+          observacoes: observacoes ?? null,
+        },
+        create: {
+          vistoriaId,
+          aguaNumero: aguaNumero ?? null,
+          aguaLeitura: aguaLeitura ?? null,
+          energiaNumero: energiaNumero ?? null,
+          energiaLeitura: energiaLeitura ?? null,
+          gasNumero: gasNumero ?? null,
+          gasLeitura: gasLeitura ?? null,
+          observacoes: observacoes ?? null,
+        },
+      });
+
+      return NextResponse.json({ success: true, medidores });
+    }
+
     if (action === "UPDATE_CHECKLIST") {
       const {
         cheiroGasOk,

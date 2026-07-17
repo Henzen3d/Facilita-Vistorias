@@ -23,7 +23,8 @@ export default function FieldVistoriaSuccess({ params }: PageProps) {
         <div className="space-y-2.5">
           <h2 className="text-xl font-bold tracking-tight text-secondary">Vistoria Finalizada!</h2>
           <p className="text-xs text-slate-400 leading-relaxed px-4">
-            A vistoria do imóvel foi concluída com sucesso e os dados locais estão prontos para envio ao painel da administração.
+            Captura em campo concluída (em revisão). Sincronize as mídias, revise
+            as descrições técnicas e gere o relatório fotográfico em PDF.
           </p>
         </div>
 
@@ -33,7 +34,7 @@ export default function FieldVistoriaSuccess({ params }: PageProps) {
             className="w-full h-14 rounded-full bg-primary hover:bg-[#009acd] text-white font-bold text-sm shadow-md shadow-primary/20 flex items-center justify-center gap-2 transition-all"
           >
             <Icon name="rate_review" className="text-[20px]" />
-            Revisar descrições (online)
+            Revisar e gerar PDF (online)
           </Link>
 
           <a

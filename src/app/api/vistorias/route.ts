@@ -50,6 +50,7 @@ export async function GET(_request: NextRequest) {
           },
         },
         checklistChegada: true,
+        medidores: true,
       },
       orderBy: {
         data: "asc",

@@ -103,6 +103,7 @@ model Vistoria {
   ambientes Ambiente[]
   relatorio Relatorio?
   checklistChegada ChecklistChegada?
+  medidores Medidores?
   tokenPublico String? @unique @map("token_publico") // JWT para acesso público
   expiracaoToken DateTime? @map("expiracao_token")
 
@@ -264,6 +265,25 @@ model ChecklistChegada {
   vistoria                Vistoria @relation(fields: [vistoriaId], references: [id], onDelete: Cascade)
 
   @@map("checklist_chegada")
+}
+
+// Leituras de medidores de concessionárias (água / energia / gás)
+model Medidores {
+  id               String   @id @default(uuid())
+  vistoriaId       String   @unique @map("vistoria_id")
+  aguaNumero       String?  @map("agua_numero")
+  aguaLeitura      String?  @map("agua_leitura")
+  energiaNumero    String?  @map("energia_numero")
+  energiaLeitura   String?  @map("energia_leitura")
+  gasNumero        String?  @map("gas_numero")
+  gasLeitura       String?  @map("gas_leitura")
+  observacoes      String?  @db.Text
+  updatedAt        DateTime @updatedAt @map("updated_at")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  vistoria Vistoria @relation(fields: [vistoriaId], references: [id], onDelete: Cascade)
+
+  @@map("medidores")
 }
 
 // Enums
