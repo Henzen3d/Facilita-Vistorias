@@ -13,10 +13,14 @@
 | Bug 2 — Cômodo cadastrado não funciona | ✅ Concluído |
 | Bug 3 — Adicionar novos cômodos durante vistoria | ✅ Concluído |
 | Feat 4 — Criar vistoria do zero (campo) | ✅ Concluído |
-| Design 5 — Melhorias visuais baseadas em studio-google | ◆ Em progresso (3A–3C ok) |
+| Design 5 — Melhorias visuais baseadas em studio-google | ✅ Concluído (3A–3G) |
 | Sprint 3A — Login field + home `/field` | ✅ Concluído |
 | Sprint 3B — Captura item (foto+áudio) | ✅ Concluído |
 | Sprint 3C — Ambientes / itens / progress | ✅ Concluído |
+| Sprint 3D — Revisão IA (field + admin) | ✅ Concluído |
+| Sprint 3E — Admin dashboard + lista | ✅ Concluído |
+| Sprint 3F — Relatório público | ✅ Concluído |
+| Sprint 3G — Sync + empty states | ✅ Concluído |
 
 ---
 
@@ -197,7 +201,7 @@ O dashboard só mostra vistorias baixadas do servidor. Não há como criar uma v
   - Botão "Nova Vistoria" no header (vem da Etapa 4)
   - Login field redesenhado com tokens DESIGN.md + touch ≥44px
 
-- [ ] 5.2 — **Detalhe da vistoria** (`/field/vistorias/[id]/page.tsx`)
+- [x] 5.2 — **Detalhe da vistoria** (`/field/vistorias/[id]/page.tsx`)
   - Adicionar quick actions: "GPS / Navegar" e "WhatsApp Locatário"
   - Melhorar o stepper de progresso (1. Info → 2. Protocolo → 3. Cômodos → 4. Fim)
   - Tornar o stepper visual — item atual em destaque colorido
@@ -280,6 +284,9 @@ O dashboard só mostra vistorias baixadas do servidor. Não há como criar uma v
 | 2026-07-16 | Sprint 3A: Login + Home field | ✅ Concluído | Tokens DESIGN.md, UI Button/Badge/Progress, progresso por card, CTA continuar, nav shell polish |
 | 2026-07-16 | Sprint 3B: Captura item | ✅ Concluído | Cards de seção, readiness chips foto/áudio/estado, touch ≥44px, FAB de câmera, label a11y no textarea |
 | 2026-07-16 | Sprint 3C: Ambientes/itens | ✅ Concluído | Progresso com mini-métricas, cards com borda de status, filtros Hick, detalhe com próximo item + badges |
-| — | Etapa 5 restante (3D–3G) | ⬜ Pendente | — |
+| 2026-07-16 | 5.2 + Sprint 3D: Detalhe + Revisão IA | ✅ Concluído | Quick actions GPS/WhatsApp, stepper, ItemDescricaoEditor tokens, field+admin review polish |
+| 2026-07-16 | Sprint 3E: Admin dashboard/lista | ✅ Concluído | KPIs, nav com ícones, tabela + cards mobile |
+| 2026-07-16 | Sprint 3F: Relatório público | ✅ Concluído | Instrument Serif, tokens, capa soft brand |
+| 2026-07-16 | Sprint 3G: Sync | ✅ Concluído | Status card, empty state, badges, offline banner |
 
 
