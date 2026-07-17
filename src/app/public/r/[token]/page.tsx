@@ -23,12 +23,12 @@ export default async function PublicReportDetail({
 
   if (!report) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-6">
+      <div className="min-h-screen bg-background-light flex items-center justify-center px-6">
         <div className="max-w-md text-center space-y-3">
-          <h1 className="text-xl font-bold text-[#1A2B3C]">
+          <h1 className="text-xl font-bold text-secondary">
             Relatório não encontrado ou link expirado
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-500 max-w-prose mx-auto">
             Verifique o link recebido ou solicite um novo acesso à imobiliária /
             responsável pela vistoria.
           </p>

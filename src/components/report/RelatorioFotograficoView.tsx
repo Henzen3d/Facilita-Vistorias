@@ -78,56 +78,64 @@ export function RelatorioFotograficoView({
 
   return (
     <div
-      className={`min-h-screen bg-[#F8FAFC] text-[#1A2B3C] font-sans ${
-        isPrint ? "print-root" : ""
+      className={`min-h-screen bg-background-light text-secondary font-sans ${
+        isPrint ? "print-root" : "relative"
       }`}
     >
+      {!isPrint && (
+        <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
+          <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+          <div className="absolute bottom-0 -left-10 h-56 w-56 rounded-full bg-accent/10 blur-3xl" />
+        </div>
+      )}
+
       {/* —— CAPA —— */}
       <section
         className={
           isPrint
             ? "report-page cover-page flex flex-col min-h-[100vh] bg-white px-10 py-12"
-            : "max-w-2xl mx-auto py-12 px-6"
+            : "relative max-w-2xl mx-auto py-12 px-6"
         }
       >
-        <header className="border-b border-slate-100 pb-6 mb-8">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-[#00AEEF]">
+        <header className="border-b border-slate-100/80 pb-6 mb-8">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-primary">
             Documentação técnica
           </p>
-          <h1 className="text-2xl md:text-3xl font-bold text-[#1A2B3C] mt-1">
-            Relatório Fotográfico
+          <h1 className="text-2xl md:text-3xl font-bold text-secondary mt-1">
+            Relatório{" "}
+            <span className="text-accent-editorial font-normal">fotográfico</span>
           </h1>
           <p className="text-sm text-slate-500 mt-1">{report.empresa.nome}</p>
         </header>
 
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-4">
+        <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 space-y-4">
           <div>
-            <p className="text-[10px] uppercase font-bold text-slate-400">
+            <p className="text-[11px] uppercase font-bold text-slate-400 tracking-wider">
               Imóvel
             </p>
-            <h2 className="text-lg font-bold mt-0.5">
+            <h2 className="text-lg font-bold mt-0.5 text-secondary leading-snug">
               {formatEndereco(report.imovel)}
             </h2>
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-xs border-t border-slate-50 pt-4">
             <div>
-              <p className="text-slate-400 font-semibold uppercase">Código</p>
-              <p className="font-bold text-sm">{report.vistoria.codigo}</p>
+              <p className="text-slate-400 font-semibold uppercase tracking-wide">Código</p>
+              <p className="font-bold text-sm text-secondary">{report.vistoria.codigo}</p>
             </div>
             <div>
-              <p className="text-slate-400 font-semibold uppercase">Tipo</p>
-              <p className="font-bold text-sm">{report.vistoria.tipo}</p>
+              <p className="text-slate-400 font-semibold uppercase tracking-wide">Tipo</p>
+              <p className="font-bold text-sm text-secondary">{report.vistoria.tipo}</p>
             </div>
             <div>
-              <p className="text-slate-400 font-semibold uppercase">Data</p>
-              <p className="font-bold text-sm">
+              <p className="text-slate-400 font-semibold uppercase tracking-wide">Data</p>
+              <p className="font-bold text-sm text-secondary">
                 {formatData(report.vistoria.data)}
               </p>
             </div>
             <div>
-              <p className="text-slate-400 font-semibold uppercase">Itens</p>
-              <p className="font-bold text-sm">{flatItems.length}</p>
+              <p className="text-slate-400 font-semibold uppercase tracking-wide">Itens</p>
+              <p className="font-bold text-sm text-secondary tabular-nums">{flatItems.length}</p>
             </div>
           </div>
 
@@ -135,10 +143,10 @@ export function RelatorioFotograficoView({
             <div className="border-t border-slate-50 pt-4 grid grid-cols-2 gap-3 text-xs">
               {report.pessoas.map((p) => (
                 <div key={`${p.tipo}-${p.nome}`}>
-                  <p className="text-slate-400 font-semibold uppercase">
+                  <p className="text-slate-400 font-semibold uppercase tracking-wide">
                     {pessoaLabel(p.tipo)}
                   </p>
-                  <p className="font-bold text-sm">{p.nome}</p>
+                  <p className="font-bold text-sm text-secondary">{p.nome}</p>
                 </div>
               ))}
             </div>
@@ -151,10 +159,10 @@ export function RelatorioFotograficoView({
             {report.relatorio?.pdfDownloadUrl ? (
               <a
                 href={report.relatorio.pdfDownloadUrl}
-                className="inline-flex items-center justify-center w-full sm:w-auto bg-[#00AEEF] hover:bg-[#009ACD] text-white px-6 py-3 rounded-full font-medium text-sm transition-colors shadow-sm"
+                className="inline-flex items-center justify-center gap-2 w-full sm:w-auto min-h-[48px] bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-full font-bold text-sm transition-colors shadow-soft"
                 download
               >
-                Baixar PDF do Relatório Fotográfico
+                Baixar PDF do relatório fotográfico
               </a>
             ) : (
               <div className="rounded-2xl border border-amber-100 bg-amber-50 px-5 py-4 text-amber-900 text-sm">
@@ -162,7 +170,7 @@ export function RelatorioFotograficoView({
               </div>
             )}
             {report.relatorio?.versaoAtual ? (
-              <p className="text-[11px] text-slate-400">
+              <p className="text-xs text-slate-400">
                 Versão {report.relatorio.versaoAtual}
                 {report.relatorio.geradoEm
                   ? ` · gerado em ${formatData(report.relatorio.geradoEm)}`
@@ -173,7 +181,7 @@ export function RelatorioFotograficoView({
         )}
 
         {/* Discreet CREA disclaimer (D-12) — not a banner */}
-        <p className="mt-10 text-[9px] leading-relaxed text-slate-400 max-w-md">
+        <p className="mt-10 text-[11px] leading-relaxed text-slate-400 max-w-prose">
           Documentação técnica fotográfica com finalidade informativa para
           locação. Este documento não constitui laudo técnico pericial de
           engenharia regulado pelo CREA.
