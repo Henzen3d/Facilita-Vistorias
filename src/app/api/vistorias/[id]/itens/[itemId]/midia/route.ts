@@ -6,6 +6,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import { TipoMidia, SyncStatus, StatusItem } from "@prisma/client";
 import { enqueueAiDescribeItem } from "@/lib/queue/queues";
+import { rejectIfAssinado } from "@/lib/report/hard-lock";
 
 export async function POST(
   request: NextRequest,
@@ -19,6 +20,9 @@ export async function POST(
 
     const resolvedParams = await params;
     const { id: vistoriaId, itemId } = resolvedParams;
+
+    const locked = await rejectIfAssinado(vistoriaId);
+    if (locked) return locked;
 
     // T-03-09: bind item to path vistoriaId before create
     const item = await prisma.item.findUnique({

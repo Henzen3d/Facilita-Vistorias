@@ -21,7 +21,7 @@ Do núcleo de dados ao relatório compartilhável: construir primeiro a fundaç�
 - [x] **Phase 3.1: Produtividade em Campo** - Templates de imóvel/cômodos, próximo item, score com foto obrigatória (D-05) (code 2026-07-17; UAT em aparelho pendente)
 - [x] **Phase 3.2: Fechamento** - Medidores no resumo/PDF + gerar PDF no field + soft lock pós-finalização (code 2026-07-17; migrate DB)
 - [x] **Phase 4: Envio e Contestação** - Página pública rica, contestação/confirmação, WhatsApp + marcar enviado (code 2026-07-17; migrate + UAT)
-- [ ] **Phase 5: Assinatura Eletrônica Nativa** - Signature Pad a dedo, log de auditoria (IP/CPF/hash SHA-256), hard lock e PDF com página de auditoria
+- [x] **Phase 5: Assinatura Eletrônica Nativa** - Signature Pad a dedo, log de auditoria (IP/CPF/hash SHA-256), hard lock e PDF com página de auditoria (code 2026-07-17; migrate + UAT)
 
 ## Phase Details
 
@@ -117,13 +117,13 @@ Plans:
   3. PDF final é re-gerado com página de auditoria contendo assinatura + quadro de metadados + QR code
   4. Status do relatório muda para `ASSINADA` e qualquer edição no admin/field retorna HTTP 423
 
-**Plans**: 3 waves
+**Plans**: 1/1 plans complete (3 waves no 05-PLAN)
 
 Plans:
 
-- [ ] 05-Wave1: Schema Prisma + API `/assinar` + validação CPF + hard lock
-- [ ] 05-Wave2: UI Signature Pad (Canvas nativo) + formulário + fluxo de confirmação
-- [ ] 05-Wave3: PDF re-gerado com página de auditoria + rota pública `/audit`
+- [x] 05-Wave1: Schema Prisma + API `/assinar` + validação CPF + hard lock
+- [x] 05-Wave2: UI Signature Pad (Canvas nativo) + formulário + fluxo de confirmação
+- [x] 05-Wave3: PDF re-gerado com página de auditoria + rota pública `/audit`
 
 ## Progress
 
@@ -138,4 +138,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 3.1. Produtividade em Campo | 1/1 | Complete | 2026-07-17 |
 | 3.2. Fechamento + Medidores | 1/1 | Complete | 2026-07-17 |
 | 4. Envio e Contestação | 1/1 | Complete | 2026-07-17 |
-| 5. Assinatura Eletrônica | 0/3 | Planned | - |
+| 5. Assinatura Eletrônica | 1/1 | Complete (code) | 2026-07-17 |

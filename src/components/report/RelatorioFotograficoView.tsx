@@ -209,12 +209,42 @@ export function RelatorioFotograficoView({
               </div>
             )}
 
-            {!report.jaConfirmado && (
+            {report.jaAssinado && (
+              <div className="rounded-2xl border border-secondary/20 bg-secondary/5 px-4 py-3 text-secondary text-sm space-y-2">
+                <p>
+                  Documento assinado eletronicamente
+                  {report.relatorio?.assinaturaNome
+                    ? ` por ${report.relatorio.assinaturaNome}`
+                    : ""}
+                  {report.relatorio?.assinadoEm
+                    ? ` em ${formatData(report.relatorio.assinadoEm)}`
+                    : ""}
+                  .
+                </p>
+                <a
+                  href={`/public/r/${token}/audit`}
+                  className="inline-flex font-bold text-sm underline"
+                >
+                  Ver registro de auditoria
+                </a>
+              </div>
+            )}
+
+            {!report.jaConfirmado && !report.jaAssinado && (
               <a
                 href={`/public/r/${token}/confirmar`}
                 className="inline-flex items-center justify-center gap-2 w-full min-h-[48px] rounded-full border-2 border-status-good text-status-good font-bold text-sm hover:bg-green-50 transition-colors"
               >
                 Confirmar recebimento do relatório
+              </a>
+            )}
+
+            {report.podeAssinar && (
+              <a
+                href={`/public/r/${token}/assinar`}
+                className="inline-flex items-center justify-center gap-2 w-full min-h-[48px] rounded-full bg-secondary text-white font-bold text-sm hover:opacity-90 transition-opacity shadow-md"
+              >
+                Assinar documento
               </a>
             )}
 
@@ -472,6 +502,108 @@ export function RelatorioFotograficoView({
           />
         </section>
       )}
+
+      {/* —— PRINT: electronic signature audit page (Phase 5) —— */}
+      {isPrint &&
+        report.jaAssinado &&
+        report.relatorio?.assinadoEm && (
+          <section className="report-page break-before-page flex flex-col min-h-[100vh] bg-white px-10 py-12">
+            <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">
+              Validade jurídica
+            </p>
+            <h2 className="text-xl font-bold mt-1 mb-6">
+              Registro de Assinatura Eletrônica
+            </h2>
+
+            {report.relatorio.assinaturaImagem && (
+              <div className="mb-6 border border-slate-200 rounded-xl p-4 bg-slate-50">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={report.relatorio.assinaturaImagem}
+                  alt="Assinatura"
+                  className="max-h-28 object-contain mx-auto"
+                />
+              </div>
+            )}
+
+            <table className="w-full text-sm border-collapse">
+              <tbody className="text-secondary">
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-3 text-slate-400 font-semibold w-36">
+                    Nome
+                  </td>
+                  <td className="py-2 font-semibold">
+                    {report.relatorio.assinaturaNome || "—"}
+                  </td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-3 text-slate-400 font-semibold">
+                    Data
+                  </td>
+                  <td className="py-2">
+                    {new Date(report.relatorio.assinadoEm).toLocaleString(
+                      "pt-BR",
+                      { dateStyle: "long", timeStyle: "medium" },
+                    )}
+                  </td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-3 text-slate-400 font-semibold">IP</td>
+                  <td className="py-2 font-mono text-xs">
+                    {report.relatorio.assinaturaIp || "—"}
+                  </td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-3 text-slate-400 font-semibold">
+                    Dispositivo
+                  </td>
+                  <td className="py-2 text-xs break-all">
+                    {report.relatorio.assinaturaDevice || "—"}
+                  </td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-3 text-slate-400 font-semibold">
+                    CPF (parcial)
+                  </td>
+                  <td className="py-2 font-mono text-xs">
+                    ***.***.***-
+                    {report.relatorio.assinaturaCpfUltimos || "•••"}
+                  </td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-3 text-slate-400 font-semibold align-top">
+                    Hash SHA-256
+                  </td>
+                  <td className="py-2 font-mono text-[10px] break-all">
+                    {report.relatorio.assinaturaHash || "—"}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div className="mt-auto pt-10 flex flex-col items-center border-t border-slate-100">
+              {qrDataUrl && (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={qrDataUrl}
+                    alt="QR de verificação da auditoria"
+                    width={120}
+                    height={120}
+                  />
+                  <p className="text-[9px] text-slate-400 mt-2 text-center max-w-xs">
+                    Escaneie para verificar o registro de auditoria online
+                    (/public/r/…/audit)
+                  </p>
+                </>
+              )}
+              <p className="text-[10px] text-slate-400 mt-4 text-center max-w-md leading-relaxed">
+                Documento com validade de assinatura eletrônica simples — MP nº
+                2.200-2/2001 e Lei nº 14.063/2020.
+              </p>
+            </div>
+          </section>
+        )}
 
       {isPrint && (
         <style>{`

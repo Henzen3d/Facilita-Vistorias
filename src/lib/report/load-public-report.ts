@@ -88,11 +88,22 @@ export type PublicReportDto = {
     urlPublica: string | null;
     versaoAtual: number;
     historicoGeracoes: PublicReportGeracao[];
+    /** Phase 5 signature (safe fields only — no full CPF) */
+    assinadoEm: string | null;
+    assinaturaNome: string | null;
+    assinaturaHash: string | null;
+    assinaturaImagem: string | null;
+    assinaturaIp: string | null;
+    assinaturaDevice: string | null;
+    assinaturaCpfUltimos: string | null;
   } | null;
   /** Client can still contest within window and report not confirmed-only lock */
   contestacaoAberta: boolean;
   contestacaoPrazoAte: string | null;
   jaConfirmado: boolean;
+  /** Phase 5: client may open signature pad */
+  podeAssinar: boolean;
+  jaAssinado: boolean;
   token: string;
 };
 
@@ -180,6 +191,13 @@ export async function loadPublicReportByToken(
           urlPublica: true,
           versaoAtual: true,
           historicoGeracoes: true,
+          assinadoEm: true,
+          assinaturaNome: true,
+          assinaturaHash: true,
+          assinaturaImagem: true,
+          assinaturaIp: true,
+          assinaturaDevice: true,
+          assinaturaCpfUltimos: true,
         },
       },
       ambientes: {
@@ -221,6 +239,22 @@ export async function loadPublicReportByToken(
   const windowOpen = isContestacaoOpen(rel?.enviadoEm, rel?.geradoEm);
   const deadline = contestacaoDeadline(rel?.enviadoEm, rel?.geradoEm);
   const jaConfirmado = Boolean(rel?.confirmadoEm);
+  const jaAssinado = Boolean(
+    rel?.assinadoEm || rel?.status === "ASSINADA",
+  );
+
+  const openStatuses = new Set(["PENDENTE", "EM_ANALISE"]);
+  let hasOpenContestAnywhere = false;
+  for (const ambiente of vistoria.ambientes) {
+    for (const item of ambiente.items) {
+      const last = item.contestacoes[0]?.status ?? null;
+      if (last && openStatuses.has(last)) {
+        hasOpenContestAnywhere = true;
+        break;
+      }
+    }
+    if (hasOpenContestAnywhere) break;
+  }
 
   const ambientes: PublicReportAmbiente[] = [];
   for (const ambiente of vistoria.ambientes) {
@@ -234,7 +268,6 @@ export async function loadPublicReportByToken(
         .map((m) => ({ id: m.id, url: m.url }));
 
       const lastContest = item.contestacoes[0]?.status ?? null;
-      const openStatuses = new Set(["PENDENTE", "EM_ANALISE"]);
       const hasOpenContest = lastContest
         ? openStatuses.has(lastContest)
         : false;
@@ -246,7 +279,8 @@ export async function loadPublicReportByToken(
         estadoConservacao: item.estadoConservacao,
         fotos,
         contestacaoStatus: lastContest,
-        podeContestar: windowOpen && !hasOpenContest && !jaConfirmado,
+        podeContestar:
+          windowOpen && !hasOpenContest && !jaConfirmado && !jaAssinado,
       });
     }
     if (items.length > 0) {
@@ -319,11 +353,25 @@ export async function loadPublicReportByToken(
           urlPublica: rel.urlPublica,
           versaoAtual: rel.versaoAtual,
           historicoGeracoes: parseHistorico(rel.historicoGeracoes),
+          assinadoEm: rel.assinadoEm?.toISOString() ?? null,
+          assinaturaNome: rel.assinaturaNome,
+          assinaturaHash: rel.assinaturaHash,
+          assinaturaImagem: rel.assinaturaImagem,
+          assinaturaIp: rel.assinaturaIp,
+          assinaturaDevice: rel.assinaturaDevice,
+          assinaturaCpfUltimos: rel.assinaturaCpfUltimos,
         }
       : null,
-    contestacaoAberta: windowOpen && !jaConfirmado,
+    contestacaoAberta: windowOpen && !jaConfirmado && !jaAssinado,
     contestacaoPrazoAte: deadline?.toISOString() ?? null,
     jaConfirmado,
+    // D-09: Assinar only if CONFIRMADO and no open contestations
+    podeAssinar:
+      !jaAssinado &&
+      jaConfirmado &&
+      (rel?.status === "CONFIRMADO" || Boolean(rel?.confirmadoEm)) &&
+      !hasOpenContestAnywhere,
+    jaAssinado,
     token,
   };
 }

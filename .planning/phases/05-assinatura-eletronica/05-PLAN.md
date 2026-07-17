@@ -1,7 +1,7 @@
 # Phase 5: Assinatura Eletrônica Nativa — Plano de Execução
 
 **Created:** 2026-07-17  
-**Status:** Planejado — aguardando execução  
+**Status:** Executado (code 2026-07-17) — migrate + UAT pendentes  
 **Depends on:** Phase 4 concluída (token JWT, status CONFIRMADO, página pública)
 
 ---

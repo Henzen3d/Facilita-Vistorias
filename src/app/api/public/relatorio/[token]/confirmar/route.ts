@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { StatusRelatorio } from "@prisma/client";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
+import { rejectIfAssinado } from "@/lib/report/hard-lock";
 import { verifyPublicReportToken } from "@/lib/report/token";
 
 const bodySchema = z.object({
@@ -25,6 +26,9 @@ export async function POST(
         { status: 404 },
       );
     }
+
+    const locked = await rejectIfAssinado(verified.vistoriaId);
+    if (locked) return locked;
 
     const raw = await request.json();
     const parsed = bodySchema.safeParse(raw);

@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { promises as fs } from "fs";
 import path from "path";
 import { StatusVistoria } from "@prisma/client";
+import { rejectIfAssinado } from "@/lib/report/hard-lock";
 
 function mapFieldStatusToVistoria(
   raw: string,
@@ -153,6 +154,9 @@ export async function PUT(
 
     const resolvedParams = await params;
     const { id: vistoriaId } = resolvedParams;
+
+    const locked = await rejectIfAssinado(vistoriaId);
+    if (locked) return locked;
 
     const body = await request.json();
     const { action, payload } = body;

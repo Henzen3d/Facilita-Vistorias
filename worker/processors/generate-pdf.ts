@@ -123,6 +123,7 @@ export async function processGeneratePdf(job: Job<GeneratePdfJob>): Promise<void
   const urlPublica = publicUrl;
   const now = new Date();
 
+  // Never downgrade status on regenerate (preserve ENVIADO/CONFIRMADO/ASSINADA)
   await prisma.relatorio.upsert({
     where: { vistoriaId },
     create: {
@@ -137,7 +138,6 @@ export async function processGeneratePdf(job: Job<GeneratePdfJob>): Promise<void
     update: {
       pdfStorageKey: storageKey,
       urlPublica,
-      status: StatusRelatorio.GERADO,
       geradoEm: now,
       versaoAtual: nextVersion,
       historicoGeracoes: history as unknown as Prisma.InputJsonValue,

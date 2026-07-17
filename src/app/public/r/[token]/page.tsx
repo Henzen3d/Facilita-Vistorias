@@ -43,7 +43,10 @@ export default async function PublicReportDetail({
     await trackPublicReportView(report.vistoria.id);
   }
 
-  const publicUrl = `${appBaseUrl()}/public/r/${token}`;
+  // When signed, print QR points to audit page for verification (Phase 5)
+  const publicUrl = report.jaAssinado
+    ? `${appBaseUrl()}/public/r/${token}/audit`
+    : `${appBaseUrl()}/public/r/${token}`;
   let qrDataUrl: string | null = null;
   try {
     qrDataUrl = await QRCode.toDataURL(publicUrl, {

@@ -235,6 +235,16 @@ model Relatorio {
   versaoAtual        Int              @default(1) @map("versao_atual")
   /// Audit log of generations: [{ versionNumber, userId, userNome?, motivo, createdAt, pdfStorageKey }]
   historicoGeracoes  Json             @default("[]") @map("historico_geracoes")
+  /// Phase 5 — electronic signature audit trail
+  assinadoEm         DateTime?        @map("assinado_em")
+  assinaturaImagem   String?          @map("assinatura_imagem") @db.Text
+  assinaturaHash     String?          @map("assinatura_hash")
+  assinaturaIp       String?          @map("assinatura_ip")
+  assinaturaDevice   String?          @map("assinatura_device")
+  assinaturaNome     String?          @map("assinatura_nome")
+  assinaturaCpfHash  String?          @map("assinatura_cpf_hash")
+  /// Last 3 digits of CPF only (LGPD-safe audit display)
+  assinaturaCpfUltimos String?        @map("assinatura_cpf_ultimos") @db.VarChar(3)
   createdAt          DateTime         @default(now()) @map("created_at")
   updatedAt          DateTime         @updatedAt @map("updated_at")
 
@@ -365,4 +375,5 @@ enum StatusRelatorio {
   ENVIADO
   VISUALIZADO
   CONFIRMADO
+  ASSINADA
 }

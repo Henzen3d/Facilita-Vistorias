@@ -5,6 +5,7 @@ import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { enqueueGeneratePdf } from "@/lib/queue/queues";
+import { rejectIfAssinado } from "@/lib/report/hard-lock";
 import { createPublicReportToken } from "@/lib/report/token";
 
 const bodySchema = z.object({
@@ -39,6 +40,9 @@ export async function POST(
     }
 
     const { id: vistoriaId } = await params;
+
+    const locked = await rejectIfAssinado(vistoriaId);
+    if (locked) return locked;
 
     let motivo: string | undefined;
     try {

@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { EstadoConservacao, StatusItem, TipoUsuario } from "@prisma/client";
 import { z } from "zod";
 import { containsRegulatedTerms } from "@/lib/ai/guardrails";
+import { rejectIfAssinado } from "@/lib/report/hard-lock";
 
 const patchBodySchema = z.object({
   descricaoFinal: z.string().min(1, "Descrição é obrigatória"),
@@ -25,6 +26,9 @@ export async function PATCH(
     }
 
     const { id: vistoriaId, itemId } = await params;
+
+    const locked = await rejectIfAssinado(vistoriaId);
+    if (locked) return locked;
 
     let body: unknown;
     try {
