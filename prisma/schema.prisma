@@ -187,16 +187,19 @@ model AnaliseIa {
 
 // Contestação de itens pelo cliente
 model Contestacao {
-  id        String   @id @default(uuid())
-  itemId    String
-  motivo    String
-  status    StatusContestacao @default(PENDENTE)
-  createdAt DateTime @default(now())
-  resolvidoEm DateTime? @map("resolvido_em")
-  resposta  String?
+  id          String            @id @default(uuid())
+  itemId      String
+  motivo      String            @db.Text
+  nomeCliente String?           @map("nome_cliente")
+  status      StatusContestacao @default(PENDENTE)
+  createdAt   DateTime          @default(now())
+  resolvidoEm DateTime?         @map("resolvido_em")
+  resposta    String?           @db.Text
 
   item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
+  @@index([itemId])
+  @@index([status])
   @@map("contestacoes")
 }
 

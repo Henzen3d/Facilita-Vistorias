@@ -1,10 +1,11 @@
 import QRCode from "qrcode";
 import { RelatorioFotograficoView } from "@/components/report/RelatorioFotograficoView";
 import { loadPublicReportByToken } from "@/lib/report/load-public-report";
+import { trackPublicReportView } from "@/lib/report/track-public-view";
 
 interface PageProps {
   params: Promise<{ token: string }>;
-  searchParams: Promise<{ print?: string }>;
+  searchParams: Promise<{ print?: string; contestado?: string; confirmado?: string }>;
 }
 
 function appBaseUrl(): string {
@@ -37,6 +38,11 @@ export default async function PublicReportDetail({
     );
   }
 
+  // Phase 4 D-07: count views only on client public page (not Puppeteer print)
+  if (!isPrint) {
+    await trackPublicReportView(report.vistoria.id);
+  }
+
   const publicUrl = `${appBaseUrl()}/public/r/${token}`;
   let qrDataUrl: string | null = null;
   try {
@@ -49,13 +55,20 @@ export default async function PublicReportDetail({
     qrDataUrl = null;
   }
 
-  // D-14: default public view is capa + PDF download only.
-  // ?print=1 enables full template for Puppeteer PDF (D-09–D-13).
   return (
-    <RelatorioFotograficoView
-      report={report}
-      mode={isPrint ? "print" : "public"}
-      qrDataUrl={qrDataUrl}
-    />
+    <>
+      {!isPrint && (sp.contestado === "1" || sp.confirmado === "1") && (
+        <div className="bg-status-good/10 border-b border-status-good/20 text-status-good text-sm font-semibold text-center py-3 px-4">
+          {sp.confirmado === "1"
+            ? "Recebimento confirmado com sucesso."
+            : "Contestação enviada. A equipe analisará em breve."}
+        </div>
+      )}
+      <RelatorioFotograficoView
+        report={report}
+        mode={isPrint ? "print" : "public"}
+        qrDataUrl={qrDataUrl}
+      />
+    </>
   );
 }

@@ -1,6 +1,10 @@
 import { TipoMidia } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { verifyPublicReportToken } from "./token";
+import {
+  contestacaoDeadline,
+  isContestacaoOpen,
+} from "@/lib/report/whatsapp";
 
 export type PublicReportPessoa = {
   nome: string;
@@ -18,6 +22,9 @@ export type PublicReportItem = {
   descricaoFinal: string | null;
   estadoConservacao: string | null;
   fotos: PublicReportFoto[];
+  /** Latest open contestation status if any */
+  contestacaoStatus: string | null;
+  podeContestar: boolean;
 };
 
 export type PublicReportAmbiente = {
@@ -70,6 +77,11 @@ export type PublicReportDto = {
   relatorio: {
     status: string;
     geradoEm: string | null;
+    enviadoEm: string | null;
+    visualizadoEm: string | null;
+    confirmadoEm: string | null;
+    nomeQuemConfirmou: string | null;
+    totalVisualizacoes: number;
     pdfStorageKey: string | null;
     /** App-relative or absolute download path when PDF exists */
     pdfDownloadUrl: string | null;
@@ -77,6 +89,10 @@ export type PublicReportDto = {
     versaoAtual: number;
     historicoGeracoes: PublicReportGeracao[];
   } | null;
+  /** Client can still contest within window and report not confirmed-only lock */
+  contestacaoAberta: boolean;
+  contestacaoPrazoAte: string | null;
+  jaConfirmado: boolean;
   token: string;
 };
 
@@ -155,6 +171,11 @@ export async function loadPublicReportByToken(
         select: {
           status: true,
           geradoEm: true,
+          enviadoEm: true,
+          visualizadoEm: true,
+          confirmadoEm: true,
+          nomeQuemConfirmou: true,
+          totalVisualizacoes: true,
           pdfStorageKey: true,
           urlPublica: true,
           versaoAtual: true,
@@ -182,6 +203,11 @@ export async function loadPublicReportByToken(
                   url: true,
                 },
               },
+              contestacoes: {
+                orderBy: { createdAt: "desc" },
+                take: 1,
+                select: { status: true },
+              },
             },
           },
         },
@@ -190,6 +216,11 @@ export async function loadPublicReportByToken(
   });
 
   if (!vistoria) return null;
+
+  const rel = vistoria.relatorio;
+  const windowOpen = isContestacaoOpen(rel?.enviadoEm, rel?.geradoEm);
+  const deadline = contestacaoDeadline(rel?.enviadoEm, rel?.geradoEm);
+  const jaConfirmado = Boolean(rel?.confirmadoEm);
 
   const ambientes: PublicReportAmbiente[] = [];
   for (const ambiente of vistoria.ambientes) {
@@ -202,12 +233,20 @@ export async function loadPublicReportByToken(
         .filter((m) => m.tipo === TipoMidia.FOTO)
         .map((m) => ({ id: m.id, url: m.url }));
 
+      const lastContest = item.contestacoes[0]?.status ?? null;
+      const openStatuses = new Set(["PENDENTE", "EM_ANALISE"]);
+      const hasOpenContest = lastContest
+        ? openStatuses.has(lastContest)
+        : false;
+
       items.push({
         id: item.id,
         nome: item.nome,
         descricaoFinal: item.descricaoFinal ?? item.descricao,
         estadoConservacao: item.estadoConservacao,
         fotos,
+        contestacaoStatus: lastContest,
+        podeContestar: windowOpen && !hasOpenContest && !jaConfirmado,
       });
     }
     if (items.length > 0) {
@@ -220,7 +259,6 @@ export async function loadPublicReportByToken(
     }
   }
 
-  const rel = vistoria.relatorio;
   let pdfDownloadUrl: string | null = null;
   if (rel?.pdfStorageKey) {
     // Local public fallback used by worker when storage upload fails/unavailable
@@ -271,6 +309,11 @@ export async function loadPublicReportByToken(
       ? {
           status: rel.status,
           geradoEm: rel.geradoEm?.toISOString() ?? null,
+          enviadoEm: rel.enviadoEm?.toISOString() ?? null,
+          visualizadoEm: rel.visualizadoEm?.toISOString() ?? null,
+          confirmadoEm: rel.confirmadoEm?.toISOString() ?? null,
+          nomeQuemConfirmou: rel.nomeQuemConfirmou,
+          totalVisualizacoes: rel.totalVisualizacoes,
           pdfStorageKey: rel.pdfStorageKey,
           pdfDownloadUrl,
           urlPublica: rel.urlPublica,
@@ -278,6 +321,9 @@ export async function loadPublicReportByToken(
           historicoGeracoes: parseHistorico(rel.historicoGeracoes),
         }
       : null,
+    contestacaoAberta: windowOpen && !jaConfirmado,
+    contestacaoPrazoAte: deadline?.toISOString() ?? null,
+    jaConfirmado,
     token,
   };
 }

@@ -323,17 +323,46 @@ export default function FieldRevisaoIaPage({ params }: PageProps) {
                     </p>
                   )}
                   {pdfResult && (
-                    <div className="text-xs text-status-good bg-green-50 border border-status-good/20 rounded-2xl px-3 py-2 space-y-1">
+                    <div className="text-xs text-status-good bg-green-50 border border-status-good/20 rounded-2xl px-3 py-2 space-y-2">
                       <p className="font-semibold">{pdfResult.message}</p>
                       {pdfResult.urlPublica && (
-                        <a
-                          href={pdfResult.urlPublica}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-bold text-primary underline break-all"
-                        >
-                          Abrir versão digital
-                        </a>
+                        <>
+                          <a
+                            href={pdfResult.urlPublica}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-bold text-primary underline break-all block"
+                          >
+                            Abrir versão digital
+                          </a>
+                          <a
+                            href={`https://wa.me/?text=${encodeURIComponent(
+                              `Olá! Segue o *relatório fotográfico*.\n\nAcesse:\n${pdfResult.urlPublica}\n\nSe notar divergência, use Contestar no link.`,
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-2 w-full min-h-[44px] rounded-full bg-[#25D366] text-white font-bold text-xs"
+                          >
+                            Enviar por WhatsApp
+                          </a>
+                          <button
+                            type="button"
+                            className="w-full min-h-[40px] rounded-full border border-slate-200 bg-white text-slate-600 font-bold text-xs"
+                            onClick={async () => {
+                              try {
+                                await fetch(
+                                  `/api/vistorias/${id}/marcar-enviado`,
+                                  { method: "POST" },
+                                );
+                                alert("Marcado como enviado.");
+                              } catch {
+                                alert("Não foi possível marcar como enviado.");
+                              }
+                            }}
+                          >
+                            Marcar como enviado
+                          </button>
+                        </>
                       )}
                     </div>
                   )}

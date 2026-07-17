@@ -279,6 +279,45 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
     }
   };
 
+  const [markingSent, setMarkingSent] = useState(false);
+  const [sentMsg, setSentMsg] = useState<string | null>(null);
+
+  const whatsappUrl = publicUrl
+    ? (() => {
+        const endereco = data?.imovel
+          ? `${data.imovel.endereco}${data.imovel.numero ? `, ${data.imovel.numero}` : ""}`
+          : undefined;
+        const lines = [
+          `Olá! Segue o *relatório fotográfico* da vistoria ${data?.vistoria.codigo || ""}.`,
+        ];
+        if (endereco) lines.push(`Imóvel: ${endereco}`);
+        lines.push("", "Acesse a versão digital e o PDF:", publicUrl, "");
+        lines.push(
+          "Se notar alguma divergência em um item, use a opção Contestar no link.",
+        );
+        const text = encodeURIComponent(lines.join("\n"));
+        return `https://wa.me/?text=${text}`;
+      })()
+    : null;
+
+  const handleMarkSent = async () => {
+    setMarkingSent(true);
+    setSentMsg(null);
+    try {
+      const res = await fetch(`/api/vistorias/${id}/marcar-enviado`, {
+        method: "POST",
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body?.error || `Erro ${res.status}`);
+      setSentMsg("Marcado como enviado.");
+      await load();
+    } catch (e) {
+      setSentMsg(e instanceof Error ? e.message : "Falha ao marcar envio");
+    } finally {
+      setMarkingSent(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background-light font-sans text-secondary p-6 md:p-8">
       <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
@@ -526,7 +565,7 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
                   <p className="text-xs break-all font-mono text-slate-700">
                     {publicUrl}
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2 items-center">
                     <button
                       type="button"
                       onClick={handleCopyLink}
@@ -538,11 +577,32 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
                       href={publicUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-xs font-semibold text-slate-600 hover:underline"
+                      className="text-xs font-semibold text-slate-600 hover:underline min-h-[44px] inline-flex items-center"
                     >
                       Abrir
                     </a>
                   </div>
+                  {whatsappUrl && (
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full min-h-[44px] rounded-full bg-[#25D366] hover:bg-[#20ba56] text-white text-xs font-bold"
+                    >
+                      Enviar por WhatsApp
+                    </a>
+                  )}
+                  <button
+                    type="button"
+                    disabled={markingSent}
+                    onClick={handleMarkSent}
+                    className="w-full min-h-[40px] rounded-full border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                  >
+                    {markingSent ? "Salvando…" : "Marcar como enviado"}
+                  </button>
+                  {sentMsg && (
+                    <p className="text-[11px] text-slate-500">{sentMsg}</p>
+                  )}
                 </div>
               )}
 

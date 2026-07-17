@@ -77,8 +77,8 @@ function hasAnyMedidor(
 
 /**
  * Shared HTML template for public digital report and Puppeteer PDF (D-10).
- * Default public mode is minimal cover + PDF download (D-14).
- * Print mode renders capa + one item per page + QR placements (D-09, D-13).
+ * Public mode (Phase 4): capa + download + galeria de itens + CTAs.
+ * Print mode: capa + medidores + 1 item/page + QR (D-09, D-13).
  */
 export function RelatorioFotograficoView({
   report,
@@ -89,6 +89,7 @@ export function RelatorioFotograficoView({
   const flatItems = report.ambientes.flatMap((a) =>
     a.items.map((item) => ({ ambiente: a.nome, item })),
   );
+  const token = report.token;
 
   return (
     <div
@@ -167,7 +168,7 @@ export function RelatorioFotograficoView({
           )}
         </div>
 
-        {/* Public mode (D-14): download only — no item gallery, no contest CTAs */}
+        {/* Public mode: PDF + status + client CTAs (Phase 4) */}
         {!isPrint && (
           <div className="mt-8 space-y-4">
             {report.relatorio?.pdfDownloadUrl ? (
@@ -189,8 +190,45 @@ export function RelatorioFotograficoView({
                 {report.relatorio.geradoEm
                   ? ` · gerado em ${formatData(report.relatorio.geradoEm)}`
                   : ""}
+                {report.relatorio.status
+                  ? ` · status ${report.relatorio.status}`
+                  : ""}
               </p>
             ) : null}
+
+            {report.jaConfirmado && (
+              <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-emerald-900 text-sm">
+                Recebimento confirmado
+                {report.relatorio?.nomeQuemConfirmou
+                  ? ` por ${report.relatorio.nomeQuemConfirmou}`
+                  : ""}
+                {report.relatorio?.confirmadoEm
+                  ? ` em ${formatData(report.relatorio.confirmadoEm)}`
+                  : ""}
+                .
+              </div>
+            )}
+
+            {!report.jaConfirmado && (
+              <a
+                href={`/public/r/${token}/confirmar`}
+                className="inline-flex items-center justify-center gap-2 w-full min-h-[48px] rounded-full border-2 border-status-good text-status-good font-bold text-sm hover:bg-green-50 transition-colors"
+              >
+                Confirmar recebimento do relatório
+              </a>
+            )}
+
+            {report.contestacaoAberta && report.contestacaoPrazoAte && (
+              <p className="text-xs text-slate-500">
+                Você pode contestar itens até{" "}
+                <strong>{formatData(report.contestacaoPrazoAte)}</strong>.
+              </p>
+            )}
+            {!report.contestacaoAberta && !report.jaConfirmado && (
+              <p className="text-xs text-slate-500">
+                O prazo para contestar itens encerrou ou não está disponível.
+              </p>
+            )}
           </div>
         )}
 
@@ -217,6 +255,79 @@ export function RelatorioFotograficoView({
           </div>
         )}
       </section>
+
+      {/* —— PUBLIC: gallery by room (Phase 4) —— */}
+      {!isPrint &&
+        report.ambientes.map((ambiente) => (
+          <section
+            key={ambiente.id}
+            className="relative max-w-2xl mx-auto px-6 pb-8"
+          >
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3">
+              {ambiente.nome}
+            </h2>
+            <ul className="space-y-4">
+              {ambiente.items.map((item) => {
+                const thumb = item.fotos[0];
+                return (
+                  <li
+                    key={item.id}
+                    className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden"
+                  >
+                    {thumb && (
+                      <div className="aspect-[16/10] bg-slate-50">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={thumb.url}
+                          alt={item.nome}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="p-4 space-y-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="text-base font-bold text-secondary">
+                          {item.nome}
+                        </h3>
+                        {item.estadoConservacao && (
+                          <span
+                            className={`text-[10px] font-bold uppercase rounded px-2 py-0.5 shrink-0 ${estadoBadgeClass(
+                              item.estadoConservacao,
+                            )}`}
+                          >
+                            {item.estadoConservacao}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">
+                        {item.descricaoFinal || "Sem descrição técnica."}
+                      </p>
+                      {item.contestacaoStatus && (
+                        <p className="text-xs font-semibold text-slate-500">
+                          Contestação: {item.contestacaoStatus}
+                        </p>
+                      )}
+                      {item.podeContestar ? (
+                        <a
+                          href={`/public/r/${token}/contestar/${item.id}`}
+                          className="inline-flex items-center justify-center min-h-[44px] px-4 rounded-full border border-red-200 text-red-700 text-sm font-bold hover:bg-red-50 transition-colors"
+                        >
+                          Contestar este item
+                        </a>
+                      ) : null}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ))}
+
+      {!isPrint && flatItems.length === 0 && (
+        <p className="relative max-w-2xl mx-auto px-6 pb-12 text-sm text-slate-500 text-center">
+          Nenhum item com mídia completa neste relatório ainda.
+        </p>
+      )}
 
       {/* —— PRINT: medidores page (Phase 3.2) —— */}
       {isPrint && report.medidores && hasAnyMedidor(report.medidores) && (

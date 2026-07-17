@@ -21,7 +21,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-15)
 
 **Core value:** Vistoriador executa vistoria completa no celular, offline, e obtém um relatório fotográfico pronto com descrições geradas por IA.
-**Current focus:** Phase 3.2 Fechamento (medidores + PDF no field) implemented; Phase 4 Envio/Contestação next. Run prisma migrate for `medidores`.
+**Current focus:** Phase 4 Envio/Contestação implemented (public gallery, contest/confirm APIs, WhatsApp). Run prisma migrate for medidores + nome_cliente.
 
 ## Current Position
 
