@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { Icon } from "@/components/app/Icon";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export type ItemDescricaoEditorProps = {
   vistoriaId: string;
@@ -24,14 +27,36 @@ export type ItemDescricaoEditorProps = {
 
 const ESTADOS = ["NOVO", "BOM", "REGULAR", "RUIM"] as const;
 
-const STATUS_STYLES: Record<string, string> = {
-  PENDENTE: "bg-slate-100 text-slate-600",
-  CAPTURADO: "bg-amber-100 text-amber-800",
-  EM_ANALISE: "bg-sky-100 text-sky-800",
-  ANALISADO: "bg-indigo-100 text-indigo-800",
-  REVISADO: "bg-emerald-100 text-emerald-800",
-  FINALIZADO: "bg-emerald-100 text-emerald-900",
-};
+function statusTone(
+  status: string,
+): "pending" | "fair" | "primary" | "good" | "neutral" {
+  switch (status) {
+    case "REVISADO":
+    case "FINALIZADO":
+      return "good";
+    case "ANALISADO":
+    case "EM_ANALISE":
+      return "primary";
+    case "CAPTURADO":
+      return "fair";
+    case "PENDENTE":
+      return "pending";
+    default:
+      return "neutral";
+  }
+}
+
+function statusLabel(status: string): string {
+  const map: Record<string, string> = {
+    PENDENTE: "Pendente",
+    CAPTURADO: "Capturado",
+    EM_ANALISE: "Em análise",
+    ANALISADO: "Analisado",
+    REVISADO: "Revisado",
+    FINALIZADO: "Finalizado",
+  };
+  return map[status] ?? status;
+}
 
 export function ItemDescricaoEditor({
   vistoriaId,
@@ -107,61 +132,75 @@ export function ItemDescricaoEditor({
     }
   };
 
-  const badgeClass = STATUS_STYLES[status] ?? "bg-slate-100 text-slate-600";
+  const reviewed = status === "REVISADO" || status === "FINALIZADO";
 
   return (
-    <div className="p-4 border border-slate-100 rounded-xl space-y-3 bg-white">
+    <article
+      className={cn(
+        "p-4 border rounded-2xl space-y-3 bg-white shadow-sm",
+        reviewed ? "border-status-good/25" : "border-slate-100",
+      )}
+    >
       <div className="flex justify-between items-start gap-3">
         <div className="min-w-0">
-          <h4 className="font-semibold text-sm text-[#1A2B3C] truncate">{nome}</h4>
+          <h4 className="font-bold text-sm text-secondary truncate">{nome}</h4>
           {provedor && (
-            <p className="text-[11px] text-slate-400 mt-0.5">
-              Provedor IA: {provedor}
-            </p>
+            <p className="text-xs text-slate-400 mt-0.5">Provedor IA: {provedor}</p>
           )}
         </div>
-        <span
-          className={`shrink-0 text-[10px] font-bold uppercase rounded px-2 py-0.5 ${badgeClass}`}
-        >
-          {status}
-        </span>
+        <Badge tone={statusTone(status)}>{statusLabel(status)}</Badge>
       </div>
 
       {fotoUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={fotoUrl}
           alt={`Foto — ${nome}`}
-          className="w-full max-h-48 object-cover rounded-lg border border-slate-100"
+          className="w-full max-h-52 object-cover rounded-xl border border-slate-100"
         />
       )}
 
       {transcricao && (
-        <div className="rounded-lg bg-slate-50 border border-slate-100 p-3">
-          <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-1">
+        <div className="rounded-xl bg-slate-50 border border-slate-100 p-3">
+          <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-1 flex items-center gap-1">
+            <Icon name="graphic_eq" className="text-[14px] text-primary" />
             Transcrição do áudio
           </p>
-          <p className="text-xs text-slate-600 leading-relaxed">{transcricao}</p>
+          <p className="text-sm text-slate-600 leading-relaxed max-w-prose">
+            {transcricao}
+          </p>
         </div>
       )}
 
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-slate-500">
+        <label
+          htmlFor={`desc-${itemId}`}
+          className="text-xs font-bold uppercase tracking-wider text-slate-500"
+        >
           Descrição técnica
         </label>
         <textarea
-          className="w-full rounded-lg border border-slate-200 p-2.5 text-xs h-24 focus:outline-none focus:ring-2 focus:ring-[#00AEEF]/30 focus:border-[#00AEEF]"
+          id={`desc-${itemId}`}
+          className="w-full rounded-xl border border-slate-200 p-3 text-sm min-h-[96px] text-secondary focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary bg-slate-50 leading-relaxed"
           value={descricao}
           onChange={(e) => setDescricao(e.target.value)}
           placeholder="Descrição técnica do item para o relatório fotográfico…"
         />
+        <p className="text-[11px] text-slate-400">
+          Não use &ldquo;laudo&rdquo; ou &ldquo;laudo técnico&rdquo;.
+        </p>
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-slate-500">
+        <label
+          htmlFor={`estado-${itemId}`}
+          className="text-xs font-bold uppercase tracking-wider text-slate-500"
+        >
           Estado de conservação
         </label>
         <select
-          className="w-full rounded-lg border border-slate-200 p-2 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[#00AEEF]/30 focus:border-[#00AEEF]"
+          id={`estado-${itemId}`}
+          className="w-full h-11 min-h-[44px] rounded-xl border border-slate-200 px-3 text-sm bg-white text-secondary focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary"
           value={estado}
           onChange={(e) => setEstado(e.target.value)}
         >
@@ -175,22 +214,24 @@ export function ItemDescricaoEditor({
 
       {message && (
         <p
-          className={`text-xs rounded-lg px-3 py-2 ${
+          role="status"
+          className={cn(
+            "text-sm rounded-xl px-3 py-2 border",
             message.type === "ok"
-              ? "bg-emerald-50 text-emerald-800 border border-emerald-100"
-              : "bg-red-50 text-red-700 border border-red-100"
-          }`}
+              ? "bg-green-50 text-green-800 border-green-100"
+              : "bg-red-50 text-red-700 border-red-100",
+          )}
         >
           {message.text}
         </p>
       )}
 
       <div className="flex flex-wrap gap-2 pt-1">
-        <button
+        <Button
           type="button"
+          size="sm"
           disabled={saving || !descricao.trim()}
           onClick={() => submit(false)}
-          className="inline-flex items-center gap-1.5 rounded-full bg-[#00AEEF] hover:bg-[#009ACD] text-white text-xs font-bold px-4 py-2 disabled:opacity-50 transition-colors"
         >
           {saving ? (
             <Icon name="progress_activity" className="text-[16px] animate-spin" />
@@ -198,17 +239,18 @@ export function ItemDescricaoEditor({
             <Icon name="save" className="text-[16px]" />
           )}
           Salvar revisão
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          size="sm"
+          variant="secondary"
           disabled={saving || !descricao.trim()}
           onClick={() => submit(true)}
-          className="inline-flex items-center gap-1.5 rounded-full bg-[#1A2B3C] hover:bg-slate-800 text-white text-xs font-bold px-4 py-2 disabled:opacity-50 transition-colors"
         >
           <Icon name="check_circle" className="text-[16px]" />
-          Aprovar sem editar
-        </button>
+          Aprovar
+        </Button>
       </div>
-    </div>
+    </article>
   );
 }

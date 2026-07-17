@@ -280,29 +280,31 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans text-[#1A2B3C] p-8">
+    <div className="min-h-screen bg-background-light font-sans text-secondary p-6 md:p-8">
       <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <p className="text-xs font-bold uppercase tracking-wider text-primary mb-1">
+            Admin · revisão IA
+          </p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-secondary">
             Relatório fotográfico
             {data ? ` — ${data.vistoria.codigo}` : ""}
           </h1>
-          <p className="text-sm text-slate-500">
-            Revisão das descrições técnicas geradas pela IA, ambiente por
-            ambiente
+          <p className="text-sm text-slate-500 mt-1">
+            Revise descrições técnicas ambiente por ambiente antes de gerar o PDF
           </p>
         </div>
         <div className="flex gap-3">
           <Link
             href="/admin/vistorias"
-            className="text-slate-500 text-sm hover:underline font-medium flex items-center"
+            className="text-slate-500 text-sm hover:underline font-medium flex items-center min-h-[44px]"
           >
             Voltar
           </Link>
           <button
             type="button"
             onClick={load}
-            className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium hover:bg-slate-50 transition-colors inline-flex items-center gap-1.5"
+            className="rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold hover:bg-slate-50 transition-colors inline-flex items-center gap-1.5 min-h-[44px]"
           >
             <Icon name="refresh" className="text-[18px]" />
             Atualizar
@@ -314,7 +316,7 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
         <div className="flex items-center justify-center py-24 text-slate-400 gap-2">
           <Icon
             name="progress_activity"
-            className="text-3xl animate-spin text-[#00AEEF]"
+            className="text-3xl animate-spin text-primary"
           />
           <span className="text-sm">Carregando revisão…</span>
         </div>
@@ -327,7 +329,7 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
           <button
             type="button"
             onClick={load}
-            className="text-sm font-bold text-[#00AEEF] hover:underline"
+            className="text-sm font-bold text-primary hover:underline min-h-[44px]"
           >
             Tentar novamente
           </button>
@@ -338,7 +340,7 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
             {canFinalize && (
-              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-emerald-900 text-sm font-medium">
+              <div className="rounded-2xl border border-status-good/30 bg-green-50 px-5 py-4 text-green-900 text-sm font-medium">
                 Itens com mídia revisados ({mediaReviewed}/{mediaItems.length}) —
                 pronto para{" "}
                 {hasExistingReport ? "regenerar" : "gerar"} o relatório
@@ -353,42 +355,44 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
               </div>
             )}
 
-            <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-wrap gap-4 text-sm">
-              <div>
-                <span className="text-slate-400 text-xs uppercase font-bold">
+            <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm grid grid-cols-2 sm:grid-cols-5 gap-3 text-sm">
+              <div className="rounded-xl bg-slate-50 border border-slate-100 p-3">
+                <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">
                   Total
                 </span>
-                <p className="font-bold text-lg">{data.progress.total}</p>
+                <p className="font-bold text-xl text-secondary tabular-nums mt-0.5">
+                  {data.progress.total}
+                </p>
               </div>
-              <div>
-                <span className="text-slate-400 text-xs uppercase font-bold">
+              <div className="rounded-xl bg-primary/5 border border-primary/10 p-3">
+                <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">
                   Com mídia
                 </span>
-                <p className="font-bold text-lg text-[#00AEEF]">
+                <p className="font-bold text-xl text-primary tabular-nums mt-0.5">
                   {mediaItems.length}
                 </p>
               </div>
-              <div>
-                <span className="text-slate-400 text-xs uppercase font-bold">
+              <div className="rounded-xl bg-slate-50 border border-slate-100 p-3">
+                <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">
                   Analisados
                 </span>
-                <p className="font-bold text-lg text-indigo-600">
+                <p className="font-bold text-xl text-secondary tabular-nums mt-0.5">
                   {data.progress.analisados}
                 </p>
               </div>
-              <div>
-                <span className="text-slate-400 text-xs uppercase font-bold">
+              <div className="rounded-xl bg-green-50 border border-status-good/15 p-3">
+                <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">
                   Revisados
                 </span>
-                <p className="font-bold text-lg text-emerald-600">
+                <p className="font-bold text-xl text-status-good tabular-nums mt-0.5">
                   {data.progress.revisados}
                 </p>
               </div>
-              <div>
-                <span className="text-slate-400 text-xs uppercase font-bold">
+              <div className="rounded-xl bg-amber-50 border border-status-warn/15 p-3">
+                <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">
                   Pendentes
                 </span>
-                <p className="font-bold text-lg text-amber-600">
+                <p className="font-bold text-xl text-status-warn tabular-nums mt-0.5">
                   {data.progress.pendentes}
                 </p>
               </div>
@@ -501,7 +505,7 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
                 type="button"
                 disabled={!canFinalize || finalizing}
                 onClick={handleFinalize}
-                className="w-full rounded-full bg-[#00AEEF] hover:bg-[#009ACD] disabled:bg-slate-200 disabled:text-slate-400 text-white px-5 py-3 text-sm font-semibold transition-colors"
+                className="w-full rounded-full bg-primary hover:bg-primary-hover disabled:bg-slate-200 disabled:text-slate-400 text-white px-5 py-3 text-sm font-bold transition-colors min-h-[48px]"
               >
                 {finalizing
                   ? "Enfileirando…"
@@ -511,7 +515,7 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
               </button>
 
               {finalizeError && (
-                <p className="text-xs text-red-600">{finalizeError}</p>
+                <p className="text-sm text-status-bad">{finalizeError}</p>
               )}
 
               {publicUrl && (
@@ -526,7 +530,7 @@ export default function AdminVistoriaDetail({ params }: PageProps) {
                     <button
                       type="button"
                       onClick={handleCopyLink}
-                      className="text-xs font-semibold text-[#00AEEF] hover:underline"
+                      className="text-sm font-semibold text-primary hover:underline min-h-[44px]"
                     >
                       {copied ? "Copiado!" : "Copiar link"}
                     </button>

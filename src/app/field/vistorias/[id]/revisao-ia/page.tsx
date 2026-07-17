@@ -4,6 +4,8 @@ import { use, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { PhoneShell, TopBar } from "@/components/app/PhoneShell";
 import { Icon } from "@/components/app/Icon";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { ItemDescricaoEditor } from "@/components/report/ItemDescricaoEditor";
 
 interface PageProps {
@@ -172,6 +174,10 @@ export default function FieldRevisaoIaPage({ params }: PageProps) {
 
   const allReviewed =
     !!data && data.progress.total > 0 && data.progress.revisados === data.progress.total;
+  const reviewPct =
+    data && data.progress.total > 0
+      ? Math.round((data.progress.revisados / data.progress.total) * 100)
+      : 0;
 
   return (
     <PhoneShell showNav={false}>
@@ -179,70 +185,72 @@ export default function FieldRevisaoIaPage({ params }: PageProps) {
 
       <main className="flex-1 px-5 pt-2 pb-8 space-y-4 overflow-y-auto">
         {!online && (
-          <div className="bg-amber-50 border border-amber-200 text-amber-900 rounded-3xl p-5 text-sm space-y-2">
-            <p className="font-bold flex items-center gap-1.5">
-              <Icon name="wifi_off" className="text-[18px]" />
+          <div className="bg-amber-50 border border-amber-200 text-amber-900 rounded-3xl p-5 space-y-2">
+            <p className="font-bold flex items-center gap-1.5 text-sm">
+              <Icon name="wifi_off" className="text-[20px]" />
               Sem conexão
             </p>
-            <p className="text-xs text-amber-800/80 leading-relaxed">
-              A revisão de descrições técnicas requer conexão com a internet.
-              As saídas da IA não ficam disponíveis offline.
+            <p className="text-sm text-amber-800/90 leading-relaxed">
+              A revisão de descrições técnicas precisa de internet. As saídas da IA não
+              ficam disponíveis offline.
             </p>
           </div>
         )}
 
         {online && loading && (
           <div className="flex items-center justify-center py-16 gap-2 text-slate-400">
-            <Icon
-              name="progress_activity"
-              className="text-3xl text-primary animate-spin"
-            />
-            <span className="text-xs">Carregando descrições técnicas…</span>
+            <Icon name="progress_activity" className="text-3xl text-primary animate-spin" />
+            <span className="text-sm">Carregando descrições técnicas…</span>
           </div>
         )}
 
         {online && error && !loading && (
-          <div className="bg-red-50 border border-red-100 text-red-700 rounded-3xl p-5 text-sm space-y-2">
-            <p className="font-bold">Não foi possível carregar</p>
-            <p className="text-xs">{error}</p>
-            <button
-              type="button"
-              onClick={load}
-              className="text-primary font-bold text-xs hover:underline"
-            >
+          <div className="bg-red-50 border border-red-100 text-red-700 rounded-3xl p-5 space-y-3">
+            <p className="font-bold text-sm">Não foi possível carregar</p>
+            <p className="text-sm">{error}</p>
+            <Button type="button" size="sm" onClick={load}>
               Tentar novamente
-            </button>
+            </Button>
           </div>
         )}
 
         {online && data && !loading && (
           <>
-            <div className="bg-white border border-slate-100 rounded-3xl p-4 shadow-sm">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-                Progresso do relatório fotográfico
-              </p>
-              <div className="flex justify-between text-xs">
-                <span className="text-slate-500">
-                  Revisados:{" "}
-                  <strong className="text-secondary">
-                    {data.progress.revisados}/{data.progress.total}
-                  </strong>
-                </span>
-                <span className="text-slate-500">
-                  Status:{" "}
-                  <strong className="text-secondary">{data.vistoria.status}</strong>
+            <div className="bg-white border border-slate-100 rounded-3xl p-4 shadow-sm space-y-3">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                    Relatório fotográfico
+                  </p>
+                  <p className="text-sm font-bold text-secondary mt-0.5">
+                    {data.vistoria.codigo}
+                  </p>
+                </div>
+                <span className="text-xs font-semibold text-slate-500 tabular-nums">
+                  {data.progress.revisados}/{data.progress.total}
                 </span>
               </div>
+              <Progress
+                value={reviewPct}
+                size="sm"
+                barClassName={allReviewed ? "bg-status-good" : "bg-primary"}
+                label="Revisados"
+                meta={`${reviewPct}%`}
+              />
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <Metric label="Analisados" value={data.progress.analisados} />
+                <Metric label="Revisados" value={data.progress.revisados} good />
+                <Metric label="Pendentes" value={data.progress.pendentes} warn />
+              </div>
               {allReviewed && (
-                <p className="mt-3 text-xs text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-2xl px-3 py-2">
-                  Todas as descrições técnicas revisadas — pronto para o relatório
-                  fotográfico (PDF na próxima etapa).
+                <p className="text-sm text-status-good bg-green-50 border border-status-good/20 rounded-2xl px-3 py-2 font-medium">
+                  Todas as descrições revisadas — pronto para o PDF no admin.
                 </p>
               )}
             </div>
 
             {data.ambientes.length === 0 && (
-              <p className="text-center text-xs text-slate-400 py-8">
+              <p className="text-center text-sm text-slate-400 py-8">
                 Nenhum ambiente encontrado.
               </p>
             )}
@@ -284,12 +292,39 @@ export default function FieldRevisaoIaPage({ params }: PageProps) {
         <div className="pt-2">
           <Link
             href={`/field/vistorias/${id}/sucesso`}
-            className="block w-full h-12 rounded-full bg-secondary text-white text-sm font-bold text-center leading-[3rem]"
+            className="flex items-center justify-center w-full h-12 min-h-[48px] rounded-full bg-secondary text-white text-sm font-bold hover:bg-secondary/90 transition-colors"
           >
             Voltar
           </Link>
         </div>
       </main>
     </PhoneShell>
+  );
+}
+
+function Metric({
+  label,
+  value,
+  good,
+  warn,
+}: {
+  label: string;
+  value: number;
+  good?: boolean;
+  warn?: boolean;
+}) {
+  return (
+    <div className="rounded-xl bg-slate-50 border border-slate-100 py-2 px-1">
+      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+        {label}
+      </p>
+      <p
+        className={`text-base font-bold tabular-nums mt-0.5 ${
+          good ? "text-status-good" : warn ? "text-status-warn" : "text-secondary"
+        }`}
+      >
+        {value}
+      </p>
+    </div>
   );
 }
