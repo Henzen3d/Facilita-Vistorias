@@ -7,20 +7,30 @@
 ---
 
 ## STATUS GLOBAL
-| Área | Status |
-|------|--------|
-| Bug 1 — Progresso travado em 0% | ✅ Concluído |
-| Bug 2 — Cômodo cadastrado não funciona | ✅ Concluído |
-| Bug 3 — Adicionar novos cômodos durante vistoria | ✅ Concluído |
-| Feat 4 — Criar vistoria do zero (campo) | ✅ Concluído |
-| Design 5 — Melhorias visuais baseadas em studio-google | ✅ Concluído (3A–3G) |
-| Sprint 3A — Login field + home `/field` | ✅ Concluído |
-| Sprint 3B — Captura item (foto+áudio) | ✅ Concluído |
-| Sprint 3C — Ambientes / itens / progress | ✅ Concluído |
-| Sprint 3D — Revisão IA (field + admin) | ✅ Concluído |
-| Sprint 3E — Admin dashboard + lista | ✅ Concluído |
-| Sprint 3F — Relatório público | ✅ Concluído |
-| Sprint 3G — Sync + empty states | ✅ Concluído |
+
+**Progresso consolidado:** `12/12` entregas de bugs/features/design shippadas · Taste Skill redesign re-pass `1/4` (só auditoria)
+
+| Área | Status | Notas |
+|------|--------|-------|
+| Bug 1 — Progresso travado em 0% | ✅ Concluído | Fórmula cadastro 15% + checklist 10% + itens 75% |
+| Bug 2 — Cômodo cadastrado não funciona | ✅ Concluído | Empty state + add item |
+| Bug 3 — Adicionar novos cômodos durante vistoria | ✅ Concluído | Modal offline-first |
+| Feat 4 — Criar vistoria do zero (campo) | ✅ Concluído | `/field/vistorias/nova` |
+| Design 5 — Melhorias UI (studio-google + plan-new-redesing) | ✅ Concluído | Sprints 3A–3G no código |
+| Sprint 3A — Login field + home `/field` | ✅ Concluído | Commit `ead82ef` |
+| Sprint 3B — Captura item (foto+áudio) | ✅ Concluído | Commit `988fdcd` |
+| Sprint 3C — Ambientes / itens / progress | ✅ Concluído | Commit `de48371` |
+| Sprint 3D — Revisão IA (field + admin) | ✅ Concluído | Commit `03fef3d` |
+| Sprint 3E — Admin dashboard + lista | ✅ Concluído | Commit `b73e64a` |
+| Sprint 3F — Relatório público | ✅ Concluído | Commit `a34b6c4` |
+| Sprint 3G — Sync + empty states | ✅ Concluído | Commit `ea9f586` |
+| Taste Skill v2 — install `design-taste-frontend` | ✅ Concluído | `npx skills add … -y -g` |
+| Taste Skill — Step 1 audit §11.B (3A–3C) | ✅ Concluído | Publicado na sessão; mode Preserve |
+| Taste Skill — Step 2 levers §11.D | ⬜ Pendente | Aguardando OK do usuário |
+| Taste Skill — Step 3 implement + `tsc` | ⬜ Pendente | Bloqueado até Step 2 OK |
+| Taste Skill — Step 4 pre-flight / em-dash / preservation | ⬜ Pendente | Bloqueado até Step 3 |
+
+> **Regra:** qualquer **Fail** no Step 4 (Pre-Flight, em-dash, preservation, brand fidelity) **bloqueia conclusão** do re-pass Taste — não marcar Steps 2–4 como ✅ sem passar a matriz.
 
 ---
 
@@ -104,31 +114,31 @@ O dashboard só mostra vistorias baixadas do servidor. Não há como criar uma v
 ### ETAPA 1 — Corrigir Bug 1: Progresso travado em 0%
 **Arquivo:** `src/app/field/vistorias/[id]/ambientes/page.tsx`
 
-- [ ] 1.1 — Calcular progresso separado do checklist de chegada (10 campos booleanos)
+- [x] 1.1 — Calcular progresso separado do checklist de chegada (10 campos booleanos)
   - Criar lista `checklistFields` com os 10 campos
   - Calcular `checklistDone` = quantidade de `true`
   - Calcular `checklistPct` = `Math.round((checklistDone / 10) * 100)`
-- [ ] 1.2 — Atualizar o card de progresso principal
+- [x] 1.2 — Atualizar o card de progresso principal
   - Exibir duas métricas: "Protocolo de Chegada" (checklistPct%) e "Ambientes" (pct%)
   - Ou calcular progresso unificado: `(checklistPct * 0.3) + (pct * 0.7)`
-- [ ] 1.3 — Adicionar feedback visual no protocolo de chegada
+- [x] 1.3 — Adicionar feedback visual no protocolo de chegada
   - Exibir contagem "X/10 concluídos" ao lado do título "Protocolo de Chegada"
   - Quando `checklistDone === 10`, mostrar badge "✓ Protocolo Concluído" verde
-- [ ] 1.4 — Testar: marcar todos os checkboxes e ver o progresso subir
+- [x] 1.4 — Testar: marcar todos os checkboxes e ver o progresso subir
 
 ---
 
 ### ETAPA 2 — Corrigir Bug 2: Página de cômodo não funcional
 **Arquivo:** `src/app/field/vistorias/[id]/ambientes/[ambienteId]/page.tsx`
 
-- [ ] 2.1 — Adicionar empty state quando `items.length === 0`
+- [x] 2.1 — Adicionar empty state quando `items.length === 0`
   - Ícone grande + texto "Nenhum item cadastrado para este cômodo"
   - Subtexto: "Adicione itens para iniciar a vistoria deste ambiente"
   - Botão "+ Adicionar Primeiro Item" em destaque
-- [ ] 2.2 — Verificar navegação do botão "Capturar"
+- [x] 2.2 — Verificar navegação do botão "Capturar"
   - Confirmar que `item.id` e `ambienteId` batem com os dados do IDB
   - Verificar se a rota `itens/[itemId]` existe e carrega corretamente
-- [ ] 2.3 — Adicionar botão flutuante "+ Adicionar Item" no rodapé
+- [x] 2.3 — Adicionar botão flutuante "+ Adicionar Item" no rodapé
   - Estilo: botão primário grande, fixo na parte de baixo
   - Link para `/itens/novo` (criar rota se não existir) ou modal inline
 
@@ -137,33 +147,33 @@ O dashboard só mostra vistorias baixadas do servidor. Não há como criar uma v
 ### ETAPA 3 — Implementar adição de cômodos durante vistoria
 **Arquivo:** `src/app/field/vistorias/[id]/ambientes/page.tsx`
 
-- [ ] 3.1 — Adicionar estados `showAddModal`, `newRoomName`, `newRoomIcon`
-- [ ] 3.2 — Criar função `handleAddAmbiente`:
+- [x] 3.1 — Adicionar estados `showAddModal`, `newRoomName`, `newRoomIcon`
+- [x] 3.2 — Criar função `handleAddAmbiente`:
   - Criar `LocalAmbiente` com `id = "amb-local-" + Date.now()`
   - Salvar no IDB: `db.put("ambientes", novoAmbiente)`
   - Adicionar na `mutation_queue`: `action: "CREATE_AMBIENTE_LOCAL"` (novo tipo)
   - Atualizar estado local: `setAmbientes(prev => [...prev, novoAmbiente])`
-- [ ] 3.3 — Implementar modal de criação (baseado em RoomOverviewScreen.tsx da referência):
+- [x] 3.3 — Implementar modal de criação (baseado em RoomOverviewScreen.tsx da referência):
   - Input: nome do cômodo (obrigatório)
   - Seleção: tipo de ícone com 6 opções (Quarto, Sala, Cozinha, Banheiro, Varanda, Outro)
   - Botões: Cancelar + Adicionar
-- [ ] 3.4 — Adicionar botão "+ Adicionar Cômodo" na página
+- [x] 3.4 — Adicionar botão "+ Adicionar Cômodo" na página
   - Posição: abaixo da lista de cômodos ou como FAB (Floating Action Button)
   - Ícone: `add` (Material Symbol)
-- [ ] 3.5 — Testar: adicionar cômodo offline e verificar que aparece na lista
+- [x] 3.5 — Testar: adicionar cômodo offline e verificar que aparece na lista
 
 ---
 
 ### ETAPA 4 — Criar vistoria do zero pelo vistoriador
 **Arquivos:** `src/app/field/page.tsx` + `src/app/field/vistorias/nova/page.tsx` + `src/lib/db/idb.ts`
 
-- [ ] 4.1 — Atualizar `src/lib/db/idb.ts`
+- [x] 4.1 — Atualizar `src/lib/db/idb.ts`
   - Adicionar `"CREATE_VISTORIA_LOCAL"` e `"CREATE_AMBIENTE_LOCAL"` ao tipo `MutationQueueItem.action`
-- [ ] 4.2 — Adicionar botão "Nova Vistoria" no dashboard (`/field/page.tsx`)
+- [x] 4.2 — Adicionar botão "Nova Vistoria" no dashboard (`/field/page.tsx`)
   - Posição: no header, ao lado do botão de sincronizar
   - Link: `/field/vistorias/nova`
   - Ícone: `add_circle` ou `edit_note`
-- [ ] 4.3 — Criar página `/field/vistorias/nova/page.tsx`:
+- [x] 4.3 — Criar página `/field/vistorias/nova/page.tsx`:
   - TopBar com título "Nova Vistoria" e botão Voltar
   - Formulário com os campos:
     * Endereço (obrigatório)
@@ -180,14 +190,14 @@ O dashboard só mostra vistorias baixadas do servidor. Não há como criar uma v
     * Nome do Proprietário/Locador (opcional)
   - Validação: campos obrigatórios marcados com erro visual
   - Botão "Criar Vistoria" no rodapé (estilo primário grande)
-- [ ] 4.4 — Implementar função `handleCreateVistoria`:
+- [x] 4.4 — Implementar função `handleCreateVistoria`:
   - Gerar `id = "vis-local-" + Date.now()`
   - Gerar `codigo = "VIS-LOCAL-" + Date.now()`
   - Criar objeto `LocalVistoria` completo
   - `db.put("vistorias", novaVistoria)`
   - `db.put("mutation_queue", { action: "CREATE_VISTORIA_LOCAL", ... })`
   - `router.push("/field/vistorias/" + novaVistoria.id)`
-- [ ] 4.5 — Testar o fluxo completo: criar → navegar para detalhes → iniciar cômodos
+- [x] 4.5 — Testar o fluxo completo: criar → navegar para detalhes → iniciar cômodos
 
 ---
 
@@ -288,5 +298,7 @@ O dashboard só mostra vistorias baixadas do servidor. Não há como criar uma v
 | 2026-07-16 | Sprint 3E: Admin dashboard/lista | ✅ Concluído | KPIs, nav com ícones, tabela + cards mobile |
 | 2026-07-16 | Sprint 3F: Relatório público | ✅ Concluído | Instrument Serif, tokens, capa soft brand |
 | 2026-07-16 | Sprint 3G: Sync | ✅ Concluído | Status card, empty state, badges, offline banner |
+| 2026-07-16 | Taste Skill install + §11.B audit (3A–3C) | ✅ Concluído | `design-taste-frontend` global; mode Preserve; dials 3/3/5; Step 2+ aguarda OK |
+| — | Taste Skill Steps 2–4 (levers → implement → pre-flight) | ⬜ Pendente | Fail em Pre-Flight / preservation / brand **bloqueia** conclusão |
 
 
