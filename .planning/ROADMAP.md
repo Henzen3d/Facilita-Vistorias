@@ -21,6 +21,7 @@ Do núcleo de dados ao relatório compartilhável: construir primeiro a fundaç�
 - [x] **Phase 3.1: Produtividade em Campo** - Templates de imóvel/cômodos, próximo item, score com foto obrigatória (D-05) (code 2026-07-17; UAT em aparelho pendente)
 - [x] **Phase 3.2: Fechamento** - Medidores no resumo/PDF + gerar PDF no field + soft lock pós-finalização (code 2026-07-17; migrate DB)
 - [x] **Phase 4: Envio e Contestação** - Página pública rica, contestação/confirmação, WhatsApp + marcar enviado (code 2026-07-17; migrate + UAT)
+- [ ] **Phase 5: Assinatura Eletrônica Nativa** - Signature Pad a dedo, log de auditoria (IP/CPF/hash SHA-256), hard lock e PDF com página de auditoria
 
 ## Phase Details
 
@@ -99,11 +100,30 @@ Plans:
   2. Cliente acessa a versão digital por token e visualiza fotos/descrições
   3. Cliente pode contestar itens específicos dentro do prazo configurado
 
-**Plans**: TBD
+**Plans**: 1/1 plans complete
 
 Plans:
 
-- [ ] 04-01: TBD (definir em /gsd:discuss-phase 4)
+- [x] 04-01: Página pública rica + contestação + confirmação + WhatsApp (code 2026-07-17)
+
+### Phase 5: Assinatura Eletrônica Nativa
+
+**Goal**: Implementar assinatura eletrônica a dedo (Signature Pad) com log de auditoria de validade jurídica, hash SHA-256 de integridade do documento e hard lock pós-assinatura, sem uso de serviços terceiros.
+**Depends on**: Phase 4 (token JWT, status CONFIRMADO, página pública)
+**Success Criteria** (what must be TRUE):
+
+  1. Inquilino acessa o link no celular e desenha a assinatura com o dedo após informar nome + CPF
+  2. Sistema gera hash SHA-256 no servidor e grava log de auditoria completo (IP, User-Agent, data/hora)
+  3. PDF final é re-gerado com página de auditoria contendo assinatura + quadro de metadados + QR code
+  4. Status do relatório muda para `ASSINADA` e qualquer edição no admin/field retorna HTTP 423
+
+**Plans**: 3 waves
+
+Plans:
+
+- [ ] 05-Wave1: Schema Prisma + API `/assinar` + validação CPF + hard lock
+- [ ] 05-Wave2: UI Signature Pad (Canvas nativo) + formulário + fluxo de confirmação
+- [ ] 05-Wave3: PDF re-gerado com página de auditoria + rota pública `/audit`
 
 ## Progress
 
@@ -114,5 +134,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Núcleo de Dados e Auth | 1/1 | Complete | 2026-07-14 |
 | 2. App de Campo (PWA) | 1/1 | Complete | 2026-07-15 |
-| 3. Relatório, PDF e IA | 5/5 | Complete   | 2026-07-15 |
-| 4. Envio e Contestação | 0/0 | Not started | - |
+| 3. Relatório, PDF e IA | 5/5 | Complete | 2026-07-15 |
+| 3.1. Produtividade em Campo | 1/1 | Complete | 2026-07-17 |
+| 3.2. Fechamento + Medidores | 1/1 | Complete | 2026-07-17 |
+| 4. Envio e Contestação | 1/1 | Complete | 2026-07-17 |
+| 5. Assinatura Eletrônica | 0/3 | Planned | - |
