@@ -177,33 +177,26 @@ por contexto (reaproveitar os mesmos símbolos no app garante consistência):
 
 ## 5. Bordas e forma (correção importante)
 
-A versão anterior deste documento estimava um raio máximo de 20px — **está
-errado**. O `tailwind_config.js` real sobrescreve o `borderRadius` padrão do
-Tailwind e o site usa esses valores **extensivamente** em containers grandes
-(hero, footer, cards de serviço):
+O site institucional utiliza valores de border radius bem grandes (`3xl = 40px` e `2xl = 24px`) criando uma estética "soft/blob" muito acentuada.
+
+Contudo, no **aplicativo operacional (dashboard, ambientes, captura de itens e admin)**, esses cantos muito arredondados dificultam a leitura e a densidade de dados. Portanto, a escala do aplicativo foi ajustada para valores mais discretos e harmoniosos:
 
 ```js
 borderRadius: {
   "DEFAULT": "0.25rem", // 4px
   "lg": "0.5rem",       // 8px
-  "xl": "1rem",         // 16px
-  "2xl": "1.5rem",      // 24px
-  "3xl": "2.5rem",      // 40px
+  "xl": "0.75rem",      // 12px  - antes 16px
+  "2xl": "1rem",        // 16px  - antes 24px
+  "3xl": "1.5rem",      // 24px  - antes 40px (Medida ideal para cards de destaque)
   "full": "9999px",
   "pill": "50px",
 }
 ```
 
-Exemplos reais de uso: hero `rounded-[3rem]` (48px, ainda maior que o `3xl`
-do config — usado como valor arbitrário pontual), footer `rounded-[2rem]
-md:rounded-[3rem]`, cards de serviço `rounded-[2.5rem]`. **A estética é
-"soft/blob"**, não o cantos discretamente arredondados que eu tinha assumido
-antes. Botões CTA são **pill** (`rounded-full` ou `rounded-pill`).
-
-No app: manter essa linguagem nos componentes voltados ao cliente
-(relatório público, botões de CTA), mas **moderar no painel
-admin/operacional** (usar no máximo `xl`/`2xl` em cards de trabalho — muito
-arredondado em telas densas de dados atrapalha a leitura).
+Desta forma:
+- O card do calendário e os cards principais de vistorias, que usam `rounded-3xl`, passam a ter **24px** (o arredondamento ideal anteriormente observado nos cards de estatísticas).
+- Os cards de estatísticas e painéis secundários, que usam `rounded-2xl`, passam a ter **16px**, suavizando muito o visual e otimizando a leitura.
+- Botões de CTA ou botões ovais mantêm o padrão **pill** (`rounded-full`).
 
 ## 6. Sombras
 

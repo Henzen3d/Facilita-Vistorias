@@ -57,11 +57,11 @@ const config: Config = {
       // do site — ver DESIGN.md §5 (correção importante: é bem mais
       // arredondado do que a primeira versão deste arquivo assumia).
       borderRadius: {
-        DEFAULT: "0.25rem",
-        lg: "0.5rem",
-        xl: "1rem",
-        "2xl": "1.5rem",
-        "3xl": "2.5rem",
+        DEFAULT: "0.25rem", // 4px
+        lg: "0.5rem",       // 8px
+        xl: "0.75rem",      // 12px
+        "2xl": "1rem",      // 16px
+        "3xl": "1.5rem",    // 24px
         full: "9999px",
         pill: "50px",
       },
