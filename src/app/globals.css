@@ -9,6 +9,9 @@
 @layer base {
   html {
     font-family: theme("fontFamily.sans");
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   body {
@@ -17,6 +20,28 @@
     @apply bg-background-light text-secondary;
     /* corpo nunca abaixo de 16px — app usado em campo, ver DESIGN.md §3.3 */
     font-size: 16px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, #00aeef 28%, white);
+    color: #1a2b3c;
+  }
+
+  /* Focus ring de marca — só teclado; não compete com controles que já
+     definem focus-visible localmente */
+  :where(a, button, input, textarea, select, summary, [role="button"]):focus-visible {
+    outline: 2px solid color-mix(in srgb, #00aeef 55%, transparent);
+    outline-offset: 2px;
   }
 }
 
@@ -39,4 +64,32 @@
   white-space: nowrap;
   word-wrap: normal;
   direction: ltr;
+  font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Superfícies reutilizáveis — evita cards com sombras “fantasma” inconsistentes */
+@layer components {
+  .surface-card {
+    @apply bg-white border border-slate-100 rounded-3xl shadow-sm;
+  }
+
+  .surface-panel {
+    @apply bg-white border border-slate-100 rounded-2xl shadow-sm;
+  }
+
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -26,11 +26,12 @@ export function PhoneShell({ children, showNav = true, bg = "app" }: PhoneShellP
     { href: `/field/vistorias/${id}/resumo`, icon: "assignment_turned_in", label: "Resumo" },
   ] as const;
 
-  const bgClass = bg === "dark" ? "bg-secondary" : bg === "white" ? "bg-card" : "bg-background-light";
+  const bgClass =
+    bg === "dark" ? "bg-secondary" : bg === "white" ? "bg-white" : "bg-background-light";
   
   return (
-    <div className={cn("min-h-screen w-full flex flex-col relative pb-20", bgClass)}>
-      <div className="flex-1 flex flex-col">
+    <div className={cn("min-h-[100dvh] w-full flex flex-col relative pb-20", bgClass)}>
+      <div className="flex-1 flex flex-col w-full max-w-md md:max-w-xl mx-auto">
         {children}
       </div>
 
@@ -48,11 +49,13 @@ export function PhoneShell({ children, showNav = true, bg = "app" }: PhoneShellP
                   <Link
                     href={item.href}
                     aria-label={item.label}
+                    aria-current={active ? "page" : undefined}
                     className={cn(
-                      "flex flex-col items-center gap-0.5 min-w-[64px] min-h-[44px] px-3 py-1.5 rounded-2xl transition-colors",
+                      "flex flex-col items-center gap-0.5 min-w-[64px] min-h-[44px] px-3 py-1.5 rounded-2xl",
+                      "transition-[color,background-color,transform] duration-200 ease-out active:scale-[0.97]",
                       active
-                        ? "text-primary font-semibold bg-primary/8"
-                        : "text-slate-400 hover:text-secondary"
+                        ? "text-primary font-semibold bg-primary/10"
+                        : "text-slate-500 hover:text-secondary hover:bg-slate-50"
                     )}
                   >
                     <Icon name={item.icon} filled={active} className="text-[26px]" weight={active ? 600 : 400} />
@@ -80,13 +83,19 @@ export function TopBar({
   dark?: boolean;
 }) {
   return (
-    <div className={cn("flex items-center gap-2 px-4 pt-2 pb-3 select-none", dark ? "text-white" : "text-secondary")}>
+    <div
+      className={cn(
+        "sticky top-0 z-30 flex items-center gap-2 px-4 pt-2 pb-3 select-none",
+        "backdrop-blur-md",
+        dark ? "text-white bg-secondary/90" : "text-secondary bg-background-light/90",
+      )}
+    >
       {backTo ? (
         <Link
           href={backTo}
           aria-label="Voltar"
           className={cn(
-            "inline-flex items-center justify-center h-11 w-11 rounded-full transition-colors",
+            "inline-flex items-center justify-center h-11 w-11 min-h-[44px] min-w-[44px] rounded-full transition-colors duration-200",
             dark ? "hover:bg-white/10" : "hover:bg-slate-100"
           )}
         >
@@ -95,7 +104,7 @@ export function TopBar({
       ) : (
         <span className="w-11" />
       )}
-      <h1 className="flex-1 text-base font-bold text-center truncate">{title}</h1>
+      <h1 className="flex-1 text-base font-bold text-center truncate tracking-tight">{title}</h1>
       <div className="w-11 flex items-center justify-end">{right}</div>
     </div>
   );

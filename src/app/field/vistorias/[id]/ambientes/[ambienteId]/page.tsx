@@ -262,14 +262,14 @@ export default function FieldAmbienteDetail({ params }: PageProps) {
                 <li key={item.id}>
                   <div
                     className={cn(
-                      "bg-white border border-slate-100 rounded-3xl p-4 flex flex-col gap-3 shadow-sm border-l-4",
+                      "rounded-3xl p-4 flex flex-col gap-3 shadow-sm border transition-colors duration-200",
                       isDone
                         ? tone === "good"
-                          ? "border-l-status-good"
+                          ? "bg-green-50/40 border-green-100"
                           : tone === "fair"
-                            ? "border-l-status-warn"
-                            : "border-l-status-bad"
-                        : "border-l-slate-200",
+                            ? "bg-amber-50/40 border-amber-100"
+                            : "bg-red-50/40 border-red-100"
+                        : "bg-white border-slate-100",
                     )}
                   >
                     <div className="flex justify-between items-start gap-2">

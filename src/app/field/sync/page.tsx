@@ -112,7 +112,7 @@ export default function FieldSync() {
         )}
 
         <div>
-          <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
+          <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-3">
             Arquivos na fila
           </h2>
 

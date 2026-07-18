@@ -287,28 +287,28 @@ export default function FieldVistoriaAmbientes({ params }: PageProps) {
       color: "bg-status-good",
       label: "Excelente",
       ring: "ring-status-good/20",
-      accent: "border-l-status-good",
+      surface: "bg-green-50/40 border-green-100 hover:border-status-good/40",
       bar: "bg-status-good",
     },
     warn: {
       color: "bg-status-warn",
       label: "Atenção / pendências",
       ring: "ring-status-warn/20",
-      accent: "border-l-status-warn",
+      surface: "bg-amber-50/40 border-amber-100 hover:border-status-warn/40",
       bar: "bg-status-warn",
     },
     bad: {
       color: "bg-status-bad",
       label: "Avarias detectadas",
       ring: "ring-status-bad/20",
-      accent: "border-l-status-bad",
+      surface: "bg-red-50/40 border-red-100 hover:border-status-bad/40",
       bar: "bg-status-bad",
     },
     todo: {
       color: "bg-slate-300",
       label: "Não iniciado",
       ring: "ring-slate-200",
-      accent: "border-l-slate-300",
+      surface: "bg-white border-slate-100 hover:border-primary/40",
       bar: "bg-slate-300",
     },
   };
@@ -633,8 +633,8 @@ export default function FieldVistoriaAmbientes({ params }: PageProps) {
               <Link
                 href={`/field/vistorias/${id}/ambientes/${r.id}`}
                 className={cn(
-                  "bg-white border border-slate-100 rounded-3xl p-4 flex items-center gap-4 hover:border-primary/40 shadow-sm hover:shadow-md transition-all duration-200 border-l-4 active:scale-[0.99]",
-                  s.accent,
+                  "rounded-3xl p-4 flex items-center gap-4 border shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.99]",
+                  s.surface,
                 )}
               >
                 <div className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0">

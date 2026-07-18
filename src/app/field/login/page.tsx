@@ -52,7 +52,7 @@ export default function FieldLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-background-light font-sans text-secondary flex flex-col items-center justify-center p-5">
+    <div className="min-h-[100dvh] bg-background-light font-sans text-secondary flex flex-col items-center justify-center p-5">
       {/* Soft brand wash */}
       <div
         aria-hidden
@@ -65,14 +65,14 @@ export default function FieldLogin() {
       <div className="relative w-full max-w-sm">
         {/* Brand */}
         <div className="text-center mb-8 space-y-3">
-          <div className="mx-auto h-16 w-16 rounded-3xl bg-primary text-white flex items-center justify-center shadow-soft shadow-primary/25">
+          <div className="mx-auto h-16 w-16 rounded-3xl bg-primary text-white flex items-center justify-center shadow-soft">
             <Icon name="check_circle" filled className="text-[36px]" />
           </div>
           <div className="space-y-1">
             <h1 className="text-2xl font-bold tracking-tight text-secondary">
               Facilita Vistorias
             </h1>
-            <p className="text-sm text-secondary/60">
+            <p className="text-sm text-secondary/70">
               App de campo · sessão de 7 dias
             </p>
           </div>
@@ -80,8 +80,8 @@ export default function FieldLogin() {
 
         <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-100 shadow-sm space-y-6">
           <div className="space-y-1">
-            <h2 className="text-lg font-bold text-secondary">Entrar</h2>
-            <p className="text-sm text-slate-500">
+            <h2 className="text-lg font-bold text-secondary tracking-tight">Entrar</h2>
+            <p className="text-sm text-slate-600">
               Use seu e-mail corporativo para continuar offline no celular.
             </p>
           </div>
@@ -90,7 +90,7 @@ export default function FieldLogin() {
             <div className="space-y-1.5">
               <label
                 htmlFor="field-email"
-                className="block text-xs font-bold uppercase tracking-wider text-slate-500"
+                className="block text-xs font-bold uppercase tracking-wide text-slate-600"
               >
                 E-mail
               </label>
@@ -106,7 +106,7 @@ export default function FieldLogin() {
                   inputMode="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full h-12 min-h-[48px] rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-base text-secondary placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary focus:bg-white transition-colors"
+                  className="w-full h-12 min-h-[48px] rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-base text-secondary placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-white transition-colors duration-200"
                   placeholder="voce@facilitavistorias.com"
                 />
               </div>
@@ -115,7 +115,7 @@ export default function FieldLogin() {
             <div className="space-y-1.5">
               <label
                 htmlFor="field-password"
-                className="block text-xs font-bold uppercase tracking-wider text-slate-500"
+                className="block text-xs font-bold uppercase tracking-wide text-slate-600"
               >
                 Senha
               </label>
@@ -130,13 +130,13 @@ export default function FieldLogin() {
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full h-12 min-h-[48px] rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-12 text-base text-secondary placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary focus:bg-white transition-colors"
+                  className="w-full h-12 min-h-[48px] rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-12 text-base text-secondary placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-white transition-colors duration-200"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-secondary transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 min-h-[40px] min-w-[40px] rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-secondary transition-colors duration-200"
                   aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                 >
                   <Icon name={showPassword ? "visibility_off" : "visibility"} className="text-[20px]" />
@@ -170,7 +170,7 @@ export default function FieldLogin() {
           </form>
         </div>
 
-        <p className="mt-6 text-center text-sm text-slate-400 max-w-prose mx-auto">
+        <p className="mt-6 text-center text-sm text-slate-500 max-w-prose mx-auto">
           Após o login, as vistorias do dia ficam disponíveis offline no aparelho.
         </p>
       </div>

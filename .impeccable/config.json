@@ -1,0 +1,20 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "reason": "Brand font confirmed in DESIGN.md and institutional site",
+        "createdAt": "2026-07-17T20:07:12.940Z"
+      },
+      {
+        "rule": "overused-font",
+        "value": "instrument serif",
+        "reason": "Editorial accent for public report only, DESIGN.md §3.2",
+        "createdAt": "2026-07-17T20:07:13.217Z"
+      }
+    ]
+  }
+}

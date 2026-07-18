@@ -28,22 +28,22 @@ const recent = [
 
 export default function AdminDashboard() {
   return (
-    <div className="min-h-screen bg-background-light font-sans text-secondary p-6 md:p-8">
+    <div className="min-h-[100dvh] bg-background-light font-sans text-secondary p-6 md:p-8">
       <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-primary mb-1">
+          <p className="text-xs font-bold uppercase tracking-wide text-primary mb-1">
             Painel administrativo
           </p>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
             Facilita Vistorias
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-slate-600 mt-1">
             Métricas e atalhos operacionais
           </p>
         </div>
         <Link
           href="/admin/agenda"
-          className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-white text-sm font-bold hover:bg-primary-hover transition-colors shadow-soft min-h-[48px]"
+          className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-white text-sm font-bold hover:bg-primary-hover transition-colors duration-200 shadow-soft min-h-[48px] active:scale-[0.98]"
         >
           <Icon name="add" className="text-[20px]" />
           Nova vistoria
@@ -157,21 +157,23 @@ function Kpi({
   icon: string;
 }) {
   return (
-    <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-2">
+    <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-2 transition-shadow duration-200 hover:shadow-md">
       <div className="flex items-start justify-between gap-2">
-        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider leading-snug">
+        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wide leading-snug">
           {label}
         </span>
-        <Icon name={icon} className="text-[20px] text-primary shrink-0" />
+        <span className="h-9 w-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+          <Icon name={icon} className="text-[20px]" />
+        </span>
       </div>
-      <h2 className="text-3xl font-bold text-secondary tabular-nums">{value}</h2>
+      <h2 className="text-3xl font-bold tracking-tight text-secondary tabular-nums">{value}</h2>
       <span
         className={`text-xs font-medium ${
           hintTone === "good"
             ? "text-status-good"
             : hintTone === "bad"
               ? "text-status-bad"
-              : "text-slate-500"
+              : "text-slate-600"
         }`}
       >
         {hint}

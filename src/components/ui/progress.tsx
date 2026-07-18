@@ -30,20 +30,24 @@ export function Progress({
             <span />
           )}
           {meta ? (
-            <span className="text-xs font-semibold text-slate-400 tabular-nums">{meta}</span>
+            <span className="text-xs font-semibold text-slate-500 tabular-nums">{meta}</span>
           ) : null}
         </div>
       )}
       <div
-        className={cn("w-full rounded-full bg-slate-100 overflow-hidden", height)}
+        className={cn(
+          "w-full rounded-full bg-slate-100/90 overflow-hidden ring-1 ring-inset ring-slate-200/60",
+          height,
+        )}
         role="progressbar"
         aria-valuenow={clamped}
         aria-valuemin={0}
         aria-valuemax={100}
+        aria-label={label}
       >
         <div
           className={cn(
-            "h-full rounded-full bg-primary transition-all duration-500 ease-out",
+            "h-full rounded-full bg-primary transition-[width] duration-500 ease-out",
             barClassName,
           )}
           style={{ width: `${clamped}%` }}

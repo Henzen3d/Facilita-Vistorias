@@ -154,8 +154,8 @@ export default function FieldDashboard() {
       <header className="px-5 pt-4 pb-5">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-sm text-slate-500">{greeting},</p>
-            <h1 className="text-2xl font-bold text-secondary truncate max-w-[240px]">
+            <p className="text-sm text-slate-600">{greeting},</p>
+            <h1 className="text-2xl font-bold tracking-tight text-secondary truncate max-w-[240px]">
               {firstName}
             </h1>
           </div>
@@ -164,7 +164,7 @@ export default function FieldDashboard() {
               href="/field/vistorias/nova"
               title="Criar nova vistoria"
               aria-label="Nova vistoria"
-              className="relative h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-primary flex items-center justify-center shadow-soft hover:bg-primary-hover transition-colors active:scale-95"
+              className="relative h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-primary flex items-center justify-center shadow-soft hover:bg-primary-hover transition-colors duration-200 active:scale-95"
             >
               <Icon name="add" className="text-[22px] text-white" />
             </Link>
@@ -174,7 +174,7 @@ export default function FieldDashboard() {
               disabled={loading}
               title="Sincronizar dados do dia"
               aria-label="Baixar vistorias"
-              className="relative h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-white border border-slate-100 flex items-center justify-center shadow-sm hover:bg-slate-50 transition-colors disabled:opacity-50 active:scale-95"
+              className="relative h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-white border border-slate-100 flex items-center justify-center shadow-sm hover:bg-slate-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
             >
               <Icon
                 name="cloud_download"
@@ -184,11 +184,11 @@ export default function FieldDashboard() {
             <button
               type="button"
               aria-label="Notificações"
-              className="relative h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-white border border-slate-100 flex items-center justify-center shadow-sm active:scale-95"
+              className="relative h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-white border border-slate-100 flex items-center justify-center shadow-sm hover:bg-slate-50 transition-colors duration-200 active:scale-95"
             >
               <Icon name="notifications" className="text-[22px] text-secondary" />
               {totalAgendadas > 0 && (
-                <span className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-status-bad" />
+                <span className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-status-bad ring-2 ring-white" />
               )}
             </button>
           </div>
@@ -311,7 +311,7 @@ export default function FieldDashboard() {
           )}
 
           <section className="px-5 mt-6">
-            <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wide">
               Resumo local
             </h2>
             <div className="mt-3 grid grid-cols-3 gap-3">
@@ -320,28 +320,28 @@ export default function FieldDashboard() {
                 <div className="text-xl font-bold text-secondary leading-tight tabular-nums">
                   {totalConcluidas}
                 </div>
-                <div className="text-xs text-slate-500 font-medium">Concluídas</div>
+                <div className="text-xs text-slate-600 font-medium">Concluídas</div>
               </div>
               <div className="bg-white border border-slate-100 rounded-2xl p-3.5 flex flex-col gap-1.5 shadow-sm">
                 <Icon name="event" className="text-[22px] text-primary" />
                 <div className="text-xl font-bold text-secondary leading-tight tabular-nums">
                   {totalAgendadas}
                 </div>
-                <div className="text-xs text-slate-500 font-medium">Em aberto</div>
+                <div className="text-xs text-slate-600 font-medium">Em aberto</div>
               </div>
               <div className="bg-white border border-slate-100 rounded-2xl p-3.5 flex flex-col gap-1.5 shadow-sm">
                 <Icon name="inventory_2" className="text-[22px] text-accent" />
                 <div className="text-xl font-bold text-secondary leading-tight tabular-nums">
                   {vistorias.length}
                 </div>
-                <div className="text-xs text-slate-500 font-medium">No aparelho</div>
+                <div className="text-xs text-slate-600 font-medium">No aparelho</div>
               </div>
             </div>
           </section>
 
           <section className="px-5 mt-8 pb-8">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-bold text-secondary">Vistorias</h2>
+              <h2 className="text-base font-bold tracking-tight text-secondary">Vistorias</h2>
               <span className="text-sm font-semibold text-primary tabular-nums">
                 {vistorias.length}
               </span>
@@ -365,7 +365,7 @@ export default function FieldDashboard() {
                   <li key={v.id}>
                     <Link
                       href={`/field/vistorias/${v.id}`}
-                      className="block bg-white border border-slate-100 rounded-3xl p-4 hover:border-primary/40 shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.99]"
+                      className="block bg-white border border-slate-100 rounded-3xl p-4 hover:border-primary/40 shadow-sm hover:shadow-md transition-all duration-200 ease-out active:scale-[0.99]"
                     >
                       <div className="flex items-center gap-4">
                         <div className="flex flex-col items-center justify-center min-w-[52px] min-h-[52px] py-2 px-2 rounded-2xl bg-slate-50 border border-slate-100">
